@@ -13,6 +13,15 @@ export default function Home() {
         <Link href={{ pathname: '/details', params: { name: 'Dan' } }} asChild>
           <Button title="Show Details" />
         </Link>
+        <Link href={{ pathname: '/auth/welcome', params: { name: 'Dan' } }} asChild>
+          <Button title="Inicio" />
+        </Link>
+        <Link href={{ pathname: '/auth/selectionType', params: { name: 'Dan' } }} asChild>
+          <Button title="Selecionar" />
+        </Link>
+        <Link href={{ pathname: '/auth/animation', params: { name: 'Dan' } }} asChild>
+          <Button title="Animation" />
+        </Link>
       </Container>
     </>
   );
