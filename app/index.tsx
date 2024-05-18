@@ -1,4 +1,4 @@
-import { Stack, Link } from 'expo-router';
+import { Stack, Link, Redirect } from 'expo-router';
 
 import { Button } from '~/components/Button';
 import { Container } from '~/components/Container';
@@ -7,8 +7,8 @@ import { ScreenContent } from '~/components/ScreenContent';
 export default function Home() {
   return (
     <>
-      <Stack.Screen options={{ title: 'Home' }} />
-      <Container>
+    <Redirect href="/dashboard/" />
+      {/* <Container>
         <ScreenContent path="app/index.tsx" title="Home" />
         <Link href={{ pathname: '/details', params: { name: 'Dan' } }} asChild>
           <Button title="Show Details" />
@@ -22,7 +22,10 @@ export default function Home() {
         <Link href={{ pathname: '/auth/animation', params: { name: 'Dan' } }} asChild>
           <Button title="Animation" />
         </Link>
-      </Container>
+        <Link href={{ pathname: '/dashboard/', params: { name: 'Dan' } }} asChild>
+          <Button title="dashboard" />
+        </Link>
+      </Container> */}
     </>
   );
 }
