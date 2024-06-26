@@ -1,9 +1,7 @@
 import Button from '@ant-design/react-native/lib/button';
-import Modal from '@ant-design/react-native/lib/modal';
-import Provider from '@ant-design/react-native/lib/provider';
 import { Link, Tabs } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Dimensions, Image, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useFonts, Lato_400Regular, Lato_300Light} from '@expo-google-fonts/lato'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Feather } from '@expo/vector-icons';
@@ -43,6 +41,7 @@ export default function Login(){
           alignItems: 'center',
           paddingHorizontal: 20,
           paddingVertical: 20,
+          paddingTop: 60,
           backgroundColor: '#fff',
           justifyContent: 'space-between',
         }}>
@@ -131,7 +130,7 @@ export default function Login(){
           </Link>
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, width: '100%' }}>
-          <Link href={{ pathname: '/auth/selectionType', params: { name: 'Dan' } }} asChild>
+          <Link href={{ pathname: '/dashboard', params: { name: 'Dan' } }} asChild>
             <Button type="primary" style={{ marginBottom: 10 }}>
               Entrar
             </Button>

@@ -22,6 +22,7 @@ export default function Dashboard(){
     }  
     return(
         <>
+        <StatusBar barStyle='light-content' hidden={false} />
         <View style={{backgroundColor: '#fff', position: 'relative'}}>
         <View style={styles.selectTypes}>
             <ScrollView
@@ -84,7 +85,10 @@ export default function Dashboard(){
                 <SelectStatus item="waiting" setStatus={setStatus} status={status} />
                 <SelectStatus item="ok" setStatus={setStatus} status={status} />
             </ScrollView>
-            <ScrollView contentContainerStyle={{marginHorizontal: 20}}>
+            <ScrollView 
+                contentContainerStyle={{marginHorizontal: 20}}
+                showsVerticalScrollIndicator={false}
+            >
                 <ItemList />
                 <ItemList />
                 <ItemList />

@@ -38,12 +38,14 @@ export default function FirstAcess() {
             },
           ]}
         />
+        <View style={{width: '100%'}}>
         <Text
           style={{
             fontFamily: 'Lato_400Regular',
             fontSize: 36,
             color: '#716F6F',
             marginBottom: 5,
+            minWidth: '100%'
           }}>
           Bem vindo
         </Text>
@@ -51,10 +53,11 @@ export default function FirstAcess() {
           style={{
             fontFamily: 'Lato_300Light',
             fontSize: 20,
-            color: '#716F6F',
+            color: '#716F6F'
           }}>
           Clique abaixo na opção desejada para continuar a autenticação.
         </Text>
+        </View>
       </View>
       <View style={{ marginTop: 10, marginBottom: 10, width: '100%' }}>
         <Link href={{ pathname: '/auth/login', params: { name: 'Dan' } }} asChild>

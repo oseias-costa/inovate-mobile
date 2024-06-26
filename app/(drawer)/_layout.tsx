@@ -61,7 +61,7 @@ export default function Layout(){
     return(
         <Drawer 
             drawerContent={(props) => <CustomDrawerContent {...props} />} 
-            screenOptions={{ headerShown: false }}
+            screenOptions={{ headerShown: false, headerTintColor: '#fff' }}
         >
         </Drawer>
     )

@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import React from "react";
-import { Platform, ScrollView, View } from "react-native";
+import { Platform, SafeAreaView, ScrollView, View } from "react-native";
 
 export default function PageLayout({children}: {children: JSX.Element}){
     return(
@@ -14,12 +14,13 @@ export default function PageLayout({children}: {children: JSX.Element}){
         />
           <View
             style={{
-              flex: 1,
-              alignItems: 'center',
-              paddingHorizontal: 20,
-              paddingBottom: 20,
-              backgroundColor: '#fff',
-              justifyContent: 'space-between',
+                paddingTop: 60,
+                flex: 1,
+                alignItems: 'center',
+                paddingHorizontal: 20,
+                paddingBottom: 20,
+                backgroundColor: '#fff',
+                justifyContent: 'space-between',
             }}>
                 {children}
             </View>

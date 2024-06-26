@@ -25,8 +25,8 @@ export default function Layout(){
                 //             height: 36
                 //         }}
                 //     />,
-                headerLeft: () => <DrawerToggleButton />,
-                headerRight: () => <Feather name="bell" size={24} color="black" style={{marginRight: 20}} />,
+                headerLeft: () => <DrawerToggleButton  tintColor="#fff"  />,
+                headerRight: () => <TouchableOpacity><Feather name="bell" size={24} color="white" style={{marginRight: 20}} /></TouchableOpacity>,
                 tabBarIcon: ({ focused, color, size}) => {
                     if (focused){
                         return <MaterialIcons name='dashboard' color={color} size={size} />
