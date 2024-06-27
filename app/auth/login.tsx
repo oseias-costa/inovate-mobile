@@ -5,12 +5,18 @@ import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useFonts, Lato_400Regular, Lato_300Light} from '@expo-google-fonts/lato'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Feather } from '@expo/vector-icons';
+import { useLogin } from '../hook/useLogin';
 
 export default function Login(){
+    const [error, setError] = useState('')
     const [showPassword, setShowPassword] = useState(false)
+    const [data, setData] = useState({ email: '', password: '' })
+    const { mutate, fetchToken } = useLogin(setError)
     const [other, setOther] = useState({
       input: '', color: '#DADADA'
     })
+
+    console.log(data)
     let [fontsLoades] = useFonts({
       Lato_400Regular,
       Lato_300Light
@@ -70,6 +76,10 @@ export default function Login(){
             onFocus={() => setOther({color: '#2E77FF', input: 'email'})}
             onBlur={() => setOther({color: '#2E77FF', input: 'email'})}
             placeholder='E-mail'
+            onChange={(e) => {
+              setError('')
+              setData({ ...data, email: e.nativeEvent.text })
+            }}
           />
           <View style={{
             flexDirection: 'row',
@@ -94,7 +104,10 @@ export default function Login(){
             secureTextEntry={!showPassword}
             onFocus={() => setOther({color: '#2E77FF', input: 'password'})}
             placeholder='Senha'
-            
+            onChange={(e) => {
+              setError('')
+              setData({ ...data, password: e.nativeEvent.text})
+            }}
             />
             <TouchableOpacity 
             style={{
@@ -130,11 +143,12 @@ export default function Login(){
           </Link>
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, width: '100%' }}>
-          <Link href={{ pathname: '/dashboard', params: { name: 'Dan' } }} asChild>
-            <Button type="primary" style={{ marginBottom: 10 }}>
+          {/* <Link href={{ pathname: '/dashboard', params: { name: 'Dan' } }} asChild> */}
+            <Button 
+              onPress={() => mutate.mutate(data)} type="primary" style={{ marginBottom: 10 }}>
               Entrar
             </Button>
-          </Link>
+          {/* </Link> */}
           <Link href={{ pathname: '/auth/welcome', params: { name: 'Dan' } }} asChild>
             <Button>Voltar</Button>
           </Link>
