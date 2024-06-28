@@ -1,10 +1,13 @@
 import Button from '@ant-design/react-native/lib/button';
-import { Link } from 'expo-router';
+import { Link, Redirect } from 'expo-router';
 import { Dimensions, Image, Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, Text, TextInput, View } from "react-native";
 import PageLayout from './PageLayout';
 import { useFonts, Lato_400Regular, Lato_300Light} from '@expo-google-fonts/lato'
 import { useRef, useState } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import axios from 'axios';
+import { useIsMutating, useMutation } from '@tanstack/react-query';
+import { router } from 'expo-router'
 
 export default function RecoveryPassword(){
   const [other, setOther] = useState({
@@ -16,16 +19,36 @@ export default function RecoveryPassword(){
     Lato_300Light
   })
   const {height} = Dimensions.get('window')
-
   const scrollView = useRef<ScrollView>(null)
+
+  const postRecovery = async () => {
+    const response = await axios({
+      baseURL: "http://10.0.0.101:3009/users/recovery-password",
+      method: "POST",
+      data: { email: email }
+    })
+    return response.data
+}
+
+const isMutation = useIsMutating({ mutationKey: ['recovery-passord'], exact: true})
+
+  const mutate = useMutation({
+    mutationFn: postRecovery,
+    mutationKey: ['recovery-passord'],
+    onSuccess: (data) => {
+      return router.replace(`/auth/${email}`, )
+    },
+    onError: () => {
+      // setError('O e-mail é inválido')
+    }
+  })
 
   if(!fontsLoades){
     return <Text>Loading</Text>
   }
 
     return (
-      <KeyboardAwareScrollView
-        contentContainerStyle={{flex: 1}}
+      <KeyboardAwareScrollView contentContainerStyle={{flex: 1}}
         extraScrollHeight={30}
         bounces={false}
         scrollEnabled={false}
@@ -89,11 +112,9 @@ export default function RecoveryPassword(){
               />
             </View>
               <View style={{ marginTop: 10, marginBottom: 10, width: '100%' }}>
-                <Link href={{ pathname: '/auth/verifyCode', params: { email: email } }} asChild>
-                  <Button type="primary" style={{ marginBottom: 10 }}>
+                  <Button type="primary" onPress={() => mutate.mutate()} style={{ marginBottom: 10 }}>
                     Recuperar
                   </Button>
-                </Link>
                 <Link href={{ pathname: '/auth/login', params: { name: 'Dan' } }} asChild>
                 <Button>
                   Voltar
