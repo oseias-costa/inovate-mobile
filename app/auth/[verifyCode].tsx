@@ -1,4 +1,4 @@
-import React, {  useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Image, Keyboard, Text, TextInput, View } from 'react-native';
 import PageLayout from './PageLayout';
 import { useFonts, Lato_400Regular, Lato_300Light } from '@expo-google-fonts/lato';
@@ -23,13 +23,12 @@ export default function VerifyCode() {
     Lato_400Regular,
     Lato_300Light,
   });
-  const refInput = useRef<TextInput>(null);
 
   const postRecovery = async () => {
     const response = await axios({
       baseURL: 'http://10.0.0.101:3009/users/check-code',
       method: 'POST',
-      data: { code: code, email: verifyCode },
+      data: { code: Number(code), email: verifyCode },
     });
     return response.data;
   };
@@ -38,13 +37,13 @@ export default function VerifyCode() {
   const mutation = useMutation({
     mutationFn: postRecovery,
     mutationKey: ['verify-code'],
-    onSuccess: (data) => {
-      AsyncStorage.setItem('update-password', data.token);
-      console.log(data)
-      // return router.replace('/entrar/alterar-a-senha?email=' + params.get('email'));
+    onSuccess:  async (data) => {
+       await AsyncStorage.setItem('token', data.token);
+       await AsyncStorage.setItem('email', String(verifyCode));
+      return router.navigate('/auth/updatePassword')
     },
     onError: (err) => {
-      console.log(err)
+      console.log(err);
       setError('O código é inválido');
     },
   });
@@ -115,9 +114,13 @@ export default function VerifyCode() {
           </View>
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, width: '100%' }}>
-            <Button type="primary" style={{ marginBottom: 10 }} onPress={() => mutation.mutate()}>
-              Verificar
-            </Button>
+          <Button
+            type="primary"
+            style={{ marginBottom: 10 }}
+            loading={isMutation ? true : false}
+            onPress={() => !isMutation && mutation.mutate()}>
+            {!isMutation && 'Verificar'}
+          </Button>
           <Button onPress={() => router.back()}>Voltar</Button>
         </View>
       </PageLayout>

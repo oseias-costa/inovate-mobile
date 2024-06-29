@@ -7,7 +7,7 @@ import { ScreenContent } from '~/components/ScreenContent';
 export default function Home() {
   return (
     <>
-    <Redirect href="auth/animation" />
+    <Redirect href="/auth/animation" />
       {/* <Container>
         <ScreenContent path="app/index.tsx" title="Home" />
         <Link href={{ pathname: '/details', params: { name: 'Dan' } }} asChild>
