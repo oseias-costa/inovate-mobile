@@ -1,31 +1,26 @@
-import { Stack, Link, Redirect } from 'expo-router';
-
-import { Button } from '~/components/Button';
-import { Container } from '~/components/Container';
-import { ScreenContent } from '~/components/ScreenContent';
+import { Redirect } from 'expo-router';
+import useGetUser from './hook/useGetUser';
+import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Home() {
-  return (
-    <>
-    <Redirect href="/auth/animation" />
-      {/* <Container>
-        <ScreenContent path="app/index.tsx" title="Home" />
-        <Link href={{ pathname: '/details', params: { name: 'Dan' } }} asChild>
-          <Button title="Show Details" />
-        </Link>
-        <Link href={{ pathname: '/auth/welcome', params: { name: 'Dan' } }} asChild>
-          <Button title="Inicio" />
-        </Link>
-        <Link href={{ pathname: '/auth/selectionType', params: { name: 'Dan' } }} asChild>
-          <Button title="Selecionar" />
-        </Link>
-        <Link href={{ pathname: '/auth/animation', params: { name: 'Dan' } }} asChild>
-          <Button title="Animation" />
-        </Link>
-        <Link href={{ pathname: '/dashboard/', params: { name: 'Dan' } }} asChild>
-          <Button title="dashboard" />
-        </Link>
-      </Container> */}
-    </>
-  );
+  const [token, setToken] = useState('')
+  const { user } = useGetUser()
+
+  const getToken = async () => {
+    const token = await AsyncStorage.getItem('token')
+    if(token){
+      setToken(token)
+    }
+  }
+
+  useEffect(() => {
+    getToken()
+  },[])
+
+  if(user || token){
+    return <Redirect href='/(drawer)/(tabs)/dashboard' />
+  }
+
+  return  <Redirect href="/auth/login" />
 }

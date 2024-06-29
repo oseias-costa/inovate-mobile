@@ -1,7 +1,6 @@
 import Button from '@ant-design/react-native/lib/button';
-import { Link, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import {
-  Dimensions,
   Image,
   ScrollView,
   Text,
@@ -30,7 +29,7 @@ export default function FirstAcess() {
 
   const handlePress = () => {
     const verify = validateEmail(email)
-    console.log(verify, 'verify')
+
     if(verify){
       router.push({
         pathname: '/auth/verifyCode', 
@@ -124,9 +123,7 @@ export default function FirstAcess() {
             >
               Continuar
             </Button>
-          <Link href={{ pathname: '/auth/welcome', params: { name: 'Dan' } }} asChild>
-            <Button>Voltar</Button>
-          </Link>
+            <Button onPress={() => router.back()}>Voltar</Button>
         </View>
       </PageLayout>
     </KeyboardAwareScrollView>

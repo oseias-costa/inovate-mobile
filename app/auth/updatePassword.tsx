@@ -54,7 +54,6 @@ export default function VerifyCode() {
     mutationFn: updatePassword,
     mutationKey: ['update-password'],
     onSuccess: async () => {
-      await AsyncStorage.removeItem('email');
       await AsyncStorage.removeItem('token');
       return router.replace('/auth/login');
     },

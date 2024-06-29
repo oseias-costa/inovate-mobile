@@ -8,6 +8,7 @@ import SelectStatus from "../../../components/SelectStatus";
 import ItemList from "~/app/components/ItemList";
 import { LinearGradient } from "expo-linear-gradient";
 import BottomSheet from '@gorhom/bottom-sheet'
+import useGetUser from "~/app/hook/useGetUser";
 // import { StatusBar } from "expo-status-bar";
 
 export default function Dashboard(){
@@ -15,7 +16,8 @@ export default function Dashboard(){
     const [status, setStatus] = useState<'all' | 'pending' | 'ok' | 'waiting'>('all')
     const fontsLoades = useFontLato()
     const colorSelected = (item: string) => selected === item ? '#fff' : '#5D5B5B'
-
+    const { user } = useGetUser()
+    console.log(user)
 
     if(!fontsLoades){
         return <Text>Loading</Text>

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Image, Keyboard, Text, TextInput, View } from 'react-native';
 import PageLayout from './PageLayout';
 import { useFonts, Lato_400Regular, Lato_300Light } from '@expo-google-fonts/lato';
@@ -11,7 +11,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 
 export default function VerifyCode() {
-  const { verifyCode } = useLocalSearchParams();
   const [other, setOther] = useState({
     input: '',
     color: '#DADADA',
@@ -19,6 +18,7 @@ export default function VerifyCode() {
   const local = useLocalSearchParams();
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
+  const params = useLocalSearchParams()
   let [fontsLoades] = useFonts({
     Lato_400Regular,
     Lato_300Light,
@@ -28,7 +28,7 @@ export default function VerifyCode() {
     const response = await axios({
       baseURL: 'http://10.0.0.101:3009/users/check-code',
       method: 'POST',
-      data: { code: Number(code), email: verifyCode },
+      data: { code: Number(code), email: params.email },
     });
     return response.data;
   };
@@ -39,7 +39,7 @@ export default function VerifyCode() {
     mutationKey: ['verify-code'],
     onSuccess:  async (data) => {
        await AsyncStorage.setItem('token', data.token);
-       await AsyncStorage.setItem('email', String(verifyCode));
+       await AsyncStorage.setItem('email', String(params.email));
       return router.navigate('/auth/updatePassword')
     },
     onError: (err) => {

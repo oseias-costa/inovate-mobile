@@ -33,6 +33,7 @@ export default function RecoveryPassword() {
   });
   const { height } = Dimensions.get('window');
   const scrollView = useRef<ScrollView>(null);
+  const [error, setError] = useState('');
 
   const postRecovery = async () => {
     const response = await axios({
@@ -48,11 +49,15 @@ export default function RecoveryPassword() {
   const mutate = useMutation({
     mutationFn: postRecovery,
     mutationKey: ['recovery-passord'],
-    onSuccess: (data) => {
-      return router.replace(`/auth/${email}`);
+    onSuccess: () => {
+      router.push({
+        pathname: '/auth/verifyCode', 
+        params: {
+          email
+      }})
     },
     onError: () => {
-      // setError('O e-mail é inválido')
+      setError('O e-mail é inválido')
     },
   });
 
