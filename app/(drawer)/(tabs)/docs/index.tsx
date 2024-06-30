@@ -1,4 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
@@ -9,7 +12,37 @@ import Subtitle from "~/app/components/Subtitle";
 
 export default function Docs(){
     const [status, setStatus] = useState<'all' | 'pending' | 'ok' | 'waiting'>('all')
+    const [filter, setFilter] = useState({ user: "", company: "" })
+    const [pagination, setPagination] = useState({ page: "1", limit: "2" });
 
+    const getDocuments = async () => {
+        const token = await AsyncStorage.getItem('token')
+        const documents = await axios({
+          method: "GET",
+          baseURL: `http://10.0.0.101:3009/document?page=${pagination.page}&limit=${pagination.limit}&user=${filter.user}&company&${filter.company}`,
+          headers: { Authorization: `Bearer ${token}` },
+        });
+    
+        return documents.data;
+      };
+    
+      const { data: docs, isLoading } = useQuery<Documents>({
+        queryKey: [`document-page`, pagination.page],
+        queryFn: getDocuments,
+      });
+    
+      type Documents = {
+        items: Document[];
+        meta: {
+          totalItems: number;
+          itemCount: number;
+          itemsPerPage: number;
+          totalPages: number;
+          currentPage: number;
+        };
+      };
+
+      console.log(docs)
     return(
         <View style={{backgroundColor: '#fff', position: 'relative'}}>
             <StatusBar barStyle='light-content' hidden={false} />
