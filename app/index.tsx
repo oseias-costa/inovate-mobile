@@ -18,9 +18,9 @@ export default function Home() {
     getToken()
   },[])
 
-  if(user || token){
-    return <Redirect href='/(drawer)/(tabs)/dashboard' />
+  if(!user){
+    return  <Redirect href="/auth/login" />
   }
-
-  return  <Redirect href="/auth/login" />
+  
+  return <Redirect href='/(drawer)/(tabs)/dashboard' />
 }

@@ -40,7 +40,7 @@ export default function useGetUser() {
       const getError = error as AxiosError;
       if (getError.response?.status === 401) {
         await AsyncStorage.removeItem("token");
-        router.replace("/auth/login");
+        return router.navigate("/auth/login");
       }
   }
 

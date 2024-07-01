@@ -1,5 +1,5 @@
 import Button from '@ant-design/react-native/lib/button';
-import { Link, Tabs } from 'expo-router';
+import { Link, Redirect, Tabs } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useFonts, Lato_400Regular, Lato_300Light } from '@expo-google-fonts/lato';
@@ -9,6 +9,7 @@ import { useLogin } from '../hook/useLogin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsMutating } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import useGetUser from '../hook/useGetUser';
 
 export default function Login() {
   const [error, setError] = useState('');
@@ -19,6 +20,7 @@ export default function Login() {
     input: '',
     color: '#DADADA',
   });
+  const { user } = useGetUser()
 
   const isMutating = useIsMutating({ mutationKey: ['login'], exact: true });
   const getEmail = async () => {
@@ -36,6 +38,10 @@ export default function Login() {
     Lato_400Regular,
     Lato_300Light,
   });
+
+  if(user){
+    return <Redirect href="/(drawer)/(tabs)/dashboard" />
+  }
 
   if (!fontsLoades) {
     return <Text>Loading</Text>;
