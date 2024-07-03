@@ -1,9 +1,19 @@
-import { Modal, SafeAreaView, Text, TextInput, View } from 'react-native';
+import {
+  Modal,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Subtitle from '../components/Subtitle';
 import { useMemo, useRef, useState } from 'react';
 import TextInputCustom from '../components/TextInputCustom';
 import useGetCompanys from '../hook/useGetCompanys';
 import { Button } from '~/components/Button';
+import { MaterialIcons } from '@expo/vector-icons';
+import RadioItem from '@ant-design/react-native/lib/radio/RadioItem';
 
 export default function NewSolicitation() {
   const [other, setOther] = useState({
@@ -13,7 +23,8 @@ export default function NewSolicitation() {
   const [error, setError] = useState('');
   const [data, setData] = useState({ email: '', password: '' });
   const { data: companys } = useGetCompanys();
-  const [selectCompany, setSelectCompany] = useState(false)
+  const [selectCompany, setSelectCompany] = useState(false);
+  const [companySelected, setCompanySelected] = useState('')
 
   return (
     <View style={{ backgroundColor: '#fff', paddingTop: 20, flex: 1 }}>
@@ -21,14 +32,37 @@ export default function NewSolicitation() {
         <Subtitle text="Nova solicitação" />
       </View>
       <TextInput placeholder="Empresa" onPressIn={() => setSelectCompany(true)} />
-      <Modal 
-        animationType='slide'
+      <Modal
+        animationType="slide"
         visible={selectCompany}
-        onRequestClose={() => setSelectCompany(false)}
-      >
-        <SafeAreaView>
-        <Text>Test</Text>
-        <Button title='Close' onPress={() => setSelectCompany(false)}/>
+        onRequestClose={() => setSelectCompany(false)}>
+        <SafeAreaView style={{ backgroundColor: '#00264B' }}>
+          <View style={style.header}>
+            <TouchableOpacity onPress={() => setSelectCompany(false)}>
+              <MaterialIcons name="arrow-back-ios" size={24} color="white" />
+            </TouchableOpacity>
+            <Text style={style.title}>Selecione a Empresa</Text>
+            <TouchableOpacity onPress={() => setSelectCompany(false)}>
+              <Text style={{ color: '#fff' }}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={style.body}>
+            <View>
+              {companys.map((company: any) => {
+                return (
+                <RadioItem 
+                  checked={companySelected === company.id}
+                  onChange={() => {
+                    setCompanySelected(company.id)
+                    setSelectCompany(false)
+                  }}
+                  value={company.id}
+                  children={<View style={{marginTop: 7}}><Text>{company.name}</Text></View>}
+                  left={true}
+                />
+              )})}
+            </View>
+          </View>
         </SafeAreaView>
       </Modal>
       <TextInput
@@ -59,3 +93,24 @@ export default function NewSolicitation() {
     </View>
   );
 }
+
+const style = StyleSheet.create({
+  header: {
+    paddingHorizontal: 12,
+    height: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderBottomColor: '#d3d3d3',
+    shadowColor: '#000',
+  },
+  body: {
+    backgroundColor: '#fff'
+  },
+  title: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 18,
+  },
+});
