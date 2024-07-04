@@ -15,20 +15,25 @@ const TextInputCustom = ({label, placeholder, text}: TextInputProps) => {
     const borderInput = other.input === 'email' ? '#75BCEE' : '#DADADA'
     return(
         <View>
-            <Text style={{
-                color: '#3B3D3E',
-                fontSize: 12,
-                fontFamily: 'Lato_400Regular',
+            <View style={{
                 marginLeft: 20,
-                marginTop: 4,
+                marginTop: 6,
+                marginBottom: 2,
                 position: 'relative',
-                top: 0,
                 paddingHorizontal: 10,
-                // backgroundColor: '#fff'
+                }}>
+            <Text style={{
+                color: '#7F7676',
+                fontSize: 13,
+                position: 'relative',
+                fontFamily: 'Lato_400Regular',
+                zIndex: 10,
             }}>{label}</Text>
+            </View>
             <TextInput
                 readOnly
                 style={{
+                    zIndex: 2,
                     borderColor: borderInput,
                     borderWidth: 1,
                     height: 47,
