@@ -1,4 +1,5 @@
 import {
+  Button,
   Modal,
   SafeAreaView,
   StyleSheet,
@@ -16,7 +17,15 @@ import RadioItem from '@ant-design/react-native/lib/radio/RadioItem';
 import { Ionicons } from '@expo/vector-icons';
 import DatePicker from '@ant-design/react-native/lib/date-picker';
 import Provider from '@ant-design/react-native/lib/provider';
-import List from '@ant-design/react-native/lib/list'
+import List from '@ant-design/react-native/lib/list';
+import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { useCallback, useMemo, useRef } from 'react';
+import DatePickerView from '@ant-design/react-native/lib/date-picker-view';
+import ButtonAnt from '@ant-design/react-native/lib/button';
+
+const renderBackdrop = (props: any) => (
+  <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />
+);
 
 export default function NewSolicitation() {
   const [other, setOther] = useState({
@@ -28,7 +37,11 @@ export default function NewSolicitation() {
   const { data: companys } = useGetCompanys();
   const [selectCompany, setSelectCompany] = useState(false);
   const [companySelected, setCompanySelected] = useState({ id: '', name: '' });
-  const [expiration, setExpiration] = useState();
+  const [expiration, setExpiration] = useState<Date>();
+  const snapPoins = useMemo(() => ['25%', '50%', '60%'], []);
+  const ref = useRef<BottomSheet>(null);
+  const handleOpen = () => ref.current?.expand();
+  const handleClose = () => ref.current?.close();
 
   return (
     <View style={{ backgroundColor: '#fff', paddingTop: 20, flex: 1 }}>
@@ -128,52 +141,60 @@ export default function NewSolicitation() {
         }}
       />
       <TextInputCustom label="Descrição" text="" />
-      <Provider>
-        <List>
-        <DatePicker
-          value={expiration}
-          mode="date"
-          title="Selecione"
-          locale={{
-            okText: 'Ok',
-            dismissText: 'Cancelar',
-            DatePickerLocale: {
-              day: '',
-              year: '',
-              month: '',
-              am: '',
-              pm: '',
-              hour: '',
-              minute: '',
-            },
-          }}
-          defaultDate={new Date()}
-          minDate={new Date()}
-          maxDate={new Date(2026, 11, 3)}
-          onChange={(e: any) => setExpiration(e)}
-          format="YYYY-MM-DD">
-          <List.Item
-            style={{
-              width: '100%',
-              borderColor: '#DADADA',
-              borderWidth: 1,
-              height: 47,
-              padding: 10,
-              borderRadius: 5,
-              marginVertical: 5,
-              marginHorizontal: 20,
-              flexDirection: 'row',
-              // justifyContent: 'space-between',
-              // fontFamily: 'Lato_400Regular',
-              // fontSize: 18,
-            }}
-          ><Text>Selecione a Data</Text>
-          <MaterialIcons name="date-range" size={24} color="black" />
-          </List.Item>
-        </DatePicker>
-        </List>
-      </Provider>
+
       <TextInputCustom label="Solicitante" text="" />
+      <TextInput />
+      <Button onPress={handleOpen} title="open" />
+      <Button onPress={handleClose} title="close" />
+      <BottomSheet
+        onClose={handleClose}
+        snapPoints={['20%']}
+        ref={ref}
+        handleStyle={{
+          // backgroundColor: '#00264B',
+          borderTopEndRadius: 5,
+          borderTopStartRadius: 5,
+        }}
+        backdropComponent={renderBackdrop}
+        enablePanDownToClose={true}
+        backgroundStyle={{ backgroundColor: '#fff' }}>
+        <View style={{ height: 100 }}>
+          <Text style={{textAlign: 'center'}}>Selecione a data</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              // backgroundColor: '#00264B',
+              borderBottomColor: '#d3d3d3',
+              borderBottomWidth: 1,
+              paddingBottom: 10,
+              paddingTop: 10
+            }}>
+            <Text>Ano</Text>
+            <Text>Mês</Text>
+            <Text>Dia</Text>
+          </View>
+          <DatePickerView
+            value={expiration}
+            locale={{
+              day: ' ',
+              year: ' ',
+              month: '',
+            }}
+            onChange={(val: Date) => {
+              setExpiration(val);
+              console.log('onChange', val);
+            }}
+          />
+          <ButtonAnt
+            type="primary"
+            style={{
+              marginHorizontal: 20,
+            }}>
+            Test
+          </ButtonAnt>
+        </View>
+      </BottomSheet>
     </View>
   );
 }
