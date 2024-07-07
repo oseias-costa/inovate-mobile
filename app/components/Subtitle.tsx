@@ -6,7 +6,7 @@ export default function Subtitle({text}:{text: string}){
             color: '#3B3D3E', 
             fontSize: 24, 
             fontFamily: 'Lato_400Regular',
-            marginLeft: 25
+            marginLeft: 20
         }}>{text}</Text>
     )
 }
