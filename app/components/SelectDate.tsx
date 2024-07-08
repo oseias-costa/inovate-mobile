@@ -1,9 +1,15 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetModalProvider,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet';
 import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ButtonAnt from '@ant-design/react-native/lib/button';
 import DatePickerView from '@ant-design/react-native/lib/date-picker-view';
+import Modal from '@ant-design/react-native/lib/modal';
+import Provider from '@ant-design/react-native/lib/provider';
 
 const renderBackdrop = (props: any) => (
   <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />
@@ -17,72 +23,79 @@ type SelectDateProps = {
 
 export function SelectDate({ dateValue, setDate, placeholder }: SelectDateProps) {
   const ref = useRef<BottomSheet>(null);
-  const snapPoins = useMemo(() => ['64%'],[])
-  const [localDate, setLocalDate] = useState<Date | undefined>(dateValue)
-  const [showDate, setShowDate] = useState('')
-  
-  const includeZero = (num: number) => num < 10 ?  `0${num}` : num
+  const snapPoins = useMemo(() => ['63%'], []);
+  const [localDate, setLocalDate] = useState<Date | undefined>(dateValue);
+  const [showDate, setShowDate] = useState('');
+  const [openModal, setOpenModal] = useState(false);
+
+  const includeZero = (num: number) => (num < 10 ? `0${num}` : num);
   useEffect(() => {
-      if(dateValue){
-          const date = new Date(dateValue)
-          const day = includeZero(date.getDate())
-          const month = includeZero(date.getMonth() + 1)
-          const year = date.getFullYear()
-          const format = `${day}-${month}-${year}`
-          return setShowDate(format)
-        }
-    },[dateValue])
+    if (dateValue) {
+      const date = new Date(dateValue);
+      const day = includeZero(date.getDate());
+      const month = includeZero(date.getMonth() + 1);
+      const year = date.getFullYear();
+      const format = `${day}-${month}-${year}`;
+      return setShowDate(format);
+    }
+  }, [dateValue]);
 
   const handleClose = () => {
-    setDate(localDate)
-    ref.current?.close()
-};
-  
+    setDate(localDate);
+    ref.current?.close();
+  };
+
   return (
     <>
-      <TouchableOpacity style={styles.button} onPress={() => ref.current?.expand()}>
+      <TouchableOpacity style={styles.button} onPress={() => setOpenModal(true)}>
         <Text numberOfLines={1} style={styles.textButton}>
-          {showDate?  showDate : placeholder }
+          {showDate ? showDate : placeholder}
         </Text>
         <MaterialIcons name="date-range" size={24} color="#7B8A92" />
       </TouchableOpacity>
-      <BottomSheet
-        onClose={handleClose}
-        snapPoints={snapPoins}
-        index={-1}
-        ref={ref}
-        enableOverDrag={true}
-        handleStyle={{
-          borderTopEndRadius: 5,
-          borderTopStartRadius: 5,
-        }}
-        backdropComponent={renderBackdrop}
-        enablePanDownToClose={true}
-        backgroundStyle={{ backgroundColor: '#fff' }}>
-        <View style={{ height: 100 }}>
-          <View style={styles.boxTop}>
-            <Text style={styles.boxTopText}>Ano</Text>
-            <Text style={styles.boxTopText}>Mês</Text>
-            <Text style={styles.boxTopText}>Dia</Text>
+      <Provider>
+        <Modal
+          popup
+          style={{
+              borderTopEndRadius: 13,
+              borderTopStartRadius: 13
+          }}
+          visible={openModal}
+          animationType="slide-up"
+          closable
+          maskClosable
+          onClose={() => setOpenModal(false)}>
+          <View style={{ height: 440 }}>
+            <View style={styles.boxTop}>
+              <Text style={styles.boxTopText}>Ano</Text>
+              <Text style={styles.boxTopText}>Mês</Text>
+              <Text style={styles.boxTopText}>Dia</Text>
+            </View>
+            <DatePickerView
+              value={localDate}
+              locale={{
+                day: ' ',
+                year: ' ',
+                month: '',
+              }}
+              itemStyle={styles.dateValue}
+              onChange={(val: Date) => {
+                setLocalDate(val);
+                console.log('onChange', val);
+              }}
+            />
+            <ButtonAnt
+              type="primary"
+              style={styles.buttonClose}
+              onPress={() => {
+                setOpenModal(false);
+                setDate(localDate);
+              }}>
+              Selecionar
+            </ButtonAnt>
           </View>
-          <DatePickerView
-            value={localDate}
-            locale={{
-              day: ' ',
-              year: ' ',
-              month: '',
-            }}
-            itemStyle={styles.dateValue}
-            onChange={(val: Date) => {
-              setLocalDate(val);
-              console.log('onChange', val);
-            }}
-          />
-          <ButtonAnt type="primary" style={styles.buttonClose} onPress={handleClose}>
-            Selecionar
-          </ButtonAnt>
-        </View>
-      </BottomSheet>
+        </Modal>
+      </Provider>
     </>
   );
 }

@@ -9,10 +9,9 @@ type SelectCompanyProps = {
         id: string
     },
     setCompanySelected: Dispatch<SetStateAction<{name: string, id: string}>>
-    setOpenModal: Dispatch<SetStateAction<boolean>>
 }
 
-export default function SelectCompany({companySelected, setCompanySelected, setOpenModal}: SelectCompanyProps){
+export default function SelectCompany({companySelected, setCompanySelected}: SelectCompanyProps){
     const { data: companys } = useGetCompanys();
 
     return(
@@ -24,7 +23,6 @@ export default function SelectCompany({companySelected, setCompanySelected, setO
                     checked={companySelected.id === company.id}
                     onChange={() => {
                       setCompanySelected({ id: company.id, name: company.name });
-                      setOpenModal(false);
                     }}
                     value={company.id}
                     children={

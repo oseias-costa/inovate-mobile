@@ -44,6 +44,20 @@ export default function Layout() {
           ),
         }}
       />
+      <Stack.Screen
+        name="SolicitationSucess"
+        options={{
+          headerTitleAlign: 'center',
+          headerTitle: 'Solicitação realizada',
+          headerTintColor: '#fff',
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.replace('/docs/')}>
+              <MaterialIcons name="arrow-back-ios" size={24} color="white" />
+            </TouchableOpacity>
+          ),
+        }}
+      />
     </Stack>
+    
   );
 }
