@@ -1,96 +1,98 @@
-import { StyleSheet, Text, View } from "react-native";
+import { SafeAreaView, StyleSheet, Text, TextInput, View } from "react-native";
 import Subtitle from "../components/Subtitle";
-import DetailItem from "../components/DetailItem";
+import { router, useLocalSearchParams } from "expo-router";
+import useGetCompanys from "../hook/useGetCompanys";
+import ButtonAnt from '@ant-design/react-native/lib/button';
 
 export default function Details(){
+    const { document: docString } = useLocalSearchParams()
+    const document = JSON.parse(String(docString))
+    const { data } = useGetCompanys()
+    const company = data?.find((item: any) => item.id === document?.companyId)
+
+    console.log(document)
     return(
-        <View style={{backgroundColor: '#fff', paddingTop: 20, flex: 1}}>
-            <View style={{paddingBottom: 20}}>
-                <Subtitle text="Solicitação" />
-            </View>
-            <View style={styles.painel}>
-                <View>
-                    <Text style={[styles.painelDescription, {
-                        backgroundColor: '#d3d3d3',
-                        paddingHorizontal: 10,
-                        paddingVertical: 1,
-                        borderRadius: 10,
-                        marginBottom: 4,
-                    }]}>Abertura</Text>
-                    <Text style={styles.painelData}>24/05/24</Text>
-                </View>
-                <View>
-                    <Text style={[styles.painelDescription, {
-                        backgroundColor: '#d3d3d3',
-                        paddingHorizontal: 10,
-                        paddingVertical: 1,
-                        borderRadius: 10,
-                        marginBottom: 4
-                    }]}>Aguardando</Text>
-                    <Text style={styles.painelData}>faltam 4 dias</Text>
-                </View>
-                <View>
-                    <Text style={styles.painelDescription}>Concluído</Text>
-                    <Text style={styles.painelData}>29/05/24</Text>
-                </View>
-            </View>
-            <DetailItem 
-                label="Empresa" 
-                text="Inovate Ambiental" 
-                fontSize="bigger"
-            />
-            <DetailItem 
-                label="Documento" 
-                text="Cadastro na FEPAM" 
-                fontSize="bigger"
-            />
-            <DetailItem 
-                label="Descrição" 
-                text="Documento Emitido no mesmo dia que foi realizado o cadastro" 
-                fontSize="small"
-            />
-            <DetailItem
-                label="Solicitante" 
-                text="Leonardo Borilli" 
-                fontSize="small"
-            />
-            <DetailItem
-                label="Prazo" 
-                text="06/05/24" 
-                fontSize="small"
-            />
-            
+        <SafeAreaView style={{backgroundColor: '#fff', flex: 1}}>
+             <View style={{ paddingBottom: 25, paddingTop: 20 }}>
+        <Subtitle text="Detalhes da solicitação" />
+        <Text style={style.description}>
+          Verifique abaixo os detalhes da solicitação.
+        </Text>
+      </View>
+        <View>
+            <TextInputDetail label="Empresa" value={company?.name} />
+            <TextInputDetail label="Documento" value={document.document} />
+            <TextInputDetail label="Descrição" value={document.description} />
+            <TextInputDetail label="Prazo" value={document.expiration} />
+            <TextInputDetail label="Status" value={document.status} />         
+        </View>
+        <ButtonAnt type="ghost" style={style.button} onPress={() => router.navigate('/docs/')}>
+          voltar
+        </ButtonAnt>
+        </SafeAreaView>
+    )
+}
+
+const TextInputDetail = ({value, label}:{value: string, label: string}) => {
+    return ( 
+        <View style={{paddingBottom: 6}}>
+            <Text style={style.label}>{label}</Text>
+            <TextInput editable={false} value={value} style={style.input} />
         </View>
     )
 }
 
-const styles = StyleSheet.create({
-    painel: {
-        marginBottom: 20,
-        marginHorizontal: 10,
-        height: 58,
-        backgroundColor: '#fff',
-        // alignSelf: 'center',
-        borderRadius: 20,
-        paddingVertical: 10,
-        paddingHorizontal: 32,
-        borderWidth: 1,
-        borderColor: '#D9D9D9',
-        flexDirection: 'row',
-        justifyContent: 'space-between'
+const style = StyleSheet.create({
+    container: {
+      backgroundColor: '#fff',
+      paddingTop: 20,
+      flex: 1,
+      justifyContent: 'flex-start',
     },
-    painelDescription: {
-        color: '#363636',
-        fontSize: 12,
+    header: {
+      paddingHorizontal: 12,
+      height: 44,
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderBottomWidth: 1,
+      borderBottomColor: '#d3d3d3',
+      shadowColor: '#000',
+    },
+    body: {
+      backgroundColor: '#fff',
+    },
+    title: {
+      color: '#fff',
+      fontWeight: '600',
+      fontSize: 18,
+    },
+    description: {
+      fontFamily: 'Lato_300Light',
+      fontSize: 16,
+      color: '#716F6F',
+      marginHorizontal: 20,
+      paddingBottom: 0,
+      paddingTop: 6,
+    },
+    label: {
         fontFamily: 'Lato_300Light',
-        position: 'relative',
-        alignSelf: 'center',
-        bottom: 1,
-        // backgroundColor: '#fff'
+        marginHorizontal: 20
     },
-    painelData: {
-        color: '#363636',
-        fontFamily: 'Lato_400Regular',
-        fontSize: 14
-    }
-})
+    input: {
+      borderWidth: 1,
+      height: 47,
+      padding: 10,
+      borderRadius: 5,
+      marginHorizontal: 20,
+      marginVertical: 5,
+      color: '#363636',
+      fontFamily: 'Lato_400Regular',
+      fontSize: 18,
+      borderColor: '#DADADA'
+    },
+    button: {
+      marginHorizontal: 20,
+      marginTop: 'auto',
+      zIndex: 1,
+    },
+  });

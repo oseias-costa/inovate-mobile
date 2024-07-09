@@ -29,6 +29,11 @@ export default function Layout() {
               <Text style={{ marginRight: 20, color: '#fff' }}>Editar</Text>
             </TouchableOpacity>
           ),
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <MaterialIcons name="arrow-back-ios" size={24} color="white" />
+            </TouchableOpacity>
+          ),
         }}
       />
       <Stack.Screen

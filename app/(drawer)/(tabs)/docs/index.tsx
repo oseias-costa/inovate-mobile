@@ -10,6 +10,7 @@ import SelectStatus from '~/app/components/SelectStatus';
 import Subtitle from '~/app/components/Subtitle';
 import { Document } from '~/app/types/doc.type';
 import { FlashList } from '@shopify/flash-list'
+import { Link } from 'expo-router';
 // import { StatusBar } from 'expo-status-bar';
 
 export default function Docs() {

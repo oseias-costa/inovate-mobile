@@ -13,6 +13,8 @@ const ItemList = ({doc}:{doc: Document}) => {
     if(user?.type === 'COMPANY'){
         companyName = user.name
     }
+
+    const document = JSON.stringify(doc)
   return (
     <TouchableOpacity
       style={{
@@ -21,7 +23,7 @@ const ItemList = ({doc}:{doc: Document}) => {
         borderBottomWidth: 1,
         borderColor: '#D9D9D9',
       }}
-      onPress={() => router.navigate("/docsDetails/details")}>
+      onPress={() => router.push({ pathname: "/docsDetails/details", params: { document }})}>
       <Ionicons name="checkmark-circle" size={24} color="#00264B" />
       <View style={{ marginLeft: 15 }}>
 
