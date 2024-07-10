@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 type CustomTextInputProps = {
   state: any;
@@ -29,6 +29,8 @@ export default function CustomTextInput({
   const [isFocus, setIsFocus] = useState(false);
 
   return (
+    <View style={styles.container}>
+    <Text style={styles.label}>{placeholder}</Text>
     <TextInput
       style={[{ borderColor: isFocus ? (error.input === item ? 'red' : '#75BCEE') : '#DADADA' }, styles.input]}
       defaultValue={state[item]}
@@ -40,10 +42,14 @@ export default function CustomTextInput({
         setState({ ...state, [item]: e.nativeEvent.text });
       }}
     />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    paddingBottom: 6
+  },
   input: {
     borderWidth: 1,
     height: 47,
@@ -54,5 +60,9 @@ const styles = StyleSheet.create({
     color: '#363636',
     fontFamily: 'Lato_400Regular',
     fontSize: 18,
+  },
+  label: {
+      fontFamily: 'Lato_300Light',
+      marginHorizontal: 20,
   },
 });

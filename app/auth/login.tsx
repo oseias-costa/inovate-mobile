@@ -21,6 +21,7 @@ export default function Login() {
     color: '#DADADA',
   });
   const { user } = useGetUser()
+  const token = async () => await AsyncStorage.getItem('token')
 
   const isMutating = useIsMutating({ mutationKey: ['login'], exact: true });
   const getEmail = async () => {
@@ -39,9 +40,9 @@ export default function Login() {
     Lato_300Light,
   });
 
-  if(user){
-    return <Redirect href="/(drawer)/(tabs)/dashboard" />
-  }
+  // if(user){
+  //   return <Redirect href="/(drawer)/(tabs)/dashboard" />
+  // }
 
   if (!fontsLoades) {
     return <Text>Loading</Text>;

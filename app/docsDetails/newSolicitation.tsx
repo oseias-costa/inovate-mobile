@@ -77,7 +77,7 @@ export default function NewSolicitation() {
         error={error}
         setError={setError}
         />
-      <Select checkValue={companySelected.name} title="Selecione a empresa">
+      <Select checkValue={companySelected.name} title="Selecione a empresa" placeholder='Empresa'>
         <SelectCompany
           companySelected={companySelected}
           setCompanySelected={setCompanySelected}

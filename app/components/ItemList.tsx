@@ -33,7 +33,7 @@ const ItemList = ({doc}:{doc: Document}) => {
             fontSize: 16,
             fontFamily: 'Lato_400Regular',
           }}>
-          {companyName}
+          {doc?.document}
         </Text>
         <Text
           style={{
@@ -41,7 +41,7 @@ const ItemList = ({doc}:{doc: Document}) => {
             fontSize: 12,
             fontFamily: 'Lato_300Light',
           }}>
-          {doc?.document}
+            {companyName}
         </Text>
       </View>
       <View style={{ marginLeft: 'auto', alignItems: 'flex-end' }}>

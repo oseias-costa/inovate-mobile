@@ -3,12 +3,13 @@ import React, { useState } from 'react';
 import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type SelectProps = {
-  title: string,
-  checkValue: string,
-  children: React.JSX.Element
+  title: string;
+  checkValue: string;
+  children: React.JSX.Element;
+  placeholder: string;
 };
 
-export default function Select({ title, checkValue, children }: SelectProps) {
+export default function Select({ title, checkValue, children, placeholder }: SelectProps) {
   const [openModal, setOpenModal] = useState(false);
 
   return (
@@ -27,19 +28,8 @@ export default function Select({ title, checkValue, children }: SelectProps) {
           <View style={style.body}>{children}</View>
         </SafeAreaView>
       </Modal>
-      <TouchableOpacity
-        style={{
-          borderColor: '#DADADA',
-          borderWidth: 1,
-          height: 47,
-          padding: 10,
-          borderRadius: 5,
-          marginVertical: 5,
-          marginHorizontal: 20,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}
-        onPress={() => setOpenModal(true)}>
+      <Text style={style.label}>{placeholder}</Text>
+      <TouchableOpacity style={style.button} onPress={() => setOpenModal(true)}>
         <Text
           numberOfLines={1}
           style={{
@@ -47,7 +37,7 @@ export default function Select({ title, checkValue, children }: SelectProps) {
             fontFamily: 'Lato_400Regular',
             fontSize: 18,
           }}>
-          { checkValue ||  title }
+          {checkValue || title}
         </Text>
         <Ionicons name="chevron-down" size={24} color="#7B8A92" />
       </TouchableOpacity>
@@ -73,5 +63,21 @@ const style = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
     fontSize: 18,
+  },
+  label: {
+    fontFamily: 'Lato_300Light',
+    marginHorizontal: 20,
+  },
+  button: {
+    borderColor: '#DADADA',
+    borderWidth: 1,
+    height: 47,
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 5,
+    marginHorizontal: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
   },
 });

@@ -3,12 +3,14 @@ import Subtitle from "../components/Subtitle";
 import { router, useLocalSearchParams } from "expo-router";
 import useGetCompanys from "../hook/useGetCompanys";
 import ButtonAnt from '@ant-design/react-native/lib/button';
+import { formatDate } from "../lib/date";
 
 export default function Details(){
     const { document: docString } = useLocalSearchParams()
     const document = JSON.parse(String(docString))
     const { data } = useGetCompanys()
     const company = data?.find((item: any) => item.id === document?.companyId)
+    const expiration = formatDate(new Date(document.expiration))
 
     console.log(document)
     return(
@@ -20,10 +22,10 @@ export default function Details(){
         </Text>
       </View>
         <View>
-            <TextInputDetail label="Empresa" value={company?.name} />
             <TextInputDetail label="Documento" value={document.document} />
             <TextInputDetail label="Descrição" value={document.description} />
-            <TextInputDetail label="Prazo" value={document.expiration} />
+            <TextInputDetail label="Empresa" value={company?.name} />
+            <TextInputDetail label="Prazo" value={expiration} />
             <TextInputDetail label="Status" value={document.status} />         
         </View>
         <ButtonAnt type="ghost" style={style.button} onPress={() => router.navigate('/docs/')}>
@@ -76,7 +78,7 @@ const style = StyleSheet.create({
     },
     label: {
         fontFamily: 'Lato_300Light',
-        marginHorizontal: 20
+        marginHorizontal: 20,
     },
     input: {
       borderWidth: 1,

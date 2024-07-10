@@ -48,7 +48,7 @@ export default function useGetUser() {
     if (error) {
         redirectUser()
     }
-  }, [error]);
+  }, []);
 
   return { user: data, isError };
 }

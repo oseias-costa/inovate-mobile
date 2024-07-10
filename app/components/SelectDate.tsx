@@ -1,19 +1,11 @@
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetModalProvider,
-  BottomSheetView,
-} from '@gorhom/bottom-sheet';
+import { MaterialIcons } from '@expo/vector-icons';
 import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ButtonAnt from '@ant-design/react-native/lib/button';
 import DatePickerView from '@ant-design/react-native/lib/date-picker-view';
 import Modal from '@ant-design/react-native/lib/modal';
 import Provider from '@ant-design/react-native/lib/provider';
-
-const renderBackdrop = (props: any) => (
-  <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />
-);
+import { formatDate } from '../lib/date';
 
 type SelectDateProps = {
   dateValue: Date | undefined;
@@ -22,31 +14,20 @@ type SelectDateProps = {
 };
 
 export function SelectDate({ dateValue, setDate, placeholder }: SelectDateProps) {
-  const ref = useRef<BottomSheet>(null);
-  const snapPoins = useMemo(() => ['63%'], []);
   const [localDate, setLocalDate] = useState<Date | undefined>(dateValue);
   const [showDate, setShowDate] = useState('');
   const [openModal, setOpenModal] = useState(false);
 
-  const includeZero = (num: number) => (num < 10 ? `0${num}` : num);
   useEffect(() => {
     if (dateValue) {
-      const date = new Date(dateValue);
-      const day = includeZero(date.getDate());
-      const month = includeZero(date.getMonth() + 1);
-      const year = date.getFullYear();
-      const format = `${day}-${month}-${year}`;
-      return setShowDate(format);
+      const date = formatDate(dateValue);
+      return setShowDate(date);
     }
   }, [dateValue]);
 
-  const handleClose = () => {
-    setDate(localDate);
-    ref.current?.close();
-  };
-
   return (
     <>
+      <Text style={styles.label}>Prazo</Text>
       <TouchableOpacity style={styles.button} onPress={() => setOpenModal(true)}>
         <Text numberOfLines={1} style={styles.textButton}>
           {showDate ? showDate : placeholder}
@@ -57,8 +38,8 @@ export function SelectDate({ dateValue, setDate, placeholder }: SelectDateProps)
         <Modal
           popup
           style={{
-              borderTopEndRadius: 13,
-              borderTopStartRadius: 13
+            borderTopEndRadius: 13,
+            borderTopStartRadius: 13,
           }}
           visible={openModal}
           animationType="slide-up"
@@ -111,6 +92,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginBottom: 6,
   },
   textButton: {
     color: '#363636',
@@ -139,5 +121,9 @@ const styles = StyleSheet.create({
   buttonClose: {
     marginHorizontal: 20,
     marginTop: 15,
+  },
+  label: {
+    fontFamily: 'Lato_300Light',
+    marginHorizontal: 20,
   },
 });
