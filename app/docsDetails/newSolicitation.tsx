@@ -12,7 +12,6 @@ import ButtonAnt from '@ant-design/react-native/lib/button';
 import Loading from '../components/Loading';
 import { newSolicitationError } from '../lib/errors';
 import Modal from '@ant-design/react-native/lib/modal';
-import { router } from 'expo-router';
 
 export default function NewSolicitation() {
   const [error, setError] = useState({ input: '', message: '' });
