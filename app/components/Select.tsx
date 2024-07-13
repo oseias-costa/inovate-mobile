@@ -7,9 +7,10 @@ type SelectProps = {
   checkValue: string;
   children: React.JSX.Element;
   placeholder: string;
+  disable?: boolean
 };
 
-export default function Select({ title, checkValue, children, placeholder }: SelectProps) {
+export default function Select({ title, checkValue, children, placeholder, disable }: SelectProps) {
   const [openModal, setOpenModal] = useState(false);
 
   return (
@@ -29,7 +30,7 @@ export default function Select({ title, checkValue, children, placeholder }: Sel
         </SafeAreaView>
       </Modal>
       <Text style={style.label}>{placeholder}</Text>
-      <TouchableOpacity style={style.button} onPress={() => setOpenModal(true)}>
+      <TouchableOpacity style={style.button} onPress={() => !disable && setOpenModal(true)}>
         <Text
           numberOfLines={1}
           style={{

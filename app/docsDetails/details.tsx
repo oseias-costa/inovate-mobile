@@ -13,7 +13,7 @@ export default function Details() {
   const { data } = useGetCompanys();
   const company = data?.find((item: any) => item.id === document?.companyId);
   const expiration = formatDate(new Date(document?.expiration));
-  console.log(document)
+
   return (
     <>
       <Stack.Screen

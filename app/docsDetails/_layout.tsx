@@ -62,7 +62,21 @@ export default function Layout() {
           ),
         }}
       />
+      <Stack.Screen
+        name="updateSucess"
+        options={{
+          headerTitleAlign: 'center',
+          headerTitle: 'Edição realizada',
+          headerTintColor: '#fff',
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.replace('/docs/')}>
+              <MaterialIcons name="arrow-back-ios" size={24} color="white" />
+            </TouchableOpacity>
+          ),
+        }}
+      />
     </Stack>
+    
     
   );
 }
