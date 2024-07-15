@@ -6,6 +6,8 @@ import ButtonAnt from '@ant-design/react-native/lib/button';
 import { formatDate } from '../lib/date';
 import { MaterialIcons } from '@expo/vector-icons';
 import useGetDocumentById from '../hook/useGetDocumentById';
+import { statusFormtter } from '../lib/status';
+import { Status } from './components/status';
 
 export default function Details() {
   const { id } = useLocalSearchParams();
@@ -13,6 +15,7 @@ export default function Details() {
   const { data } = useGetCompanys();
   const company = data?.find((item: any) => item.id === document?.companyId);
   const expiration = formatDate(new Date(document?.expiration));
+  const status = statusFormtter(document?.status)
 
   return (
     <>
@@ -26,12 +29,12 @@ export default function Details() {
               onPress={() =>
                 router.navigate({ pathname: '/docsDetails/edit', params: { id } })
               }>
-              <Text style={{ marginRight: 20, color: '#fff' }}>Editar</Text>
+              <Text style={style.headerButton}>Editar</Text>
             </TouchableOpacity>
           ),
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>
-              <MaterialIcons name="arrow-back-ios" size={24} color="white" />
+              <MaterialIcons name="arrow-back-ios" size={24} color="white" style={{right: 8}} />
             </TouchableOpacity>
           ),
         }}
@@ -42,11 +45,11 @@ export default function Details() {
           <Text style={style.description}>Verifique abaixo os detalhes da solicitação.</Text>
         </View>
         <View>
+          <Status expiration={expiration} status={document?.status} type='Solicitação'/>
           <TextInputDetail label="Documento" value={document?.document} />
           <TextInputDetail label="Descrição" value={document?.description} />
           <TextInputDetail label="Empresa" value={company?.name} />
           <TextInputDetail label="Prazo" value={expiration} />
-          <TextInputDetail label="Status" value={document?.status} />
         </View>
         <ButtonAnt type="ghost" style={style.button} onPress={() => router.navigate('/docs/')}>
           voltar
@@ -117,5 +120,10 @@ const style = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 'auto',
     zIndex: 1,
+  },
+  headerButton: { 
+    color: '#fff', 
+    fontSize: 16, 
+    fontFamily: 'Lato_400Regular' 
   },
 });

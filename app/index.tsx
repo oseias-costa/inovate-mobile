@@ -22,5 +22,9 @@ export default function Home() {
     return  <Redirect href="/auth/login" />
   }
   
-  return <Redirect href='/(drawer)/(tabs)/dashboard' />
+  return (
+    <>
+      <Redirect href='/(drawer)/(tabs)/dashboard' />)
+    </>
+    )
 }

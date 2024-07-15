@@ -12,29 +12,9 @@ export default function Layout() {
       }}>
       <Stack.Screen
         name="edit"
-        options={{
-          headerTitleAlign: 'center',
-          headerTitle: 'Editar',
-          headerTintColor: '#fff',
-        }}
       />
       <Stack.Screen
         name="details"
-        // options={{
-        //   headerTitleAlign: 'center',
-        //   headerTitle: 'Detalhes',
-        //   headerTintColor: '#fff',
-        //   headerRight: () => (
-        //     <TouchableOpacity onPress={() => router.navigate({pathname: '/docsDetails/edit'})}>
-        //       <Text style={{ marginRight: 20, color: '#fff' }}>Editar</Text>
-        //     </TouchableOpacity>
-        //   ),
-        //   headerLeft: () => (
-        //     <TouchableOpacity onPress={() => router.back()}>
-        //       <MaterialIcons name="arrow-back-ios" size={24} color="white" />
-        //     </TouchableOpacity>
-        //   ),
-        // }}
       />
       <Stack.Screen
         name="newSolicitation"

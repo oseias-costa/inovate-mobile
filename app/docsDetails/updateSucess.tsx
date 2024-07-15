@@ -4,17 +4,17 @@ import { router } from 'expo-router';
 import { useEffect } from 'react';
 
 export default function updateSucess() {
-    // useEffect(() => {
-    //     setTimeout(() => router.replace('/docs/'), 4000)    
-    // },[])
+    useEffect(() => {
+        setTimeout(() => router.replace('/docs/'), 4000)    
+    },[])
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.box}>
         <Image style={styles.img} source={require('../../assets/auth/select.png')} />
-        <Text style={styles.title}>Sucesso</Text>
+        <Text style={styles.title}>Edição realizada com sucesso</Text>
         <Text style={styles.description}>
-          Solicitação editada com sucesso.
+          A solicitação foi editada com sucesso.
         </Text>
         <ButtonAnt type="ghost" style={styles.button} onPress={() => router.replace('/docs/')}>
           voltar
@@ -33,8 +33,6 @@ const styles = StyleSheet.create({
   box: {
     paddingTop: 100,
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     width: '100%',
     marginHorizontal: 20
   },
@@ -48,7 +46,8 @@ const styles = StyleSheet.create({
     color: '#3B3D3E',
     fontSize: 24,
     fontFamily: 'Lato_400Regular',
-    textAlign: 'left'
+    textAlign: 'left',
+    marginHorizontal: 20,
   },
   description: {
     fontFamily: 'Lato_300Light',

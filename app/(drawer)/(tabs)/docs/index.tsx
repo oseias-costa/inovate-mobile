@@ -3,22 +3,31 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
-import { FlatList, RefreshControl, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import {
+  FlatList,
+  RefreshControl,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import ItemList from '~/app/components/ItemList';
 import SelectStatus from '~/app/components/SelectStatus';
 import Subtitle from '~/app/components/Subtitle';
 import { Document } from '~/app/types/doc.type';
-import { FlashList } from '@shopify/flash-list'
-import { Link } from 'expo-router';
-// import { StatusBar } from 'expo-status-bar';
+import { FlashList } from '@shopify/flash-list';
+import { Button } from '~/components/Button';
+import Toast from '~/app/lib/Toast';
 
 export default function Docs() {
   const [status, setStatus] = useState<'all' | 'pending' | 'ok' | 'waiting'>('all');
   const [filter, setFilter] = useState({ user: '', company: '' });
   const [pagination, setPagination] = useState({ page: '1', limit: '20' });
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
+
 
   const getDocuments = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -45,62 +54,71 @@ export default function Docs() {
       currentPage: number;
     };
   };
+  const ToastRef = useRef(null);
+  const showToast = () => {
+    if(ToastRef.current){
+      ToastRef?.current?.toast();
+    }
+   };
 
   console.log('docs', docs);
   return (
-    <View style={{ backgroundColor: '#fff', position: 'relative', flex: 1 }}>
-      <StatusBar barStyle="light-content" hidden={false} />
-      <View style={[styles.numbersBox]}>
-        <NumberItem description="Aguardando" number={15} />
-        <NumberItem description="Pendentes" number={5} />
-        <NumberItem description="Concluídas" number={6} />
-      </View>
-      <LinearGradient colors={['#00264B', '#005AB1']} style={styles.gradient}>
-        <View style={styles.titleBox}>
-          {/* <Ionicons name="document-text" size={28} color='#fff' /> */}
-          <Text style={styles.title}>Documentos</Text>
+    <>
+      <View style={{ backgroundColor: '#fff', position: 'relative', flex: 1 }}>
+        <Toast ref={ToastRef} message="Hello World!" />
+        <StatusBar barStyle="light-content" hidden={false} />
+        <View style={[styles.numbersBox]}>
+          <NumberItem description="Aguardando" number={15} />
+          <NumberItem description="Pendentes" number={5} />
+          <NumberItem description="Concluídas" number={6} />
         </View>
-        <Text style={styles.text}>{docs?.meta.totalItems} solicitações abertas em Abril</Text>
-      </LinearGradient>
-      <Subtitle text="Solicitações" />
-      <View style={{height: 60}}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        decelerationRate="normal"
-        contentContainerStyle={{
-          marginHorizontal: 15,
-          marginVertical: 20,
-          flexDirection: 'row',
-          paddingRight: 20,
-          height: 40,
-        }}>
-        <SelectStatus item="all" setStatus={setStatus} status={status} />
-        <SelectStatus item="pending" setStatus={setStatus} status={status} />
-        <SelectStatus item="waiting" setStatus={setStatus} status={status} />
-        <SelectStatus item="ok" setStatus={setStatus} status={status} />
-      </ScrollView>
-      </View>
-      <View style={{width: '100%', height: 400, paddingHorizontal: 20}}>
-        <FlashList
-        renderItem={({item}) => {
-          return <ItemList doc={item} key={item.id} />
-        }}
-        estimatedItemSize={5}
-        keyExtractor={(item) => item.id}
-        data={docs?.items}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => queryClient.invalidateQueries({ queryKey: ['documents']})}
-            colors={['#9Bd35A', '#689F38']}
-            progressBackgroundColor="#fff"
+        <LinearGradient colors={['#00264B', '#005AB1']} style={styles.gradient}>
+          <View style={styles.titleBox}>
+            {/* <Ionicons name="document-text" size={28} color='#fff' /> */}
+            <Text style={styles.title}>Documentos</Text>
+          </View>
+          <Text style={styles.text}>{docs?.meta.totalItems} solicitações abertas em Abril</Text>
+        </LinearGradient>
+        <Subtitle text="Solicitações" />
+        <View style={{ height: 60 }}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            decelerationRate="normal"
+            contentContainerStyle={{
+              marginHorizontal: 15,
+              marginVertical: 20,
+              flexDirection: 'row',
+              paddingRight: 20,
+              height: 40,
+            }}>
+            <SelectStatus item="all" setStatus={setStatus} status={status} />
+            <SelectStatus item="pending" setStatus={setStatus} status={status} />
+            <SelectStatus item="waiting" setStatus={setStatus} status={status} />
+            <SelectStatus item="ok" setStatus={setStatus} status={status} />
+          </ScrollView>
+        </View>
+        <View style={{ width: '100%', height: 400, paddingHorizontal: 20 }}>
+          <FlashList
+            renderItem={({ item }) => {
+              return <ItemList doc={item} key={item.id} />;
+            }}
+            estimatedItemSize={5}
+            keyExtractor={(item) => item.id}
+            data={docs?.items}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => queryClient.invalidateQueries({ queryKey: ['documents'] })}
+                colors={['#9Bd35A', '#689F38']}
+                progressBackgroundColor="#fff"
+              />
+            }
+            showsVerticalScrollIndicator={false}
           />
-        }
-        showsVerticalScrollIndicator={false}
-        />
         </View>
-    </View>
+      </View>
+    </>
   );
 }
 

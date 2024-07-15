@@ -28,8 +28,7 @@ export const useLogin = (setError: Dispatch<SetStateAction<string>>) => {
         onSuccess: (data) => {
             AsyncStorage.setItem('token', data['token'])
             setFetchToken(true)
-            router.replace('/docsDetails/updateSucess')
-            // router.replace('/(drawer)/(tabs)/dashboard')
+            router.replace('/(drawer)/(tabs)/dashboard')
         },  
         onError: (error) => {
           console.log('E-mail ou senha incorretos', error)
