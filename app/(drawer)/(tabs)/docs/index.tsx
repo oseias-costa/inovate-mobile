@@ -19,7 +19,7 @@ import Subtitle from '~/app/components/Subtitle';
 import { Document } from '~/app/types/doc.type';
 import { FlashList } from '@shopify/flash-list';
 import { Button } from '~/components/Button';
-import Toast from '~/app/lib/Toast';
+import ToastTest from '~/app/lib/ToastTest';
 
 export default function Docs() {
   const [status, setStatus] = useState<'all' | 'pending' | 'ok' | 'waiting'>('all');
@@ -65,7 +65,7 @@ export default function Docs() {
   return (
     <>
       <View style={{ backgroundColor: '#fff', position: 'relative', flex: 1 }}>
-        <Toast ref={ToastRef} message="Hello World!" />
+        <ToastTest ref={ToastRef} message="Solicitação aberta!" />
         <StatusBar barStyle="light-content" hidden={false} />
         <View style={[styles.numbersBox]}>
           <NumberItem description="Aguardando" number={15} />
@@ -79,6 +79,7 @@ export default function Docs() {
           </View>
           <Text style={styles.text}>{docs?.meta.totalItems} solicitações abertas em Abril</Text>
         </LinearGradient>
+        <Button onPress={showToast}>Test</Button>
         <Subtitle text="Solicitações" />
         <View style={{ height: 60 }}>
           <ScrollView
