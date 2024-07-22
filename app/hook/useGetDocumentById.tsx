@@ -13,7 +13,7 @@ export default function useGetDocumentById(id: string){
                 baseURL: 'http://10.0.0.101:3009/document/get-by-id/'+id,
                 headers: { Authorization: `Bearer ${token}`}
             })
-    
+            
             return companys.data
         }
     })

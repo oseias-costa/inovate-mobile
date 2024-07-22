@@ -79,7 +79,6 @@ export default function Docs() {
           </View>
           <Text style={styles.text}>{docs?.meta.totalItems} solicitações abertas em Abril</Text>
         </LinearGradient>
-        <Button onPress={showToast}>Test</Button>
         <Subtitle text="Solicitações" />
         <View style={{ height: 60 }}>
           <ScrollView

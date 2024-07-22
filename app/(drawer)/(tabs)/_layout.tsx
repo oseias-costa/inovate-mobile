@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { DrawerToggleButton } from "@react-navigation/drawer";
 import { Feather } from '@expo/vector-icons';
 import { Image, Text, TouchableOpacity } from "react-native";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function Layout(){
     return(
@@ -73,12 +74,12 @@ export default function Layout(){
             <Tabs.Screen 
                 name="tasks/index"  
                 options={{ 
-                    title: 'Atividades',
+                    title: 'Notificações',
                     tabBarIcon: ({ focused, color, size}) => {
                         if (focused){
-                            return <FontAwesome name='list-ul' color={color} size={size} />
+                            return <MaterialCommunityIcons name='bell' color={color} size={size} />
                         }
-                        return <FontAwesome name='list-ul' color={color} size={size} />
+                        return <MaterialCommunityIcons name='bell' color={color} size={size} />
                     }
                 }}
             />

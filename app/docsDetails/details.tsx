@@ -8,14 +8,15 @@ import { MaterialIcons } from '@expo/vector-icons';
 import useGetDocumentById from '../hook/useGetDocumentById';
 import { statusFormtter } from '../lib/status';
 import { Status } from './components/status';
+import Loading from '../components/Loading';
 
 export default function Details() {
   const { id } = useLocalSearchParams();
-  const { data: document } = useGetDocumentById(String(id))
+  const { data: document } = useGetDocumentById(String(id));
   const { data } = useGetCompanys();
   const company = data?.find((item: any) => item.id === document?.companyId);
   const expiration = formatDate(new Date(document?.expiration));
-  const status = statusFormtter(document?.status)
+  const status = statusFormtter(document?.status);
 
   return (
     <>
@@ -26,34 +27,38 @@ export default function Details() {
           headerTintColor: '#fff',
           headerRight: () => (
             <TouchableOpacity
-              onPress={() =>
-                router.navigate({ pathname: '/docsDetails/edit', params: { id } })
-              }>
+              onPress={() => router.navigate({ pathname: '/docsDetails/edit', params: { id } })}>
               <Text style={style.headerButton}>Editar</Text>
             </TouchableOpacity>
           ),
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>
-              <MaterialIcons name="arrow-back-ios" size={24} color="white" style={{right: 8}} />
+              <MaterialIcons name="arrow-back-ios" size={24} color="white" style={{ right: 8 }} />
             </TouchableOpacity>
           ),
         }}
       />
       <SafeAreaView style={{ backgroundColor: '#fff', flex: 1 }}>
-        <View style={{ paddingBottom: 25, paddingTop: 20 }}>
-          <Subtitle text="Detalhes da solicitação" />
-          <Text style={style.description}>Verifique abaixo os detalhes da solicitação.</Text>
-        </View>
-        <View>
-          <Status expiration={expiration} status={document?.status} type='Solicitação'/>
-          <TextInputDetail label="Documento" value={document?.document} />
-          <TextInputDetail label="Descrição" value={document?.description} />
-          <TextInputDetail label="Empresa" value={company?.name} />
-          <TextInputDetail label="Prazo" value={expiration} />
-        </View>
-        <ButtonAnt type="ghost" style={style.button} onPress={() => router.navigate('/docs/')}>
-          voltar
-        </ButtonAnt>
+        {!data ? (
+          <Loading isLoading />
+        ) : (
+          <>
+            <View style={{ paddingBottom: 25, paddingTop: 20 }}>
+              <Subtitle text="Detalhes da solicitação" />
+              <Text style={style.description}>Verifique abaixo os detalhes da solicitação.</Text>
+            </View>
+            <View>
+              <Status expiration={expiration} status={document?.status} type="Solicitação" />
+              <TextInputDetail label="Documento" value={document?.document} />
+              <TextInputDetail label="Descrição" value={document?.description} />
+              <TextInputDetail label="Empresa" value={company?.name} />
+              <TextInputDetail label="Prazo" value={expiration} />
+            </View>
+            <ButtonAnt type="ghost" style={style.button} onPress={() => router.navigate('/docs/')}>
+              voltar
+            </ButtonAnt>
+          </>
+        )}
       </SafeAreaView>
     </>
   );
@@ -121,9 +126,9 @@ const style = StyleSheet.create({
     marginTop: 'auto',
     zIndex: 1,
   },
-  headerButton: { 
-    color: '#fff', 
-    fontSize: 16, 
-    fontFamily: 'Lato_400Regular' 
+  headerButton: {
+    color: '#fff',
+    fontSize: 16,
+    fontFamily: 'Lato_400Regular',
   },
 });
