@@ -13,11 +13,10 @@ import useGetUser from '~/app/hook/useGetUser';
 
 export default function Dashboard() {
   const [selected, setSelected] = useState<'doc' | 'task' | 'lo'>('doc');
-  const [status, setStatus] = useState<'all' | 'pending' | 'ok' | 'waiting'>('all');
+  const [status, setStatus] = useState<'' | 'PEDING' | 'FINISH' | 'EXPIRED'>('');
   const fontsLoades = useFontLato();
   const colorSelected = (item: string) => (selected === item ? '#fff' : '#5D5B5B');
   const { user } = useGetUser();
-  console.log(user);
 
   if (!fontsLoades) {
     return <Text>Loading</Text>;

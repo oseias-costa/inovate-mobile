@@ -7,6 +7,7 @@ import useGetUser from '../hook/useGetUser';
 import { FontAwesome } from '@expo/vector-icons';
 import { Fontisto } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import { formatDate } from '../lib/date';
 
 const ItemList = ({ doc }: { doc: Document }) => {
   const { user } = useGetUser();
@@ -18,67 +19,57 @@ const ItemList = ({ doc }: { doc: Document }) => {
   }
 
   const status = {
-    'FINISH': {
+    FINISH: {
       icon: <AntDesign style={styles.icon} name="checkcircle" size={16} color="#00264B" />,
-      text: "A solicitação foi concluída",
+      text: 'A solicitação foi concluída',
       color: {
-        text: "#00264B",
-        background: "#E4F6FD"
-      }
+        text: '#00264B',
+        background: '#E4F6FD',
+      },
     },
-    'EXPIRED': {
+    EXPIRED: {
       icon: <AntDesign style={styles.icon} name="checkcircle" size={16} color="#DE4F51" />,
-      text: "A solicitação está vencida",
+      text: 'O prazo foi vencido dia',
       color: {
-        text: "#DE4F51",
-        background: "#FFF4E6"
-      }
+        text: '#DE4F51',
+        background: '#FFF4E6',
+      },
     },
-    'PEDING': {
+    PEDING: {
       icon: <AntDesign style={styles.icon} name="exclamationcircle" size={16} color="#F4782E" />,
-      text: "Solicitação pendende",
+      text: 'Solicitação pendende prazo',
       color: {
-        text: "#F4782E",
-        background: "#FFF4E6"
-      }
-    }
-  }
+        text: '#F4782E',
+        background: '#FFF4E6',
+      },
+    },
+  };
+
+  const date = formatDate(expiration)
 
   return (
     <TouchableOpacity
-      style={{
-        borderBottomWidth: 1,
-        borderColor: '#D9D9D9',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 6
-      }}
+      style={styles.container}
       onPress={() => router.push({ pathname: '/docsDetails/details', params: { id: doc.id } })}>
-        <View style={{ flexDirection: 'row'}}>
-       {status[doc?.status]?.icon}
-      <View style={{ marginLeft: 15 }}>
-        <Text
-          style={{
-            color: '#3B3D3E',
-            fontSize: 16,
-            fontFamily: 'Lato_400Regular',
-          }}>
-          {doc?.document}
-        </Text>
-        <Text
-          style={{
-            color: '#3B3D3E',
-            fontSize: 12,
-            fontFamily: 'Lato_300Light',
-          }}>
-          {companyName}
-        </Text>
-        <View style={{flexDirection: 'row', alignItems: 'center', backgroundColor: status[doc?.status]?.color.background, marginVertical:2, paddingHorizontal: 8, borderRadius: 8}}>
-          <Fontisto name="stopwatch" size={12} color={status[doc?.status]?.color.text} style={{top: 2, marginRight: 6}} />
-          <Text style={{ fontSize: 12, paddingTop: 4, color: status[doc?.status]?.color.text}}>{status[doc?.status]?.text}</Text>
+      <View style={{ flexDirection: 'row' }}>
+        {status[doc?.status]?.icon}
+        <View style={{ marginLeft: 15 }}>
+          <Text style={styles.title}>{doc?.document}</Text>
+          <Text style={styles.companyName}>{companyName}</Text>
+          <View style={styles.info}>
+            { doc?.status !== 'FINISH' && (
+              <Fontisto
+                name="stopwatch"
+                size={10}
+                color={status[doc?.status]?.color.text}
+                style={styles.cronIcon}
+              />
+            )}
+            <Text style={[styles.cronText, { color: status[doc?.status]?.color.text }]}>
+              {status[doc?.status]?.text}  { doc?.status !== 'FINISH' && date } 
+            </Text>
+          </View>
         </View>
-      </View>
       </View>
       <MaterialIcons name="arrow-forward-ios" size={20} color="#D9D9D9" />
     </TouchableOpacity>
@@ -88,7 +79,39 @@ const ItemList = ({ doc }: { doc: Document }) => {
 export default ItemList;
 
 const styles = StyleSheet.create({
+  container: {
+    borderBottomWidth: 1,
+    borderColor: '#D9D9D9',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  title: {
+    color: '#3B3D3E',
+    fontSize: 16,
+    fontFamily: 'Lato_400Regular',
+  },
+  companyName: {
+    color: '#3B3D3E',
+    fontSize: 12,
+    fontFamily: 'Lato_300Light',
+  },
   icon: {
-    top: 4
-  }
-})
+    top: 4,
+  },
+  info: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 2,
+    borderRadius: 8,
+  },
+  cronIcon: {
+    top: 2,
+    marginRight: 6,
+  },
+  cronText: {
+    fontSize: 11,
+    paddingTop: 4,
+  },
+});

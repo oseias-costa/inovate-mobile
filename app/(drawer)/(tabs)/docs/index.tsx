@@ -22,27 +22,32 @@ import { Button } from '~/components/Button';
 import ToastTest from '~/app/lib/ToastTest';
 
 export default function Docs() {
-  const [status, setStatus] = useState<'all' | 'pending' | 'ok' | 'waiting'>('all');
+  const [status, setStatus] = useState<'' | 'PEDING' | 'FINISH' | 'EXPIRED'>('');
   const [filter, setFilter] = useState({ user: '', company: '' });
   const [pagination, setPagination] = useState({ page: '1', limit: '20' });
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
 
-
+  
   const getDocuments = async () => {
     const token = await AsyncStorage.getItem('token');
     const documents = await axios({
       method: 'GET',
-      baseURL: `http://10.0.0.101:3009/document?page=${pagination.page}&limit=${pagination.limit}&user=${filter.user}&company&${filter.company}`,
+      baseURL: `http://10.0.0.101:3009/document?page=${pagination.page}&limit=${pagination.limit}&user=${filter.user}&company&${filter.company}&status=${status}`,
       headers: { Authorization: `Bearer ${token}` },
     });
-
+    
     return documents.data;
   };
-  const { data: docs, isLoading } = useQuery<Documents>({
+  
+  const { data: docs, isLoading, refetch } = useQuery<Documents>({
     queryKey: [`documents`],
     queryFn: getDocuments,
   });
+  
+  useEffect(() => {
+    refetch()
+  },[status])
 
   type Documents = {
     items: Document[];
@@ -56,10 +61,10 @@ export default function Docs() {
   };
   const ToastRef = useRef(null);
   const showToast = () => {
-    if(ToastRef.current){
+    if (ToastRef.current) {
       ToastRef?.current?.toast();
     }
-   };
+  };
 
   console.log('docs', docs);
   return (
@@ -92,10 +97,10 @@ export default function Docs() {
               paddingRight: 20,
               height: 40,
             }}>
-            <SelectStatus item="all" setStatus={setStatus} status={status} />
-            <SelectStatus item="pending" setStatus={setStatus} status={status} />
-            <SelectStatus item="waiting" setStatus={setStatus} status={status} />
-            <SelectStatus item="ok" setStatus={setStatus} status={status} />
+            <SelectStatus item="" setStatus={setStatus} status={status} />
+            <SelectStatus item="PEDING" setStatus={setStatus} status={status} />
+            <SelectStatus item="EXPIRED" setStatus={setStatus} status={status} />
+            <SelectStatus item="FINISH" setStatus={setStatus} status={status} />
           </ScrollView>
         </View>
         <View style={{ width: '100%', height: 400, paddingHorizontal: 20 }}>
