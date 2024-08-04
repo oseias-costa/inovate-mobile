@@ -2,9 +2,7 @@ import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { Redirect, router } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Document } from '../types/doc.type';
-import { month } from '../lib/month';
 import useGetUser from '../hook/useGetUser';
-import { FontAwesome } from '@expo/vector-icons';
 import { Fontisto } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { formatDate } from '../lib/date';
@@ -23,7 +21,7 @@ const ItemList = ({ doc }: { doc: Document }) => {
       icon: <AntDesign style={styles.icon} name="checkcircle" size={16} color="#00264B" />,
       text: 'A solicitação foi concluída',
       color: {
-        text: '#00264B',
+        text: '#00264B99',
         background: '#E4F6FD',
       },
     },
@@ -31,7 +29,7 @@ const ItemList = ({ doc }: { doc: Document }) => {
       icon: <AntDesign style={styles.icon} name="checkcircle" size={16} color="#DE4F51" />,
       text: 'O prazo foi vencido dia',
       color: {
-        text: '#DE4F51',
+        text: '#DE4F5199',
         background: '#FFF4E6',
       },
     },
@@ -39,7 +37,7 @@ const ItemList = ({ doc }: { doc: Document }) => {
       icon: <AntDesign style={styles.icon} name="exclamationcircle" size={16} color="#F4782E" />,
       text: 'Solicitação pendende prazo',
       color: {
-        text: '#F4782E',
+        text: '#F4782E99',
         background: '#FFF4E6',
       },
     },

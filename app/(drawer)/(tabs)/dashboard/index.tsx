@@ -1,15 +1,12 @@
 import { Image, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import useFontLato from '~/app/hook/useFontLato';
-import { useMemo, useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
-import { FontAwesome } from '@expo/vector-icons';
-import SelectType from '../../../components/SelectType';
+import {useState } from 'react';
 import SelectStatus from '../../../components/SelectStatus';
 import ItemList from '~/app/components/ItemList';
 import { LinearGradient } from 'expo-linear-gradient';
-import BottomSheet from '@gorhom/bottom-sheet';
 import useGetUser from '~/app/hook/useGetUser';
-// import { StatusBar } from "expo-status-bar";
+import SelectType from '~/app/components/SelectType';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 
 export default function Dashboard() {
   const [selected, setSelected] = useState<'doc' | 'task' | 'lo'>('doc');
@@ -25,6 +22,11 @@ export default function Dashboard() {
     <>
       <StatusBar barStyle="light-content" hidden={false} />
       <View style={{ backgroundColor: '#fff', position: 'relative' }}>
+      {/* <View style={[styles.numbersBox]}>
+          <NumberItem description="Aguardando" number={15} />
+          <NumberItem description="Pendentes" number={5} />
+          <NumberItem description="Concluídas" number={6} />
+        </View> */}
         <View style={styles.selectTypes}>
           <ScrollView
             horizontal
@@ -106,6 +108,15 @@ export default function Dashboard() {
   );
 }
 
+const NumberItem = ({ description, number }: { description: string; number: number }) => {
+  return (
+    <View style={styles.numberItemBox}>
+      <Text style={styles.numberDescription}>{description}</Text>
+      <Text style={styles.number}>{number}</Text>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   gradient: {
     position: 'relative',
@@ -165,5 +176,43 @@ const styles = StyleSheet.create({
     marginLeft: 25,
     position: 'relative',
     zIndex: 1,
+  },
+  numberItemBox: {
+    alignItems: 'center',
+  },
+  numberDescription: {
+    color: '#3B3D3E',
+    fontSize: 12,
+    fontFamily: 'Lato_400Regular',
+  },
+  number: {
+    color: '#00264B',
+    fontSize: 46,
+    fontFamily: 'Lato_300Light',
+  },
+  numbersBox: {
+    marginHorizontal: 20,
+    marginTop: 20,
+    width: '90%',
+    height: 200,
+    backgroundColor: '#fff',
+    alignSelf: 'center',
+    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 32,
+    position: 'absolute',
+    top: 84,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    zIndex: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
+
+    elevation: 7,
   },
 });
