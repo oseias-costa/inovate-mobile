@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "inovate-ambiental",
+    "slug": "inovate-ambiental",
     "version": "1.0.0",
     "scheme": "mobile",
     "web": {
@@ -29,13 +29,22 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.oseiascosta.mobile"
+      "bundleIdentifier": "com.inovate.ambiental.mobile"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff",
         "softwareKeyboardLayoutMode": "pan"
+      },
+      "package": "come.inovate_ambiental.mobile"
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "3ab8cd79-5c42-4424-b445-cefedf028757"
       }
     }
   }

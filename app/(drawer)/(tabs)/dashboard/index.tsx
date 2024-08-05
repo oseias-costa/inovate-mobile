@@ -1,12 +1,25 @@
-import { Image, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import useFontLato from '~/app/hook/useFontLato';
-import {useState } from 'react';
+import {useEffect, useState } from 'react';
 import SelectStatus from '../../../components/SelectStatus';
 import ItemList from '~/app/components/ItemList';
 import { LinearGradient } from 'expo-linear-gradient';
 import useGetUser from '~/app/hook/useGetUser';
 import SelectType from '~/app/components/SelectType';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import * as Permissions from 'expo-permissions';
+import Button from '@ant-design/react-native/lib/button';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function Dashboard() {
   const [selected, setSelected] = useState<'doc' | 'task' | 'lo'>('doc');
@@ -14,6 +27,20 @@ export default function Dashboard() {
   const fontsLoades = useFontLato();
   const colorSelected = (item: string) => (selected === item ? '#fff' : '#5D5B5B');
   const { user } = useGetUser();
+  const [expoPushToken, setExpoPushToken] = useState('');
+
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) => {
+      console.log(token)
+      token && setExpoPushToken(token)
+    }).catch(console.log);
+    console.log('Registering for push notification')
+  },[])
+
+  const sendNotification = () => {
+    console.log('send notification')
+  }
 
   if (!fontsLoades) {
     return <Text>Loading</Text>;
@@ -65,7 +92,7 @@ export default function Dashboard() {
             </View>
           </View>
         </LinearGradient>
-
+        <Button onPress={sendNotification} >Send</Button>
         <Text style={styles.titleList}>Solicitações</Text>
         <ScrollView
           horizontal
@@ -87,25 +114,58 @@ export default function Dashboard() {
           contentContainerStyle={{ marginHorizontal: 20 }}
           showsVerticalScrollIndicator={false}>
           <ItemList />
-          <ItemList />
-          <ItemList />
-          <ItemList />
-          <ItemList />
-          <ItemList />
-          <ItemList />
-          <ItemList />
-          <ItemList />
-          <ItemList />
-          <ItemList />
-          <ItemList />
-          <ItemList />
-          <ItemList />
-          <ItemList />
-          <ItemList />
         </ScrollView>
       </View>
     </>
   );
+}
+
+async function registerForPushNotificationsAsync() {
+  let token;
+
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!');
+      return;
+    }
+    // Learn more about projectId:
+    // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
+    // EAS projectId is used here.
+    try {
+      const projectId =
+        Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+      if (!projectId) {
+        throw new Error('Project ID not found');
+      }
+      token = (
+        await Notifications.getExpoPushTokenAsync({
+          projectId,
+        })
+      ).data;
+      console.log(token);
+    } catch (e) {
+      token = `${e}`;
+    }
+  } else {
+    alert('Must use physical device for Push Notifications');
+  }
+
+  return token;
 }
 
 const NumberItem = ({ description, number }: { description: string; number: number }) => {

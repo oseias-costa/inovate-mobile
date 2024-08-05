@@ -7,7 +7,7 @@ import { Button } from "~/components/Button";
 const renderBackdrop = (props: any) => <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />
 
 
-export default function Task(){
+export default function Notifications(){
     const snapPoins = useMemo(() => ['25%','50%', '60%'],[])
     const ref = useRef<BottomSheet>(null)
     const handleOpen = () => ref.current?.expand()

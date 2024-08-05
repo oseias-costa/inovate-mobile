@@ -83,7 +83,7 @@ export default function Layout() {
           }}
         />
         <Tabs.Screen
-          name="tasks/index"
+          name="notifications/index"
           options={{
             title: 'Notificações',
             headerTintColor: '#fff',
