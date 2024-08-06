@@ -8,7 +8,7 @@ export default function Notifications(){
 
     return(
         <View style={{flex: 1}}>
-                    <View style={{ height: 60 }}>
+          <View style={{ height: 60, marginBottom: 8 }}>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -25,7 +25,30 @@ export default function Notifications(){
             <SelectStatus item="NOTICE" setStatus={setStatus} status={status} />
           </ScrollView>
         </View>
-        <NotificationItem />
+        <NotificationItem 
+          id="123" 
+          title="Hoje último dia que precisa alguma coisa" 
+          description="Início da descrição do aviso de exemplo, caso o texto for grande" 
+          time={new Date('2024-08-07 18:02:47.776876')} 
+          type="notice" 
+          seen={true}
+        />
+         <NotificationItem 
+          id="123" 
+          title="Hoje último dia que precisa alguma coisa" 
+          description="Início da descrição do aviso de exemplo, caso o texto for grande" 
+          time={new Date('2024-08-08 18:02:47.776876')} 
+          type="notice" 
+          seen={true}
+        />
+         <NotificationItem 
+          id="123" 
+          title="Hoje último dia que precisa alguma coisa" 
+          description="Início da descrição do aviso de exemplo, caso o texto for grande" 
+          time={new Date('2024-08-05 18:02:47.776876')} 
+          type="notice" 
+          seen={false}
+        />
         </View>
     )
 }
