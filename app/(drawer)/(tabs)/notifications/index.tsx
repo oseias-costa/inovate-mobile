@@ -1,10 +1,31 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { FlashList } from "@shopify/flash-list";
+import axios from "axios";
 import { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { RefreshControl, ScrollView, Text, View } from "react-native";
 import SelectStatus from "~/app/components/SelectStatus";
+import useGetUser from "~/app/hook/useGetUser";
 import NotificationItem from "~/app/notifications/notificationItem";
 
 export default function Notifications(){
     const [status, setStatus] = useState<'' | 'PEDING' | 'FINISH' | 'EXPIRED' | 'DOCUMENTS' | 'NOTICE'>('');
+    const { user } = useGetUser()
+
+    const getNotifications = async () => {
+      const token = await AsyncStorage.getItem('token');
+      const notifications = axios({
+        method: 'GET',
+        baseURL: 'http://10.0.0.101:3009/notifications',
+        headers: { Authorization: `Bearer ${token}` },
+        data: {
+          uuid: user?.id,
+          type: user?.type,
+          options: {
+            limit: 10,
+            page: 1
+          }
+        }
+    })}
 
     return(
         <View style={{flex: 1}}>
@@ -25,30 +46,59 @@ export default function Notifications(){
             <SelectStatus item="NOTICE" setStatus={setStatus} status={status} />
           </ScrollView>
         </View>
-        <NotificationItem 
-          id="123" 
-          title="Hoje último dia que precisa alguma coisa" 
-          description="Início da descrição do aviso de exemplo, caso o texto for grande" 
-          time={new Date('2024-08-07 18:02:47.776876')} 
-          type="notice" 
-          seen={true}
-        />
-         <NotificationItem 
-          id="123" 
-          title="Hoje último dia que precisa alguma coisa" 
-          description="Início da descrição do aviso de exemplo, caso o texto for grande" 
-          time={new Date('2024-08-08 18:02:47.776876')} 
-          type="notice" 
-          seen={true}
-        />
-         <NotificationItem 
-          id="123" 
-          title="Hoje último dia que precisa alguma coisa" 
-          description="Início da descrição do aviso de exemplo, caso o texto for grande" 
-          time={new Date('2024-08-05 18:02:47.776876')} 
-          type="notice" 
-          seen={false}
-        />
+        {/* <View style={{ width: '100%', height: 800}}> */}
+          <FlashList
+            renderItem={({ item }) => {
+              return  <NotificationItem 
+              id={item.id} 
+              title={item.title} 
+              description={item.description} 
+              time={new Date(item.time)} 
+              type={'notice'} 
+              seen={item.seen}
+            />
+            }}
+            estimatedItemSize={15}
+            keyExtractor={(item) => item.id}
+            data={data}
+            // refreshControl={
+            //   <RefreshControl
+            //     refreshing={refreshing}
+            //     onRefresh={() => queryClient.invalidateQueries({ queryKey: ['documents'] })}
+            //     colors={['#9Bd35A', '#689F38']}
+            //     progressBackgroundColor="#fff"
+            //   />
+            // }
+            showsVerticalScrollIndicator={false}
+          />
         </View>
+        // </View>
     )
 }
+
+const data = [
+  {
+    id: "1233",
+    title: "Hoje último dia que precisa alguma coisa",
+    description: "Início da descrição do aviso de exemplo, caso o texto for grande",
+    time: '2024-08-05 18:02:47.776876',
+    type: "notice",
+    seen: true
+  },
+  {
+    id: "1243",
+    title: "Hoje último dia que precisa alguma coisa",
+    description: "Início da descrição do aviso de exemplo, caso o texto for grande",
+    time: '2024-08-05 18:02:47.776876',
+    type: "notice",
+    seen: true
+  },
+  {
+    id: "1263",
+    title: "Hoje último dia que precisa alguma coisa",
+    description: "Início da descrição do aviso de exemplo, caso o texto for grande",
+    time: '2024-08-05 18:02:47.776876',
+    type: "notice",
+    seen: false
+  },
+]
