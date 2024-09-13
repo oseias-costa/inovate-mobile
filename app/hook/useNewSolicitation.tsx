@@ -18,7 +18,7 @@ export default function useNewSolicitation(solicitation: NewSolicitationProps){
     const postCreateDoc = async () => {
         const token = await AsyncStorage.getItem('token')
         const response = await axios({
-          baseURL: "http://10.0.0.101:3009/document/create-request",
+          baseURL: `${process.env.EXPO_PUBLIC_API_URL}/document/create-request`,
           method: "POST",
           data: solicitation,
           headers: { Authorization: `Bearer ${token}` },

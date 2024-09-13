@@ -2,26 +2,26 @@ import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "rea
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 type NotificationItem = {
-    type: 'notice' | 'document'
+    type: string
     title: string
     description: string
     time: Date
     id: string
-    seen: boolean    
+    read: boolean    
 }
 
 export default function NotificationItem(notification: NotificationItem){
     const width = Dimensions.get('screen').width
     const notificationType: { [key: string]: string} = {
-        document: 'Solicitação de documento',
-        notice: 'Aviso Inovate'
+        DOCUMENT: 'Você tem uma nova solicitação',
+        NOTICE: 'Aviso Inovate'
     }
     const dateToday = notification.time.valueOf()
     const ee = new Date(dateToday).getDate()
     console.log('dateToday',  ee)
     return(
-        <TouchableOpacity style={[styles.button, {backgroundColor: notification.seen ? '#00264B09' : ''}]}>
-            { notification.seen && <FontAwesome name="circle" size={12} color="#6597C9" style={styles.circle} /> }
+        <TouchableOpacity style={[styles.button, {backgroundColor: notification.read ? '#00264B09' : ''}]}>
+            { notification.read && <FontAwesome name="circle" size={12} color="#6597C9" style={styles.circle} /> }
             <View style={styles.container}>
                 <Image style={styles.img} source={require('../../assets/dashboard/logo.png')} />
                 <View style={styles.box}>

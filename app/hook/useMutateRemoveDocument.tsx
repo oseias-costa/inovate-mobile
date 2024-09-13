@@ -9,7 +9,7 @@ export default function useMutateRemoveDocument(id: string){
             const token = await AsyncStorage.getItem('token')
             const companys =  await axios({
                 method: 'DELETE',
-                baseURL: 'http://10.0.0.101:3009/document/'+id,
+                baseURL: `${process.env.EXPO_PUBLIC_API_URL}/document/${id}`,
                 headers: { Authorization: `Bearer ${token}`}
             })
     

@@ -28,7 +28,7 @@ export default function Login() {
     const email = await AsyncStorage.getItem('email');
     if (email) setData({ ...data, email: email });
   };
-
+  console.log(process.env.EXPO_PUBLIC_API_URL)
   useEffect(() => {
     if (!data.email) {
       getEmail();

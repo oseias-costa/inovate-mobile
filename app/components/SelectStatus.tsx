@@ -3,9 +3,9 @@ import { Dispatch, SetStateAction } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 type SelectStatusProps = {
-  status: '' | 'PEDING' | 'FINISH' | 'EXPIRED'| 'DOCUMENTS' | 'NOTICE';
-  item: '' | 'PEDING' | 'FINISH' | 'EXPIRED' | 'DOCUMENTS' | 'NOTICE';
-  setStatus: Dispatch<SetStateAction<'' | 'PEDING' | 'FINISH' | 'EXPIRED' | 'DOCUMENTS' | 'NOTICE'>>;
+  status: '' | 'PEDING' | 'FINISH' | 'EXPIRED'| 'DOCUMENT' | 'NOTICE';
+  item: '' | 'PEDING' | 'FINISH' | 'EXPIRED' | 'DOCUMENT' | 'NOTICE';
+  setStatus: Dispatch<SetStateAction<'' | 'PEDING' | 'FINISH' | 'EXPIRED' | 'DOCUMENT' | 'NOTICE'>>;
 };
 
 const SelectStatus = ({ status, item, setStatus }: SelectStatusProps) => {
@@ -17,7 +17,7 @@ const SelectStatus = ({ status, item, setStatus }: SelectStatusProps) => {
     PEDING: 'Aguardando',
     EXPIRED: 'Vencidas',
     FINISH: 'Concluídas',
-    DOCUMENTS: 'Documentos',
+    DOCUMENT: 'Documentos',
     NOTICE: 'Avisos'
   };
   return (

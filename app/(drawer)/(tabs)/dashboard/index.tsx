@@ -28,7 +28,7 @@ export default function Dashboard() {
   const colorSelected = (item: string) => (selected === item ? '#fff' : '#5D5B5B');
   const { user } = useGetUser();
   const [expoPushToken, setExpoPushToken] = useState('');
-
+console.log('aqui', user)
 
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) => {

@@ -8,7 +8,11 @@ import type { AppStateStatus } from 'react-native';
 
 export default function Layout() {
   const client = new QueryClient({
-    queryCache: new QueryCache()
+    defaultOptions: {
+      queries: {
+        staleTime: 10000
+      }
+    }
   })
 
   useEffect(() => {

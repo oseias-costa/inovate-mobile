@@ -33,7 +33,7 @@ export default function Docs() {
     const token = await AsyncStorage.getItem('token');
     const documents = await axios({
       method: 'GET',
-      baseURL: `http://10.0.0.101:3009/document?page=${pagination.page}&limit=${pagination.limit}&user=${filter.user}&company&${filter.company}&status=${status}`,
+      baseURL: `${process.env.EXPO_PUBLIC_API_URL}/document?page=${pagination.page}&limit=${pagination.limit}&user=${filter.user}&company&${filter.company}&status=${status}`,
       headers: { Authorization: `Bearer ${token}` },
     });
     

@@ -41,7 +41,7 @@ export default function useMutationUpdateDocument(document: UpdateSolicitationPr
           description: document.description,
           expiration: String(document.expiration),
         },
-        baseURL: 'http://10.0.0.101:3009/document/update-request',
+        baseURL: `${process.env.EXPO_PUBLIC_API_URL}/document/update-request`,
         headers: { Authorization: `Bearer ${token}` },
       });
       return updateRequest.data;

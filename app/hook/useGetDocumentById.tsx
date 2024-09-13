@@ -10,7 +10,7 @@ export default function useGetDocumentById(id: string){
             console.log(token)
             const companys =  await axios({
                 method: 'GET',
-                baseURL: 'http://10.0.0.101:3009/document/get-by-id/'+id,
+                baseURL: `${process.env.EXPO_PUBLIC_API_URL}/document/get-by-id/${id}`,
                 headers: { Authorization: `Bearer ${token}`}
             })
             

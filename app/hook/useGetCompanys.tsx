@@ -9,7 +9,7 @@ export default function useGetCompanys(){
             const token = await AsyncStorage.getItem('token')
             const companys =  await axios({
                 method: 'GET',
-                baseURL: 'http://10.0.0.101:3009/users/companys',
+                baseURL: `${process.env.EXPO_PUBLIC_API_URL}/users/companys`,
                 headers: { Authorization: `Bearer ${token}`}
             })
     

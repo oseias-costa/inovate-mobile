@@ -14,11 +14,11 @@ export const useLogin = (setError: Dispatch<SetStateAction<string>>) => {
     
     const postData = async (data: LoginData) => {
         const response = await axios({
-          baseURL: "http://10.0.0.101:3009/users/login",
+          baseURL: `${process.env.EXPO_PUBLIC_API_URL}/users/login`,
           method: "POST",
           data: data
         })
-      
+        console.log(response)
         return response.data
     }
 

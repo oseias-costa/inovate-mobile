@@ -23,7 +23,7 @@ export default function useGetUser() {
 
     const user = await axios({
       method: "GET",
-      baseURL: `http://10.0.0.101:3009/users/get-user/${token}`,
+      baseURL: `${process.env.EXPO_PUBLIC_API_URL}/users/get-user/${token}`,
       headers: { Authorization: `Bearer ${token}` },
     });
 

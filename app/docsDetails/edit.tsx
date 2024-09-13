@@ -49,16 +49,15 @@ export default function UpdateSolicitation() {
     ]);
   };
 
-  const deleteSucess = () => {
-    
-    // router.navigate({pathname: '/docs', params: {
-    //   type: 'success',
-    //   text1: 'Solicitação excluída',
-    //   text2: 'A solicitação foi excluída com sucesso. 👋',
-    // }})
-      // return queryClient.invalidateQueries({
-      //   queryKey: ['documents', document.id],
-      // });
+  const deleteSucess = () => {    
+    router.navigate({pathname: '/docs', params: {
+      type: 'success',
+      text1: 'Solicitação excluída',
+      text2: 'A solicitação foi excluída com sucesso. 👋',
+    }})
+      return queryClient.invalidateQueries({
+        queryKey: ['documents', document.id],
+      });
   }
 
   useEffect(() => {
@@ -75,7 +74,7 @@ export default function UpdateSolicitation() {
           headerTitle: 'Editar',
           headerTintColor: '#fff',
           headerRight: () => (
-            <TouchableOpacity onPress={() => deleteSucess()}>
+            <TouchableOpacity onPress={() => deleteModal()}>
               <Text style={style.headerButton}>Excluir</Text>
             </TouchableOpacity>
           ),

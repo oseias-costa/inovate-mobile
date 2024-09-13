@@ -24,7 +24,7 @@ export default function Home() {
   
   return (
     <>
-      <Redirect href='/(drawer)/(tabs)/dashboard' />)
+      <Redirect href='/(drawer)/(tabs)/dashboard' />
     </>
     )
 }
