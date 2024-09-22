@@ -6,6 +6,7 @@ import { DrawerToggleButton } from '@react-navigation/drawer';
 import { Feather } from '@expo/vector-icons';
 import { Image, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Logo from '~/assets/svg/Logo';
 
 export default function Layout() {
   return (
@@ -20,14 +21,7 @@ export default function Layout() {
             title: '',
             headerShadowVisible: false,
             headerTitleAlign: 'center',
-            // headerTitle: () =>
-            //     <Image
-            //         source={require('~/assets/dashboard/inovate.png')}
-            //         style={{
-            //             width: 160,
-            //             height: 36
-            //         }}
-            //     />,
+            headerTitle: () => <Logo />,
             headerLeft: () => <DrawerToggleButton tintColor="#fff" />,
             headerRight: () => (
               <TouchableOpacity>
@@ -43,21 +37,12 @@ export default function Layout() {
           }}
         />
         <Tabs.Screen
-          name="docs/index"
+          name="requests/index"
           options={{
             headerStyle: {
               backgroundColor: '#00264B',
             },
-            title: '',
-            headerTitle: () => (
-              <Image
-                source={require('~/assets/dashboard/logo-white.png')}
-                style={{
-                  width: 40,
-                  height: 30,
-                }}
-              />
-            ),
+            title: 'Solicitações',
             headerLeft: () => <DrawerToggleButton tintColor="#fff" />,
             headerRight: () => (
               <TouchableOpacity onPress={() => router.navigate('/docsDetails/newSolicitation')}>

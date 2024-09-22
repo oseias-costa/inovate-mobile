@@ -1,24 +1,20 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { Dispatch, SetStateAction } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-type SelectStatusProps = {
-  status: '' | 'PENDING' | 'FINISH' | 'EXPIRED';
-  item: '' | 'PENDING' | 'FINISH' | 'EXPIRED';
-  setStatus: Dispatch<SetStateAction<'' | 'PENDING' | 'FINISH' | 'EXPIRED'>>;
+type SelectProps = {
+  status: '' | 'NOTICE' | 'REPORT' | 'REQUEST';
+  item: '' | 'NOTICE' | 'REPORT' | 'REQUEST';
+  setStatus: Dispatch<SetStateAction<'' | 'NOTICE' | 'REPORT' | 'REQUEST'>>;
 };
 
-const SelectStatus = ({ status, item, setStatus }: SelectStatusProps) => {
-  const queryClient = useQueryClient();
+const SelectNotificationFilter = ({ status, item, setStatus }: SelectProps) => {
   const borderColor = status === item ? '#fff' : '#D9D9D9';
   const weightItem = status === item ? 'Lato_700Bold' : 'Lato_300Light';
   const title = {
     '': 'Todas',
-    PENDING: 'Aguardando',
-    EXPIRED: 'Vencidas',
-    FINISH: 'Concluídas',
-    DOCUMENT: 'Documentos',
     NOTICE: 'Avisos',
+    REQUEST: 'Solicitações',
+    REPORT: 'Relatórios',
   };
   return (
     <TouchableOpacity onPress={() => setStatus(item)}>
@@ -43,4 +39,4 @@ const SelectStatus = ({ status, item, setStatus }: SelectStatusProps) => {
   );
 };
 
-export default SelectStatus;
+export default SelectNotificationFilter;
