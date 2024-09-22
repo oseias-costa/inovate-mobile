@@ -10,12 +10,8 @@ export default function Layout() {
           backgroundColor: '#00264B',
         },
       }}>
-      <Stack.Screen
-        name="edit"
-      />
-      <Stack.Screen
-        name="details"
-      />
+      <Stack.Screen name="edit" />
+      <Stack.Screen name="details" />
       <Stack.Screen
         name="newSolicitation"
         options={{
@@ -36,7 +32,7 @@ export default function Layout() {
           headerTitle: 'Solicitação realizada',
           headerTintColor: '#fff',
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.replace('/docs/')}>
+            <TouchableOpacity onPress={() => router.replace('/requests')}>
               <MaterialIcons name="arrow-back-ios" size={24} color="white" />
             </TouchableOpacity>
           ),
@@ -49,14 +45,12 @@ export default function Layout() {
           headerTitle: 'Edição realizada',
           headerTintColor: '#fff',
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.replace('/docs/')}>
+            <TouchableOpacity onPress={() => router.replace('/requests')}>
               <MaterialIcons name="arrow-back-ios" size={24} color="white" />
             </TouchableOpacity>
           ),
         }}
       />
     </Stack>
-    
-    
   );
 }

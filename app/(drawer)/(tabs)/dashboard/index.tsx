@@ -69,29 +69,37 @@ export default function Dashboard() {
         </View>
         <ScrollView>
           <View style={styles.titleBox}>
-            <Text style={[styles.title, { marginTop: 60 }]}>Solicitações de documentos</Text>
+            <Text style={[styles.title, { marginTop: 60 }]}>Solicitações</Text>
             <TouchableOpacity onPress={() => router.navigate('/requests')}>
               <Text style={styles.seeAll}>Ver todos</Text>
             </TouchableOpacity>
           </View>
           {data.requests?.items?.map((request: any) => (
             <RequestItemDashboard
+              uuid={request.uuid}
               title={request.documentName}
               expiration={request.expiration}
               key={request.uuid}
+              onPress={() =>
+                router.navigate({ pathname: '/requests', params: { openItemUuid: request.uuid } })
+              }
             />
           ))}
           <View style={[styles.titleBox, { paddingBottom: 15 }]}>
             <Text style={[styles.title, { marginTop: 25 }]}>Avisos</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => router.navigate('/notice')}>
               <Text style={styles.seeAll}>Ver todos</Text>
             </TouchableOpacity>
           </View>
           {data?.notice?.items?.map((item: any) => (
             <NoticeItemDashboard
+              uuid={item.uuid}
               title={item.title}
               description={item.text}
               createdAt={item.createdAt}
+              onPress={() =>
+                router.navigate({ pathname: '/notice', params: { openItemUuid: item.uuid } })
+              }
               key={item.uuid}
             />
           ))}
@@ -199,13 +207,13 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#005AB1',
-    fontSize: 18,
+    fontSize: 22,
     fontFamily: 'Lato_400Regular',
     position: 'relative',
     zIndex: 1,
   },
   seeAll: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#3B3D3E',
   },
   numbersBox: {

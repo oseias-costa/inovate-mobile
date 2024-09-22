@@ -8,15 +8,14 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { RefreshControl, ScrollView, StatusBar, View, StyleSheet } from 'react-native';
 
-import RequestItemDashboard from '~/app/components/RequestItemDashboard';
+import NoticeItemDashboard from '~/app/components/NoticeItemDashboard';
 import SelectStatus from '~/app/components/SelectStatus';
 import { useUser } from '~/app/components/UserProvider';
 import ToastTest from '~/app/lib/ToastTest';
-import Detail from '~/app/requests/components/detail';
-import { Request } from '~/app/requests/request';
-import { RequestData, RequestType } from '~/app/types/request.type';
+import NoticeDetail from '~/app/notice/components/detail';
+import { RequestData } from '~/app/types/request.type';
 
-export default function Requests() {
+export default function Notice() {
   const [status, setStatus] = useState<'' | 'PENDING' | 'FINISH' | 'EXPIRED'>('');
   const { user } = useUser();
   const [pagination, setPagination] = useState({ page: '1', limit: '20' });
@@ -35,13 +34,13 @@ export default function Requests() {
   }, [params?.openItemUuid, itemUuid]);
 
   const { data, isLoading, refetch } = useQuery<RequestData>({
-    queryKey: [`requests`],
+    queryKey: ['notice'],
     queryFn: async () => {
       const token = await AsyncStorage.getItem('token');
       console.log(token);
       const documents = await axios({
         method: 'GET',
-        baseURL: `${process.env.EXPO_PUBLIC_API_URL}/requests?page=${pagination.page}&limit=${pagination.limit}&companyUuid=${user.uuid}&status=${status}`,
+        baseURL: `${process.env.EXPO_PUBLIC_API_URL}/notice?page=${pagination.page}&limit=${pagination.limit}&companyUuid=${user.uuid}`,
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -82,13 +81,14 @@ export default function Requests() {
             <SelectStatus item="FINISH" setStatus={setStatus} status={status} />
           </ScrollView>
         </View>
-        <View style={{ width: '100%', height: 400 }}>
+        <View style={{ width: '100%', height: 400, paddingTop: 10 }}>
           <FlashList
-            renderItem={({ item }: { item: RequestType }) => (
-              <RequestItemDashboard
+            renderItem={({ item }: { item: any }) => (
+              <NoticeItemDashboard
                 uuid={item.uuid}
-                title={item.documentName}
-                expiration={item.expiration}
+                title={item.title}
+                description={item.text}
+                createdAt={item.createdAt}
                 key={item.uuid}
                 onPress={() => {
                   setItemUuid(item.uuid);
@@ -102,7 +102,7 @@ export default function Requests() {
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
-                onRefresh={() => queryClient.invalidateQueries({ queryKey: ['documents'] })}
+                onRefresh={() => queryClient.invalidateQueries({ queryKey: ['notice'] })}
                 colors={['#9Bd35A', '#689F38']}
                 progressBackgroundColor="#fff"
               />
@@ -119,7 +119,7 @@ export default function Requests() {
             maskClosable
             onClose={() => setOpenModal(false)}>
             <View style={{ height: 'auto' }}>
-              <Detail uuid={itemUuid} />
+              <NoticeDetail uuid={itemUuid} />
             </View>
           </Modal>
         </Provider>
@@ -132,7 +132,6 @@ const styles = StyleSheet.create({
   destakContainer: {
     position: 'relative',
     bottom: 1,
-    marginBottom: 10,
     zIndex: 1,
     backgroundColor: '#00264B',
     height: 60,

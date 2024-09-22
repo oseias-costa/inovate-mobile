@@ -28,7 +28,7 @@ const CustomDrawerContent = (props: any) => {
           fontSize: 16,
           fontFamily: 'Lato_400Regular',
         }}
-        onPress={() => router.push('/(drawer)/(tabs)/dashboard/')}
+        onPress={() => router.push('/(drawer)/(tabs)/dashboard')}
       />
       <DrawerItem
         style={{
@@ -41,7 +41,20 @@ const CustomDrawerContent = (props: any) => {
         }}
         icon={({ color, size }) => <Ionicons name="document-text" size={24} color="#3B3D3E" />}
         label="Documentos"
-        onPress={() => router.push('/(drawer)/(tabs)/requests/')}
+        onPress={() => router.push('/(drawer)/(tabs)/requests')}
+      />
+      <DrawerItem
+        style={{
+          backgroundColor: pathname === '/notice' ? '#D9D9D9' : '#fff',
+        }}
+        labelStyle={{
+          color: '#3B3D3E',
+          fontSize: 16,
+          fontFamily: 'Lato_400Regular',
+        }}
+        icon={({ color, size }) => <Ionicons name="document-text" size={24} color="#3B3D3E" />}
+        label="Notice"
+        onPress={() => router.push('/(drawer)/(tabs)/notice')}
       />
     </DrawerContentScrollView>
   );

@@ -11,12 +11,14 @@ import { useEffect } from 'react';
 import { AppState } from 'react-native';
 import type { AppStateStatus } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 import { UserProvider } from './components/UserProvider';
 
 export default function Layout() {
   const client = new QueryClient({
     defaultOptions: {
       queries: {
+        retry: true,
         staleTime: 10000,
       },
     },

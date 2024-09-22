@@ -1,10 +1,10 @@
 import { View } from 'react-native';
-import { Path, Svg } from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 
 export default function Logo() {
   return (
-    <View style={{ width: 180, marginTop: 10 }}>
-      <Svg x="0px" y="0px" width="100%" viewBox="0 0 4608 1152">
+    <View style={{ width: 220, marginTop: 0 }}>
+      <Svg x="0px" y="0px" width="100%" height="100%" viewBox="0 0 4608 1152">
         <Path
           fill="transparent"
           opacity="1.000000"

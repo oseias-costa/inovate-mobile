@@ -1,34 +1,44 @@
-import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Subtitle from '../components/Subtitle';
-import { Stack, router, useLocalSearchParams } from 'expo-router';
-import useGetCompanys from '../hook/useGetCompanys';
 import ButtonAnt from '@ant-design/react-native/lib/button';
-import { formatDate } from '../lib/date';
 import { MaterialIcons } from '@expo/vector-icons';
-import useGetDocumentById from '../hook/useGetDocumentById';
-import { statusFormtter } from '../lib/status';
-import { Status } from './components/status';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useQuery } from '@tanstack/react-query';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
+import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
 import Loading from '../components/Loading';
+import { formatDate } from '../lib/date';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 export default function Details() {
   const { id } = useLocalSearchParams();
-  const { data: document } = useGetDocumentById(String(id));
-  const { data } = useGetCompanys();
-  const company = data?.find((item: any) => item.id === document?.companyId);
-  const expiration = formatDate(new Date(document?.expiration));
-  const status = statusFormtter(document?.status);
+  //const expiration = formatDate(new Date(document?.expiration));
 
+  const { data, isFetching } = useQuery({
+    queryKey: ['requests-pending'],
+    queryFn: async () => {
+      const token = await AsyncStorage.getItem('token');
+      const companys = await axios({
+        method: 'GET',
+        baseURL: `${process.env.EXPO_PUBLIC_API_URL}/requests/${id}`,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      return companys.data;
+    },
+  });
+  console.log('data', data);
   return (
     <>
       <Stack.Screen
         options={{
           headerTitleAlign: 'center',
-          headerTitle: 'Detalhes',
+          headerTitle: 'Solicitação',
           headerTintColor: '#fff',
           headerRight: () => (
             <TouchableOpacity
-              onPress={() => router.navigate({ pathname: '/docsDetails/edit', params: { id } })}>
-              <Text style={style.headerButton}>Editar</Text>
+              onPress={() => router.navigate({ pathname: '/requests/edit', params: { id } })}>
+              <Text style={styles.headerButton}>Editar</Text>
             </TouchableOpacity>
           ),
           headerLeft: () => (
@@ -39,87 +49,37 @@ export default function Details() {
         }}
       />
       <SafeAreaView style={{ backgroundColor: '#fff', flex: 1 }}>
-        {!data ? (
-          <Loading isLoading />
-        ) : (
-          <>
-            <View style={{ paddingBottom: 25, paddingTop: 20 }}>
-              <Subtitle text="Detalhes da solicitação" />
-              <Text style={style.description}>Verifique abaixo os detalhes da solicitação.</Text>
-            </View>
-            <View>
-              <Status expiration={expiration} status={document?.status} type="Solicitação" />
-              <TextInputDetail label="Documento" value={document?.document} />
-              <TextInputDetail label="Descrição" value={document?.description} />
-              <TextInputDetail label="Empresa" value={company?.name} />
-              <TextInputDetail label="Prazo" value={expiration} />
-            </View>
-            <ButtonAnt type="ghost" style={style.button} onPress={() => router.navigate('/docs/')}>
-              voltar
-            </ButtonAnt>
-          </>
-        )}
+        <View style={{ paddingBottom: 25, paddingTop: 20, marginHorizontal: 20 }}>
+          <Text style={styles.title}>{data?.documentName}</Text>
+          <View style={styles.expirationContainer}>
+            <MaterialIcons name="access-alarm" size={14} color="#AEA4A4" />
+            <Text style={styles.expiration}>Prazo {formatDate(new Date(data?.expiration))}</Text>
+          </View>
+          <Text style={styles.description}>{data?.description}</Text>
+          <View style={styles.uploadContainer}>
+            <Ionicons name="cloud-upload-outline" size={24} color="#6D6D6D" />
+            <Text style={styles.uploadTitle}>Enviar arquivo</Text>
+            <Text style={styles.uploadDescription}>Selecione um arquivo de no máximo 20mb.</Text>
+          </View>
+          <View style={styles.attachContainer}>
+            <Ionicons name="attach" size={24} color="#005AB1" />
+            <Text style={styles.attachTitle}>{data?.documentName}.pdf</Text>
+          </View>
+        </View>
+        <ButtonAnt type="ghost" style={styles.button} onPress={() => router.navigate('/requests')}>
+          voltar
+        </ButtonAnt>
       </SafeAreaView>
     </>
   );
 }
 
-const TextInputDetail = ({ value, label }: { value: string; label: string }) => {
-  return (
-    <View style={{ paddingBottom: 6 }}>
-      <Text style={style.label}>{label}</Text>
-      <TextInput editable={false} value={value} style={style.input} />
-    </View>
-  );
-};
-
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     paddingTop: 20,
     flex: 1,
     justifyContent: 'flex-start',
-  },
-  header: {
-    paddingHorizontal: 12,
-    height: 44,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#d3d3d3',
-    shadowColor: '#000',
-  },
-  body: {
-    backgroundColor: '#fff',
-  },
-  title: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 18,
-  },
-  description: {
-    fontFamily: 'Lato_300Light',
-    fontSize: 16,
-    color: '#716F6F',
-    marginHorizontal: 20,
-    paddingBottom: 0,
-    paddingTop: 6,
-  },
-  label: {
-    fontFamily: 'Lato_300Light',
-    marginHorizontal: 20,
-  },
-  input: {
-    borderWidth: 1,
-    height: 47,
-    padding: 10,
-    borderRadius: 5,
-    marginHorizontal: 20,
-    marginVertical: 5,
-    color: '#363636',
-    fontFamily: 'Lato_400Regular',
-    fontSize: 18,
-    borderColor: '#DADADA',
   },
   button: {
     marginHorizontal: 20,
@@ -130,5 +90,64 @@ const style = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontFamily: 'Lato_400Regular',
+  },
+  title: {
+    color: '#3B3D3E',
+    fontSize: 22,
+    fontFamily: 'Lato_400Regular',
+    position: 'relative',
+    zIndex: 1,
+  },
+  expirationContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  expiration: {
+    fontSize: 14,
+    color: '#6D6D6D',
+    fontFamily: 'Lato_300Light',
+    paddingLeft: 4,
+  },
+  description: {
+    color: '#6D6D6D',
+    marginTop: 10,
+    fontSize: 16,
+    fontFamily: 'Lato_400Regular',
+  },
+  uploadContainer: {
+    borderColor: '#D3D3D3',
+    borderWidth: 1,
+    backgroundColor: '#F2F2F2',
+    borderRadius: 8,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 15,
+    marginVertical: 20,
+  },
+  uploadTitle: {
+    fontSize: 16,
+    color: '#6D6D6D',
+    fontFamily: 'Lato_400Regular',
+    paddingTop: 10,
+  },
+  uploadDescription: {
+    color: '#B8A1A1',
+    fontFamily: 'Lato_400Regular',
+    fontSize: 12,
+  },
+  attachContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  attachTitle: {
+    fontSize: 16,
+    color: '#005AB1',
+    fontFamily: 'Lato_400Regular',
+    paddingLeft: 5,
   },
 });

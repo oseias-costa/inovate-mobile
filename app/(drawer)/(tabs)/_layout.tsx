@@ -1,11 +1,13 @@
 import { FontAwesome } from '@expo/vector-icons';
-import { Tabs, router } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-import { DrawerToggleButton } from '@react-navigation/drawer';
+import { MaterialIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
-import { Image, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Foundation from '@expo/vector-icons/Foundation';
+import { DrawerToggleButton } from '@react-navigation/drawer';
+import { Tabs, router } from 'expo-router';
+import { Image, Text, TouchableOpacity } from 'react-native';
+
 import Logo from '~/assets/svg/Logo';
 
 export default function Layout() {
@@ -45,7 +47,7 @@ export default function Layout() {
             title: 'Solicitações',
             headerLeft: () => <DrawerToggleButton tintColor="#fff" />,
             headerRight: () => (
-              <TouchableOpacity onPress={() => router.navigate('/docsDetails/newSolicitation')}>
+              <TouchableOpacity onPress={() => router.navigate('/requests/newSolicitation')}>
                 <Text
                   style={{
                     marginRight: 20,
@@ -65,6 +67,31 @@ export default function Layout() {
               }
               return <Ionicons name="document-text" color={color} size={size} />;
             },
+          }}
+        />
+        <Tabs.Screen
+          name="notice/index"
+          options={{
+            headerStyle: {
+              backgroundColor: '#00264B',
+            },
+            title: 'Avisos',
+            headerTintColor: '#fff',
+            headerShadowVisible: false,
+            headerTitleAlign: 'center',
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => router.back()}>
+                <MaterialIcons
+                  name="arrow-back-ios-new"
+                  color="#fff"
+                  size={22}
+                  style={{ marginLeft: 20 }}
+                />
+              </TouchableOpacity>
+            ),
+            tabBarIcon: ({ focused, color, size }) => (
+              <Foundation name="megaphone" size={size} color={color} />
+            ),
           }}
         />
         <Tabs.Screen

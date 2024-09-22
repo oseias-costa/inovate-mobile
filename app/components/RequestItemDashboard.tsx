@@ -2,15 +2,23 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { formatDate } from '../lib/date';
+import { router } from 'expo-router';
 
 type RequestItemDashboardProps = {
   title: string;
   expiration: string;
+  uuid: string;
+  onPress: () => void;
 };
 
-export default function RequestItemDashboard({ title, expiration }: RequestItemDashboardProps) {
+export default function RequestItemDashboard({
+  title,
+  expiration,
+  uuid,
+  onPress,
+}: RequestItemDashboardProps) {
   return (
-    <TouchableOpacity style={styles.constainer}>
+    <TouchableOpacity style={styles.constainer} onPress={onPress}>
       <View>
         <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
           {title}
@@ -32,17 +40,17 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomColor: '#D3D3D3',
+    borderBottomColor: '#E9E9E9',
     borderBottomWidth: 1,
   },
   title: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#3B3D3E',
     fontFamily: 'Lato_400Regular',
     paddingBottom: 4,
   },
   description: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#6D6D6D',
     fontFamily: 'Lato_300Light',
     paddingLeft: 4,

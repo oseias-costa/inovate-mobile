@@ -6,15 +6,19 @@ type RequestItemDashboardProps = {
   title: string;
   description: string;
   createdAt: string;
+  uuid: string;
+  onPress: () => void;
 };
 
 export default function NoticeItemDashboard({
   title,
   description,
   createdAt,
+  uuid,
+  onPress,
 }: RequestItemDashboardProps) {
   return (
-    <TouchableOpacity style={styles.constainer}>
+    <TouchableOpacity style={styles.constainer} onPress={onPress}>
       <Text style={styles.createAt}>{formatDate(new Date(createdAt))}</Text>
       <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
         {title}
@@ -33,23 +37,23 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     marginHorizontal: 20,
-    backgroundColor: '#D3D3D3',
+    backgroundColor: '#E4E4E4',
     paddingHorizontal: 16,
     marginVertical: 3,
   },
   createAt: {
-    fontSize: 8,
+    fontSize: 9,
     color: '#3B3D3E',
     fontFamily: 'Lato_300Light',
   },
   title: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#00264B',
     fontFamily: 'Lato_400Regular',
     paddingBottom: 2,
   },
   description: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#3B3D3E',
     fontFamily: 'Lato_300Light',
   },
