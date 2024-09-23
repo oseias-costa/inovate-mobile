@@ -1,12 +1,10 @@
-import { FontAwesome } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Feather } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Badge from '@ant-design/react-native/lib/badge';
+import { Ionicons, FontAwesome, MaterialIcons, Feather } from '@expo/vector-icons';
 import Foundation from '@expo/vector-icons/Foundation';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { DrawerToggleButton } from '@react-navigation/drawer';
 import { Tabs, router } from 'expo-router';
-import { Image, Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 
 import Logo from '~/assets/svg/Logo';
 
@@ -20,22 +18,30 @@ export default function Layout() {
             headerStyle: {
               backgroundColor: '#00264B',
             },
-            title: '',
+            title: 'Início',
             headerShadowVisible: false,
             headerTitleAlign: 'center',
             headerTitle: () => <Logo />,
             headerLeft: () => <DrawerToggleButton tintColor="#fff" />,
             headerRight: () => (
               <TouchableOpacity>
-                <Feather name="bell" size={24} color="white" style={{ marginRight: 20 }} />
+                <Badge
+                  text={9}
+                  style={{ marginRight: 25 }}
+                  styles={{
+                    dot: { backgroundColor: '#000' },
+                  }}>
+                  <MaterialCommunityIcons name="bell" size={24} color="#fff" style={{ left: 5 }} />
+                </Badge>
               </TouchableOpacity>
             ),
             tabBarIcon: ({ focused, color, size }) => {
               if (focused) {
-                return <MaterialIcons name="dashboard" color={color} size={size} />;
+                return <MaterialIcons name="dashboard" color="#00264B" size={size} />;
               }
               return <MaterialIcons name="dashboard" color={color} size={size} />;
             },
+            tabBarActiveTintColor: '#00264B',
           }}
         />
         <Tabs.Screen
@@ -61,9 +67,10 @@ export default function Layout() {
             headerTitleAlign: 'center',
             headerTitleStyle: { color: '#fff' },
             headerShadowVisible: false,
+            tabBarActiveTintColor: '#00264B',
             tabBarIcon: ({ focused, color, size }) => {
               if (focused) {
-                return <Ionicons name="document-text" color={color} size={size} />;
+                return <Ionicons name="document-text" color="#00264B" size={size} />;
               }
               return <Ionicons name="document-text" color={color} size={size} />;
             },
@@ -89,9 +96,13 @@ export default function Layout() {
                 />
               </TouchableOpacity>
             ),
-            tabBarIcon: ({ focused, color, size }) => (
-              <Foundation name="megaphone" size={size} color={color} />
-            ),
+            tabBarActiveTintColor: '#00264B',
+            tabBarIcon: ({ focused, color, size }) =>
+              focused ? (
+                <Foundation name="megaphone" size={size} color="#00264B" />
+              ) : (
+                <Foundation name="megaphone" size={size} color={color} />
+              ),
           }}
         />
         <Tabs.Screen
@@ -102,9 +113,10 @@ export default function Layout() {
             headerStyle: {
               backgroundColor: '#00264B',
             },
+            tabBarActiveTintColor: '#00264B',
             tabBarIcon: ({ focused, color, size }) => {
               if (focused) {
-                return <MaterialCommunityIcons name="bell" color={color} size={size} />;
+                return <MaterialCommunityIcons name="bell" color="#00264B" size={size} />;
               }
               return <MaterialCommunityIcons name="bell" color={color} size={size} />;
             },
@@ -130,9 +142,10 @@ export default function Layout() {
                 />
               </TouchableOpacity>
             ),
+            tabBarActiveTintColor: '#00264B',
             tabBarIcon: ({ focused, color, size }) => {
               if (focused) {
-                return <FontAwesome name="user" color={color} size={size} />;
+                return <FontAwesome name="user" color="#00264B" size={size} />;
               }
               return <FontAwesome name="user" color={color} size={size} />;
             },

@@ -48,17 +48,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
 
     if (error) {
-      redirectUser();
+      const getError = error as AxiosError;
+      if (getError.response?.status === 401) {
+        AsyncStorage.removeItem('token');
+        return router.navigate('/auth/login');
+      }
     }
   }, [data, error]);
-
-  const redirectUser = async () => {
-    const getError = error as AxiosError;
-    if (getError.response?.status === 401) {
-      await AsyncStorage.removeItem('token');
-      return router.navigate('/auth/login');
-    }
-  };
 
   return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
 };

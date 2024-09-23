@@ -19,6 +19,7 @@ import RequestItemDashboard from '~/app/components/RequestItemDashboard';
 import { useUser } from '~/app/components/UserProvider';
 import useDashboard from '~/app/hook/useDashboard';
 import useFontLato from '~/app/hook/useFontLato';
+import ReportItem from '~/app/report/components/ReportItem';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -67,7 +68,7 @@ export default function Dashboard() {
             <NumberItem description="Relatórios" number={6} />
           </View>
         </View>
-        <ScrollView>
+        <ScrollView showsHorizontalScrollIndicator={false} decelerationRate="normal">
           <View style={styles.titleBox}>
             <Text style={[styles.title, { marginTop: 60 }]}>Solicitações</Text>
             <TouchableOpacity onPress={() => router.navigate('/requests')}>
@@ -103,6 +104,22 @@ export default function Dashboard() {
               key={item.uuid}
             />
           ))}
+          <View style={{ paddingBottom: 120 }}>
+            <View style={[styles.titleBox, { paddingBottom: 15 }]}>
+              <Text style={[styles.title, { marginTop: 25 }]}>Relatórios</Text>
+              <TouchableOpacity onPress={() => router.navigate('/notice')}>
+                <Text style={styles.seeAll}>Ver todos</Text>
+              </TouchableOpacity>
+            </View>
+            {data?.reports?.items?.map((report: any) => (
+              <ReportItem
+                title={report.title}
+                createdAt={report.createdAt}
+                onPress={() => console.log('test')}
+                uuid={report.uuid}
+              />
+            ))}
+          </View>
         </ScrollView>
       </View>
     </>
