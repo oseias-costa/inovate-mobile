@@ -2,13 +2,18 @@ import Badge from '@ant-design/react-native/lib/badge';
 import { Ionicons, FontAwesome, MaterialIcons, Feather } from '@expo/vector-icons';
 import Foundation from '@expo/vector-icons/Foundation';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import { DrawerToggleButton } from '@react-navigation/drawer';
 import { Tabs, router } from 'expo-router';
-import { Text, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import SelectStatus from '~/app/components/SelectStatus';
 
 import Logo from '~/assets/svg/Logo';
 
 export default function Layout() {
+  const [status, setStatus] = useState<'' | 'PENDING' | 'FINISH' | 'EXPIRED'>('');
+
   return (
     <>
       <Tabs>
@@ -102,6 +107,67 @@ export default function Layout() {
                 <Foundation name="megaphone" size={size} color="#00264B" />
               ) : (
                 <Foundation name="megaphone" size={size} color={color} />
+              ),
+          }}
+        />
+        <Tabs.Screen
+          name="reports/index"
+          options={{
+            headerStyle: {
+              backgroundColor: '#00264B',
+              height: 120,
+            },
+            title: 'Relatórios',
+            headerTintColor: '#fff',
+            headerShadowVisible: false,
+            headerTitleAlign: 'center',
+            header: () => (
+              <View style={{ backgroundColor: '#00264B', height: 150, paddingTop: 50 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <DrawerToggleButton tintColor="#fff" />
+                  <Text
+                    style={{
+                      color: '#fff',
+                      fontFamily: ' Lato_700Bold',
+                      fontSize: 22,
+                    }}>
+                    Relatórios
+                  </Text>
+                  <DrawerToggleButton tintColor="#fff" />
+                </View>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  decelerationRate="normal"
+                  contentContainerStyle={{
+                    marginHorizontal: 15,
+                    marginTop: 20,
+                    flexDirection: 'row',
+                    paddingRight: 20,
+                  }}>
+                  <SelectStatus item="" setStatus={setStatus} status={status} />
+                  <SelectStatus item="PENDING" setStatus={setStatus} status={status} />
+                  <SelectStatus item="EXPIRED" setStatus={setStatus} status={status} />
+                  <SelectStatus item="FINISH" setStatus={setStatus} status={status} />
+                </ScrollView>
+              </View>
+            ),
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => router.back()}>
+                <MaterialIcons
+                  name="arrow-back-ios-new"
+                  color="#fff"
+                  size={22}
+                  style={{ marginLeft: 20 }}
+                />
+              </TouchableOpacity>
+            ),
+            tabBarActiveTintColor: '#00264B',
+            tabBarIcon: ({ focused, color, size }) =>
+              focused ? (
+                <SimpleLineIcons name="docs" size={size} color="#00264B" />
+              ) : (
+                <SimpleLineIcons name="docs" size={size} color={color} />
               ),
           }}
         />

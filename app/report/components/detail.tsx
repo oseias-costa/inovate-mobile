@@ -8,16 +8,16 @@ import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } fro
 import Loading from '../../components/Loading';
 import { formatDate } from '../../lib/date';
 
-export default function ReportDetail({ uuid }: { uuid: string }) {
+export default function NoticeDetail({ uuid }: { uuid: string }) {
   //const expiration = formatDate(new Date(document?.expiration));
 
   const { data, isFetching } = useQuery({
-    queryKey: [`reports-${uuid}`],
+    queryKey: [`notice-${uuid}`],
     queryFn: async () => {
       const token = await AsyncStorage.getItem('token');
       const companys = await axios({
         method: 'GET',
-        baseURL: `${process.env.EXPO_PUBLIC_API_URL}/reports/${uuid}`,
+        baseURL: `${process.env.EXPO_PUBLIC_API_URL}/notice/${uuid}`,
         headers: { Authorization: `Bearer ${token}` },
       });
 
