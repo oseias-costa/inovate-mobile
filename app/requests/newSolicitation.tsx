@@ -37,19 +37,19 @@ export default function NewSolicitation() {
     Modal.alert('Solicitação', err, [
       // { text: 'Cancel', onPress: () => console.log('cancel'), style: 'cancel' },
       { text: 'OK', onPress: () => console.log('ok') },
-    ])
-  }
-  
-  useEffect(() => { 
-    if(errorRequest?.response?.data?.message[0]){
-      const error = newSolicitationError(errorRequest?.response?.data?.message)
-      console.log(error)
-      setError(error)
+    ]);
+  };
+
+  useEffect(() => {
+    if (errorRequest?.response?.data?.message[0]) {
+      const error = newSolicitationError(errorRequest?.response?.data?.message);
+      console.log(error);
+      setError(error);
     }
-    if(errorRequest?.response?.data?.message[0]){
-      errModal(error.message)
+    if (errorRequest?.response?.data?.message[0]) {
+      errModal(error.message);
     }
-  },[errorRequest])
+  }, [errorRequest]);
 
   return (
     <SafeAreaView style={style.container}>
@@ -67,7 +67,7 @@ export default function NewSolicitation() {
         setState={setData}
         error={error}
         setError={setError}
-        />
+      />
       <CustomTextInput
         item="description"
         placeholder="Descrição do documento"
@@ -75,12 +75,9 @@ export default function NewSolicitation() {
         setState={setData}
         error={error}
         setError={setError}
-        />
-      <Select checkValue={companySelected.name} title="Selecione a empresa" placeholder='Empresa'>
-        <SelectCompany
-          companySelected={companySelected}
-          setCompanySelected={setCompanySelected}
-          />
+      />
+      <Select checkValue={companySelected.name} title="Selecione a empresa" placeholder="Empresa">
+        <SelectCompany companySelected={companySelected} setCompanySelected={setCompanySelected} />
       </Select>
       <SelectDate dateValue={expiration} setDate={setExpiration} placeholder="Selecione um prazo" />
       <ButtonAnt style={style.button} type="primary" onPress={() => mutate()}>

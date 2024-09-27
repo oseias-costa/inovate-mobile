@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlashList } from '@shopify/flash-list';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { RefreshControl, ScrollView, StatusBar, View, StyleSheet } from 'react-native';
@@ -15,6 +16,7 @@ import ToastTest from '~/app/lib/ToastTest';
 import Detail from '~/app/requests/components/detail';
 import { Request } from '~/app/requests/request';
 import { RequestData, RequestType } from '~/app/types/request.type';
+import { Button } from '~/components/Button';
 
 export default function Requests() {
   const [status, setStatus] = useState<'' | 'PENDING' | 'FINISH' | 'EXPIRED'>('');

@@ -12,6 +12,7 @@ import { AppState } from 'react-native';
 import type { AppStateStatus } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { FilterProvider } from './components/FilterProvider';
 import { UserProvider } from './components/UserProvider';
 
 export default function Layout() {
@@ -43,14 +44,16 @@ export default function Layout() {
   return (
     <QueryClientProvider client={client}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <UserProvider>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-            }}>
-            {/* <Stack.Screen name='(drawer)' /> */}
-          </Stack>
-        </UserProvider>
+        <FilterProvider>
+          <UserProvider>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+              }}>
+              {/* <Stack.Screen name='(drawer)' /> */}
+            </Stack>
+          </UserProvider>
+        </FilterProvider>
       </GestureHandlerRootView>
     </QueryClientProvider>
   );

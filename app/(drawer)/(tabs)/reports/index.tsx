@@ -1,34 +1,22 @@
 import Modal from '@ant-design/react-native/lib/modal';
 import Provider from '@ant-design/react-native/lib/provider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { DrawerToggleButton } from '@react-navigation/drawer';
 import { FlashList } from '@shopify/flash-list';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { Tabs } from 'expo-router';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import {
-  RefreshControl,
-  ScrollView,
-  StatusBar,
-  View,
-  StyleSheet,
-  Text,
-  SafeAreaView,
-} from 'react-native';
+import { RefreshControl, StatusBar, View, StyleSheet } from 'react-native';
 
-import NoticeItemDashboard from '~/app/components/NoticeItemDashboard';
-import SelectStatus from '~/app/components/SelectStatus';
+import { useFilter } from '~/app/components/FilterProvider';
 import { useUser } from '~/app/components/UserProvider';
 import ToastTest from '~/app/lib/ToastTest';
 import ReportDetail from '~/app/notice/components/detail';
-import NoticeDetail from '~/app/notice/components/detail';
 import ReportItem from '~/app/report/components/ReportItem';
 import { RequestData } from '~/app/types/request.type';
 
 export default function Reports() {
-  const [status, setStatus] = useState<'' | 'PENDING' | 'FINISH' | 'EXPIRED'>('');
+  const { reportFilter } = useFilter();
   const { user } = useUser();
   const [pagination, setPagination] = useState({ page: '1', limit: '20' });
   const queryClient = useQueryClient();

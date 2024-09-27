@@ -1,29 +1,20 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import Loading from '../../components/Loading';
-import { formatDate } from '../../lib/date';
+import { useUpload } from '~/app/hook/useUpload';
+import { formatDate } from '~/app/lib/date';
+import { httpClient } from '~/app/lib/http.client';
 
 export default function Detail({ uuid }: { uuid: string }) {
-  //const expiration = formatDate(new Date(document?.expiration));
+  const { pickDocument, error, loading } = useUpload(uuid);
 
-  const { data, isFetching } = useQuery({
+  const { data } = useQuery({
     queryKey: [`request-${uuid}`],
-    queryFn: async () => {
-      const token = await AsyncStorage.getItem('token');
-      const companys = await axios({
-        method: 'GET',
-        baseURL: `${process.env.EXPO_PUBLIC_API_URL}/requests/${uuid}`,
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      return companys.data;
-    },
+    queryFn: async () => httpClient(`/requests/${uuid}`, 'GET'),
   });
+  console.log(data);
   return (
     <View style={{ paddingBottom: 25, paddingTop: 20, marginHorizontal: 20 }}>
       <Text style={styles.title}>{data?.documentName}</Text>
@@ -32,15 +23,17 @@ export default function Detail({ uuid }: { uuid: string }) {
         <Text style={styles.expiration}>Prazo {formatDate(new Date(data?.expiration))}</Text>
       </View>
       <Text style={styles.description}>{data?.description}</Text>
-      <View style={styles.uploadContainer}>
+      <TouchableOpacity style={styles.uploadContainer} onPress={pickDocument}>
         <Ionicons name="cloud-upload-outline" size={24} color="#6D6D6D" />
         <Text style={styles.uploadTitle}>Enviar arquivo</Text>
         <Text style={styles.uploadDescription}>Selecione um arquivo de no máximo 20mb.</Text>
-      </View>
-      <View style={styles.attachContainer}>
-        <Ionicons name="attach" size={24} color="#005AB1" />
-        <Text style={styles.attachTitle}>{data?.documentName}.pdf</Text>
-      </View>
+      </TouchableOpacity>
+      {data?.documents?.map((document: any) => (
+        <View style={styles.attachContainer}>
+          <Ionicons name="attach" size={24} color="#005AB1" />
+          <Text style={styles.attachTitle}>{document.name}</Text>
+        </View>
+      ))}
     </View>
   );
 }

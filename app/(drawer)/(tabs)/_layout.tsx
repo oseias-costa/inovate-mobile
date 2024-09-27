@@ -7,12 +7,13 @@ import { DrawerToggleButton } from '@react-navigation/drawer';
 import { Tabs, router } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import SelectStatus from '~/app/components/SelectStatus';
 
+import { useFilter } from '~/app/components/FilterProvider';
+import SelectStatus from '~/app/components/SelectStatus';
 import Logo from '~/assets/svg/Logo';
 
 export default function Layout() {
-  const [status, setStatus] = useState<'' | 'PENDING' | 'FINISH' | 'EXPIRED'>('');
+  const { reportFilter, setReportFilter } = useFilter();
 
   return (
     <>
@@ -75,9 +76,9 @@ export default function Layout() {
             tabBarActiveTintColor: '#00264B',
             tabBarIcon: ({ focused, color, size }) => {
               if (focused) {
-                return <Ionicons name="document-text" color="#00264B" size={size} />;
+                return <MaterialCommunityIcons name="folder-plus" size={size} color="#00264B" />;
               }
-              return <Ionicons name="document-text" color={color} size={size} />;
+              return <MaterialCommunityIcons name="folder-plus" size={size} color={color} />;
             },
           }}
         />
@@ -145,10 +146,10 @@ export default function Layout() {
                     flexDirection: 'row',
                     paddingRight: 20,
                   }}>
-                  <SelectStatus item="" setStatus={setStatus} status={status} />
-                  <SelectStatus item="PENDING" setStatus={setStatus} status={status} />
-                  <SelectStatus item="EXPIRED" setStatus={setStatus} status={status} />
-                  <SelectStatus item="FINISH" setStatus={setStatus} status={status} />
+                  <SelectStatus item="" setStatus={setReportFilter} status={reportFilter} />
+                  <SelectStatus item="PENDING" setStatus={setReportFilter} status={reportFilter} />
+                  <SelectStatus item="EXPIRED" setStatus={setReportFilter} status={reportFilter} />
+                  <SelectStatus item="FINISH" setStatus={setReportFilter} status={reportFilter} />
                 </ScrollView>
               </View>
             ),
@@ -165,9 +166,9 @@ export default function Layout() {
             tabBarActiveTintColor: '#00264B',
             tabBarIcon: ({ focused, color, size }) =>
               focused ? (
-                <SimpleLineIcons name="docs" size={size} color="#00264B" />
+                <Ionicons name="documents" size={size} color="#00264B" />
               ) : (
-                <SimpleLineIcons name="docs" size={size} color={color} />
+                <Ionicons name="documents" size={size} color={color} />
               ),
           }}
         />

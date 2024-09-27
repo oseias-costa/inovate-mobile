@@ -2,9 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import React from 'react';
+import React, { useEffect } from 'react';
 
+import useError from './useError';
 import { useUser } from '../components/UserProvider';
+import { httpClient } from '../lib/http.client';
 
 export default function useDashboard() {
   const { user } = useUser();
@@ -13,18 +15,11 @@ export default function useDashboard() {
     data: requests,
     isFetching: isFetchingRequests,
     refetch: refetchRequest,
+    error,
   } = useQuery({
     queryKey: ['requests-pending'],
-    queryFn: async () => {
-      const token = await AsyncStorage.getItem('token');
-      const companys = await axios({
-        method: 'GET',
-        baseURL: `${process.env.EXPO_PUBLIC_API_URL}/requests?companyUuid=${user?.uuid}&status=PENDING&limit=3`,
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      return companys.data;
-    },
+    queryFn: async () =>
+      await httpClient(`/requests?companyUuid=${user?.uuid}&status=PENDING&limit=3`, 'GET'),
   });
 
   const {
@@ -70,6 +65,12 @@ export default function useDashboard() {
       refetchRequest();
     }, [])
   );
+
+  useEffect(() => {
+    refetchReport();
+    refetchNotice();
+    refetchRequest();
+  }, [user]);
 
   return {
     data: { requests, notice, reports },
