@@ -2,7 +2,6 @@ import NetInfo from '@react-native-community/netinfo';
 import {
   onlineManager,
   focusManager,
-  QueryCache,
   QueryClientProvider,
   QueryClient,
 } from '@tanstack/react-query';
@@ -14,6 +13,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { FilterProvider } from './components/FilterProvider';
 import { UserProvider } from './components/UserProvider';
+import { ToastProvider } from './components/ToastProvider';
 
 export default function Layout() {
   const client = new QueryClient({
@@ -46,12 +46,14 @@ export default function Layout() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <FilterProvider>
           <UserProvider>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-              }}>
-              {/* <Stack.Screen name='(drawer)' /> */}
-            </Stack>
+            <ToastProvider>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                }}>
+                {/* <Stack.Screen name='(drawer)' /> */}
+              </Stack>
+            </ToastProvider>
           </UserProvider>
         </FilterProvider>
       </GestureHandlerRootView>

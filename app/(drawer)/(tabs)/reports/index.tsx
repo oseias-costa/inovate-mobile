@@ -5,12 +5,11 @@ import { FlashList } from '@shopify/flash-list';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RefreshControl, StatusBar, View, StyleSheet } from 'react-native';
 
 import { useFilter } from '~/app/components/FilterProvider';
 import { useUser } from '~/app/components/UserProvider';
-import ToastTest from '~/app/lib/ToastTest';
 import ReportDetail from '~/app/notice/components/detail';
 import ReportItem from '~/app/report/components/ReportItem';
 import { RequestData } from '~/app/types/request.type';
@@ -48,21 +47,9 @@ export default function Reports() {
     },
   });
 
-  useEffect(() => {
-    refetch();
-  }, [status]);
-
-  const ToastRef = useRef(null);
-  const showToast = () => {
-    if (ToastRef.current) {
-      ToastRef?.current?.toast();
-    }
-  };
-
   return (
     <>
       <View style={{ backgroundColor: '#fff', position: 'relative', flex: 1 }}>
-        <ToastTest ref={ToastRef} message="Solicitação aberta!" />
         <StatusBar barStyle="light-content" hidden={false} />
         <View style={{ width: '100%', height: 400, paddingTop: 10 }}>
           <FlashList

@@ -14,7 +14,7 @@ export default function Detail({ uuid }: { uuid: string }) {
     queryKey: [`request-${uuid}`],
     queryFn: async () => httpClient(`/requests/${uuid}`, 'GET'),
   });
-  console.log(data);
+
   return (
     <View style={{ paddingBottom: 25, paddingTop: 20, marginHorizontal: 20 }}>
       <Text style={styles.title}>{data?.documentName}</Text>

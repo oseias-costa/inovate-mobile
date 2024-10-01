@@ -5,7 +5,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const ToastTest = (props, ref) => {
+const ToastTest = (props: any, ref: React.Ref<any>) => {
   const [showToast, setShowToast] = useState(false);
   const translateYAnim = useRef(new Animated.Value(-100)).current; // Inicia fora da tela (acima do topo)
   const [viewWidth, setViewWidth] = useState(0);
@@ -62,6 +62,7 @@ const ToastTest = (props, ref) => {
 
 const styles = StyleSheet.create({
   toastContainer: {
+    top: 100,
     backgroundColor: '#fff',
     borderRadius: 6,
     padding: 10,

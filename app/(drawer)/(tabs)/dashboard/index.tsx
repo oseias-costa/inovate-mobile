@@ -16,10 +16,12 @@ import {
 
 import NoticeItemDashboard from '~/app/components/NoticeItemDashboard';
 import RequestItemDashboard from '~/app/components/RequestItemDashboard';
+import { useToast } from '~/app/components/ToastProvider';
 import { useUser } from '~/app/components/UserProvider';
 import useDashboard from '~/app/hook/useDashboard';
 import useFontLato from '~/app/hook/useFontLato';
 import ReportItem from '~/app/report/components/ReportItem';
+import { Button } from '~/components/Button';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -34,6 +36,7 @@ export default function Dashboard() {
   const [expoPushToken, setExpoPushToken] = useState('');
   const { data } = useDashboard();
   const { user } = useUser();
+  const { showToast } = useToast();
 
   console.log(data);
   useEffect(() => {
@@ -69,6 +72,7 @@ export default function Dashboard() {
           </View>
         </View>
         <ScrollView showsHorizontalScrollIndicator={false} decelerationRate="normal">
+          {/* <Button onPress={showToast}>Test</Button> */}
           <View style={styles.titleBox}>
             <Text style={[styles.title, { marginTop: 60 }]}>Solicitações</Text>
             <TouchableOpacity onPress={() => router.navigate('/requests')}>

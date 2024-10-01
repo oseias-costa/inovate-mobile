@@ -22,8 +22,7 @@ export default function ReportItem({ title, createdAt, uuid, onPress }: ReportIt
           {title}
         </Text>
         <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-          <MaterialIcons name="access-alarm" size={14} color="#AEA4A4" />
-          <Text style={styles.description}>Prazo {formatDate(new Date(createdAt))}</Text>
+          <Text style={styles.description}>Data {formatDate(new Date(createdAt))}</Text>
         </View>
       </View>
     </TouchableOpacity>
