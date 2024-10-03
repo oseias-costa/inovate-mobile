@@ -1,14 +1,21 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { useLoading } from '~/app/components/LoadingProvider';
 import { useUpload } from '~/app/hook/useUpload';
 import { formatDate } from '~/app/lib/date';
 import { httpClient } from '~/app/lib/http.client';
 
 export default function Detail({ uuid }: { uuid: string }) {
   const { pickDocument, error, loading } = useUpload(uuid);
+  const { setLoading } = useLoading();
+
+  useEffect(() => {
+    setLoading(loading);
+  }, [loading]);
 
   const { data } = useQuery({
     queryKey: [`request-${uuid}`],

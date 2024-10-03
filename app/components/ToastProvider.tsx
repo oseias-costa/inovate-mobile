@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { ReactNode, createContext, useContext, useRef, useState } from 'react';
 
 import ToastTest from '../lib/ToastTest';
@@ -6,7 +7,7 @@ interface ToastContextType {
   showToast: (message: string, type: Severity) => void;
 }
 
-enum Severity {
+export enum Severity {
   ERROR = 'ERROR',
   WARNING = 'WARNING',
   SUCCESS = 'SUCCESS',
@@ -31,6 +32,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const ToastRef = useRef<{ toast: () => void } | null>(null);
 
   const showToast = (message: string, type: Severity) => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setData({ message, severity: type });
     if (ToastRef.current) {
       ToastRef?.current?.toast();

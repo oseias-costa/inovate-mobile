@@ -7,9 +7,9 @@ import { DocumentPickerResult } from '../types/document-picker-result.type';
 
 export function useUpload(uuid: string) {
   const [files, setFiles] = useState<DocumentPickerResult | any>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const queryClient = useQueryClient();
+  const [loading, setLoading] = useState(false);
 
   const pickDocument = async () => {
     const result = await DocumentPicker.getDocumentAsync({
@@ -20,13 +20,13 @@ export function useUpload(uuid: string) {
       setFiles(result);
     } else {
       setTimeout(() => {
-        setLoading(true);
         setFiles(JSON.stringify(result));
       }, 100);
     }
   };
 
   function upload() {
+    setLoading(true);
     const name = JSON.parse(files).assets[0].name;
     FileSystem.uploadAsync(
       `${process.env.EXPO_PUBLIC_API_URL}/document/upload/${uuid}/${name}`,

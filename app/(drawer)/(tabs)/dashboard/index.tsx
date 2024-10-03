@@ -13,10 +13,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useLoading } from '~/app/components/LoadingProvider';
 
 import NoticeItemDashboard from '~/app/components/NoticeItemDashboard';
 import RequestItemDashboard from '~/app/components/RequestItemDashboard';
-import { useToast } from '~/app/components/ToastProvider';
+import { Severity, useToast } from '~/app/components/ToastProvider';
 import { useUser } from '~/app/components/UserProvider';
 import useDashboard from '~/app/hook/useDashboard';
 import useFontLato from '~/app/hook/useFontLato';
@@ -37,6 +38,7 @@ export default function Dashboard() {
   const { data } = useDashboard();
   const { user } = useUser();
   const { showToast } = useToast();
+  const { setLoading } = useLoading();
 
   console.log(data);
   useEffect(() => {
@@ -72,7 +74,13 @@ export default function Dashboard() {
           </View>
         </View>
         <ScrollView showsHorizontalScrollIndicator={false} decelerationRate="normal">
-          {/* <Button onPress={showToast}>Test</Button> */}
+          <Button
+            onPress={() => {
+              showToast('Teste', Severity.SUCCESS);
+              setLoading(true);
+            }}>
+            Test
+          </Button>
           <View style={styles.titleBox}>
             <Text style={[styles.title, { marginTop: 60 }]}>Solicitações</Text>
             <TouchableOpacity onPress={() => router.navigate('/requests')}>
