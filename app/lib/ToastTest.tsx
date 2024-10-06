@@ -50,9 +50,7 @@ const ToastTest = (props: any, ref: React.Ref<any>) => {
           style={{ width: 8, height: viewWidth, backgroundColor: '#3B3D3E', position: 'absolute' }}
         />
         <Text style={styles.toastText}>{props.message}</Text>
-        <Text style={styles.description}>
-          A solicitação foi aberta com sucesso, você pode acompanhar na aba documentos.
-        </Text>
+        <Text style={styles.description}>{props.message}</Text>
       </Animated.View>
     );
   } else {

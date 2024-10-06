@@ -19,7 +19,16 @@ export default function useDashboard() {
   } = useQuery({
     queryKey: ['requests-pending'],
     queryFn: async () =>
-      await httpClient(`/requests?companyUuid=${user?.uuid}&status=PENDING&limit=3`, 'GET'),
+      await httpClient({
+        method: 'GET',
+        path: '/requests',
+        queryString: {
+          companyUuid: user?.uuid,
+          status: 'PENDING',
+          limit: 3,
+          page: 1,
+        },
+      }),
   });
 
   const {

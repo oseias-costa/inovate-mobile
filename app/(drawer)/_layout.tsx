@@ -1,17 +1,11 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-import { router, useNavigation, usePathname } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
-import { useEffect } from 'react';
-import { Image, Text, TouchableOpacity } from 'react-native';
+import { Image } from 'react-native';
 
 const CustomDrawerContent = (props: any) => {
   const pathname = usePathname();
-  const navigation = useNavigation();
-
-  useEffect(() => {
-    console.log(pathname);
-  }, []);
 
   return (
     <DrawerContentScrollView {...props}>

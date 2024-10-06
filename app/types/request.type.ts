@@ -5,6 +5,7 @@ export type RequestType = {
   documentName: string;
   expiration: string;
   uuid: string;
+  status: 'Pendente' | 'Vencido' | 'Concluído';
 };
 
 export type RequestData = {

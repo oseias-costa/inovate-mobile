@@ -9,6 +9,7 @@ import Loading from '../components/Loading';
 import { formatDate } from '../lib/date';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import Detail from './components/detail';
 
 export default function Details() {
   const { id } = useLocalSearchParams();
@@ -49,23 +50,7 @@ export default function Details() {
         }}
       />
       <SafeAreaView style={{ backgroundColor: '#fff', flex: 1 }}>
-        <View style={{ paddingBottom: 25, paddingTop: 20, marginHorizontal: 20 }}>
-          <Text style={styles.title}>{data?.documentName}</Text>
-          <View style={styles.expirationContainer}>
-            <MaterialIcons name="access-alarm" size={14} color="#AEA4A4" />
-            <Text style={styles.expiration}>Prazo {formatDate(new Date(data?.expiration))}</Text>
-          </View>
-          <Text style={styles.description}>{data?.description}</Text>
-          <View style={styles.uploadContainer}>
-            <Ionicons name="cloud-upload-outline" size={24} color="#6D6D6D" />
-            <Text style={styles.uploadTitle}>Enviar arquivo</Text>
-            <Text style={styles.uploadDescription}>Selecione um arquivo de no máximo 20mb.</Text>
-          </View>
-          <View style={styles.attachContainer}>
-            <Ionicons name="attach" size={24} color="#005AB1" />
-            <Text style={styles.attachTitle}>{data?.documentName}.pdf</Text>
-          </View>
-        </View>
+        <Detail uuid={data?.uuid} />
         <ButtonAnt type="ghost" style={styles.button} onPress={() => router.navigate('/requests')}>
           voltar
         </ButtonAnt>

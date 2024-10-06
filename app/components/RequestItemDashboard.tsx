@@ -1,14 +1,16 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { router } from 'expo-router';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { formatDate } from '../lib/date';
-import { router } from 'expo-router';
+import { RequestStatus } from '../requests/components/RequestStatus';
 
 type RequestItemDashboardProps = {
   title: string;
   expiration: string;
   uuid: string;
   onPress: () => void;
+  status: string;
 };
 
 export default function RequestItemDashboard({
@@ -16,10 +18,12 @@ export default function RequestItemDashboard({
   expiration,
   uuid,
   onPress,
+  status,
 }: RequestItemDashboardProps) {
   return (
     <TouchableOpacity style={styles.constainer} onPress={onPress}>
       <View>
+        <RequestStatus size="small" status={status} />
         <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
           {title}
         </Text>

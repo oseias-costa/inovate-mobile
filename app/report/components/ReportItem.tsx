@@ -13,7 +13,7 @@ type ReportItemProps = {
 
 export default function ReportItem({ title, createdAt, uuid, onPress }: ReportItemProps) {
   return (
-    <TouchableOpacity style={styles.constainer} onPress={onPress}>
+    <TouchableOpacity style={styles.constainer} onPress={onPress} key={uuid}>
       <View style={styles.iconContainer}>
         <SimpleLineIcons name="docs" size={20} color="#75BCEE" />
       </View>

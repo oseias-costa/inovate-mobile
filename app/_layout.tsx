@@ -12,16 +12,16 @@ import type { AppStateStatus } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { FilterProvider } from './components/FilterProvider';
-import { UserProvider } from './components/UserProvider';
-import { ToastProvider } from './components/ToastProvider';
 import { LoadingProvider } from './components/LoadingProvider';
+import { ToastProvider } from './components/ToastProvider';
+import { UserProvider } from './components/UserProvider';
 
 export default function Layout() {
   const client = new QueryClient({
     defaultOptions: {
       queries: {
         retry: true,
-        staleTime: 10000,
+        staleTime: 0,
       },
     },
   });
@@ -52,9 +52,8 @@ export default function Layout() {
                 <Stack
                   screenOptions={{
                     headerShown: false,
-                  }}>
-                  {/* <Stack.Screen name='(drawer)' /> */}
-                </Stack>
+                  }}
+                />
               </ToastProvider>
             </LoadingProvider>
           </UserProvider>

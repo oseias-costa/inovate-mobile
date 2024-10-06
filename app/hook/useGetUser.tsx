@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
-import { router } from 'expo-router';
+import { SplashScreen, router } from 'expo-router';
 import { useEffect } from 'react';
 
 type User = {
@@ -16,6 +16,8 @@ type User = {
   type: string;
   updateAt: string;
 };
+
+// SplashScreen.preventAutoHideAsync();
 
 export default function useGetUser() {
   const getUser = async () => {

@@ -4,7 +4,6 @@ import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-  Image,
   Platform,
   ScrollView,
   StatusBar,
@@ -13,8 +12,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useLoading } from '~/app/components/LoadingProvider';
 
+import { useLoading } from '~/app/components/LoadingProvider';
 import NoticeItemDashboard from '~/app/components/NoticeItemDashboard';
 import RequestItemDashboard from '~/app/components/RequestItemDashboard';
 import { Severity, useToast } from '~/app/components/ToastProvider';
@@ -22,7 +21,6 @@ import { useUser } from '~/app/components/UserProvider';
 import useDashboard from '~/app/hook/useDashboard';
 import useFontLato from '~/app/hook/useFontLato';
 import ReportItem from '~/app/report/components/ReportItem';
-import { Button } from '~/components/Button';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -74,13 +72,6 @@ export default function Dashboard() {
           </View>
         </View>
         <ScrollView showsHorizontalScrollIndicator={false} decelerationRate="normal">
-          <Button
-            onPress={() => {
-              showToast('Teste', Severity.SUCCESS);
-              setLoading(true);
-            }}>
-            Test
-          </Button>
           <View style={styles.titleBox}>
             <Text style={[styles.title, { marginTop: 60 }]}>Solicitações</Text>
             <TouchableOpacity onPress={() => router.navigate('/requests')}>
@@ -93,6 +84,7 @@ export default function Dashboard() {
               title={request.documentName}
               expiration={request.expiration}
               key={request.uuid}
+              status={request?.status}
               onPress={() =>
                 router.navigate({ pathname: '/requests', params: { openItemUuid: request.uuid } })
               }

@@ -1,29 +1,30 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { useLoading } from '~/app/components/LoadingProvider';
+import { RequestStatus } from './RequestStatus';
+
 import { useUpload } from '~/app/hook/useUpload';
 import { formatDate } from '~/app/lib/date';
 import { httpClient } from '~/app/lib/http.client';
 
 export default function Detail({ uuid }: { uuid: string }) {
-  const { pickDocument, error, loading } = useUpload(uuid);
-  const { setLoading } = useLoading();
-
-  useEffect(() => {
-    setLoading(loading);
-  }, [loading]);
+  const { pickDocument, error } = useUpload(uuid, 'REQUEST');
 
   const { data } = useQuery({
     queryKey: [`request-${uuid}`],
-    queryFn: async () => httpClient(`/requests/${uuid}`, 'GET'),
+    queryFn: async () =>
+      httpClient({
+        path: `/requests/${uuid}`,
+        method: 'GET',
+      }),
   });
 
   return (
     <View style={{ paddingBottom: 25, paddingTop: 20, marginHorizontal: 20 }}>
+      <RequestStatus size="small" status={data?.status} />
       <Text style={styles.title}>{data?.documentName}</Text>
       <View style={styles.expirationContainer}>
         <MaterialIcons name="access-alarm" size={14} color="#AEA4A4" />

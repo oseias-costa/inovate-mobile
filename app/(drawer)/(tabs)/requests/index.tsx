@@ -1,27 +1,22 @@
 import Modal from '@ant-design/react-native/lib/modal';
 import Provider from '@ant-design/react-native/lib/provider';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlashList } from '@shopify/flash-list';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StatusBar, View, StyleSheet } from 'react-native';
 
 import RequestItemDashboard from '~/app/components/RequestItemDashboard';
 import SelectStatus from '~/app/components/SelectStatus';
 import { useUser } from '~/app/components/UserProvider';
-import ToastTest from '~/app/lib/ToastTest';
+import { httpClient } from '~/app/lib/http.client';
 import Detail from '~/app/requests/components/detail';
-import { Request } from '~/app/requests/request';
 import { RequestData, RequestType } from '~/app/types/request.type';
-import { Button } from '~/components/Button';
 
 export default function Requests() {
   const [status, setStatus] = useState<'' | 'PENDING' | 'FINISH' | 'EXPIRED'>('');
   const { user } = useUser();
-  const [pagination, setPagination] = useState({ page: '1', limit: '20' });
+  const [pagination, setPagination] = useState({ page: 1, limit: 10 });
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
   const [openModal, setOpenModal] = useState(false);
@@ -38,34 +33,26 @@ export default function Requests() {
 
   const { data, isLoading, refetch } = useQuery<RequestData>({
     queryKey: [`requests`],
-    queryFn: async () => {
-      const token = await AsyncStorage.getItem('token');
-      console.log(token);
-      const documents = await axios({
+    queryFn: () =>
+      httpClient({
+        path: `/requests`,
         method: 'GET',
-        baseURL: `${process.env.EXPO_PUBLIC_API_URL}/requests?page=${pagination.page}&limit=${pagination.limit}&companyUuid=${user.uuid}&status=${status}`,
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      return documents.data;
-    },
+        queryString: {
+          page: pagination.page,
+          limit: pagination.limit,
+          companyUuid: user.uuid,
+          status,
+        },
+      }),
   });
 
   useEffect(() => {
     refetch();
   }, [status]);
 
-  const ToastRef = useRef(null);
-  const showToast = () => {
-    if (ToastRef.current) {
-      ToastRef?.current?.toast();
-    }
-  };
-
   return (
     <>
       <View style={{ backgroundColor: '#fff', position: 'relative', flex: 1 }}>
-        <ToastTest ref={ToastRef} message="Solicitação aberta!" />
         <StatusBar barStyle="light-content" hidden={false} />
         <View style={styles.destakContainer}>
           <ScrollView
@@ -84,27 +71,29 @@ export default function Requests() {
             <SelectStatus item="FINISH" setStatus={setStatus} status={status} />
           </ScrollView>
         </View>
-        <View style={{ width: '100%', height: 400 }}>
+        <View style={{ width: '100%', height: '100%' }}>
           <FlashList
             renderItem={({ item }: { item: RequestType }) => (
               <RequestItemDashboard
-                uuid={item.uuid}
-                title={item.documentName}
-                expiration={item.expiration}
-                key={item.uuid}
-                onPress={() => {
-                  setItemUuid(item.uuid);
-                  setOpenModal(true);
-                }}
+                uuid={item?.uuid}
+                title={item?.documentName}
+                expiration={item?.expiration}
+                key={item?.uuid}
+                status={item?.status}
+                onPress={
+                  () => router.navigate(`/requests/details?id=${item?.uuid}`)
+                  // setItemUuid(item?.uuid);
+                  // setOpenModal(true);
+                }
               />
             )}
-            estimatedItemSize={5}
+            estimatedItemSize={pagination.limit}
             keyExtractor={(item) => item.uuid}
             data={data?.items}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
-                onRefresh={() => queryClient.invalidateQueries({ queryKey: ['documents'] })}
+                onRefresh={() => queryClient.invalidateQueries({ queryKey: ['requests'] })}
                 colors={['#9Bd35A', '#689F38']}
                 progressBackgroundColor="#fff"
               />

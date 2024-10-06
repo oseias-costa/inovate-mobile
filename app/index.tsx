@@ -1,7 +1,8 @@
-import { Redirect } from 'expo-router';
-import useGetUser from './hook/useGetUser';
-import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Redirect, SplashScreen } from 'expo-router';
+import { useEffect, useState } from 'react';
+
+import useGetUser from './hook/useGetUser';
 
 export default function Home() {
   const [token, setToken] = useState('');
@@ -22,9 +23,5 @@ export default function Home() {
     return <Redirect href="/auth/login" />;
   }
 
-  return (
-    <>
-      <Redirect href="/(drawer)/(tabs)/dashboard" />
-    </>
-  );
+  return <Redirect href="/(drawer)/(tabs)/dashboard" />;
 }
