@@ -1,19 +1,20 @@
 import RadioItem from '@ant-design/react-native/lib/radio/RadioItem';
-import { Text, View } from 'react-native';
-import useGetCompanys from '../hook/useGetCompanys';
 import { Dispatch, SetStateAction } from 'react';
+import { Text, View } from 'react-native';
+
+import useGetCompanys from '../hook/useGetCompanys';
 
 type SelectCompanyProps = {
   companySelected: {
     name: string;
-    id: string;
+    uuid: string;
   };
-  setCompanySelected: Dispatch<SetStateAction<{ name: string; id: string }>>;
+  setCompanySelected: Dispatch<SetStateAction<{ name: string; uuid: string }>>;
 };
 
 export default function SelectCompany({ companySelected, setCompanySelected }: SelectCompanyProps) {
   const { data: companys } = useGetCompanys();
-  console.log('OOOOOOOOOOOOOO', companys);
+
   return (
     <View style={{ paddingTop: 10 }}>
       {companys &&
@@ -21,11 +22,11 @@ export default function SelectCompany({ companySelected, setCompanySelected }: S
           return (
             <RadioItem
               key={company.id}
-              checked={companySelected.id === company.id}
+              checked={companySelected.uuid === company.uuid}
               onChange={() => {
-                setCompanySelected({ id: company.id, name: company.name });
+                setCompanySelected({ uuid: company.uuid, name: company.name });
               }}
-              value={company.id}
+              value={company.uuid}
               children={
                 <View style={{ marginTop: 4 }}>
                   <Text

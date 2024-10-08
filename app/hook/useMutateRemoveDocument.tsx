@@ -1,19 +1,14 @@
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import { useMutation, useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { useMutation } from '@tanstack/react-query';
 
-export default function useMutateRemoveDocument(id: string){
-    return useMutation({
-        mutationKey: ['document-'+id],
-        mutationFn: async () => {
-            const token = await AsyncStorage.getItem('token')
-            const companys =  await axios({
-                method: 'DELETE',
-                baseURL: `${process.env.EXPO_PUBLIC_API_URL}/document/${id}`,
-                headers: { Authorization: `Bearer ${token}`}
-            })
-    
-            return companys.data
-        }
-    })
+import { httpClient } from '../lib/http.client';
+
+export default function useMutateRemoveDocument(id: string) {
+  return useMutation({
+    mutationKey: ['request-' + id],
+    mutationFn: async () =>
+      httpClient({
+        method: 'DELETE',
+        path: `/requests/${id}`,
+      }),
+  });
 }

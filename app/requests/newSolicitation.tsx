@@ -1,36 +1,50 @@
-import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import Subtitle from '../components/Subtitle';
+import ButtonAnt from '@ant-design/react-native/lib/button';
+import Modal from '@ant-design/react-native/lib/modal';
+import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+
+import CustomTextInput from '../components/CustomTextInput';
+import Loading from '../components/Loading';
 import Select from '../components/Select';
 import SelectCompany from '../components/SelectCompany';
 import { SelectDate } from '../components/SelectDate';
-import CustomTextInput from '../components/CustomTextInput';
-import { useIsMutating } from '@tanstack/react-query';
-import useNewSolicitation from '../hook/useNewSolicitation';
+import Subtitle from '../components/Subtitle';
 import useGetUser from '../hook/useGetUser';
-import ButtonAnt from '@ant-design/react-native/lib/button';
-import Loading from '../components/Loading';
 import { newSolicitationError } from '../lib/errors';
-import Modal from '@ant-design/react-native/lib/modal';
+import { httpClient } from '../lib/http.client';
 
 export default function NewSolicitation() {
   const [error, setError] = useState({ input: '', message: '' });
   const [data, setData] = useState({ document: '', description: '' });
-  const [companySelected, setCompanySelected] = useState({ id: '', name: '' });
+  const [companySelected, setCompanySelected] = useState({ uuid: '', name: '' });
   const [expiration, setExpiration] = useState<Date | undefined>(undefined);
   const { user } = useGetUser();
   const isMutation = useIsMutating({ mutationKey: ['documents'], exact: true });
-  const {
-    error: errorRequest,
-    data: response,
-    mutate,
-  } = useNewSolicitation({
-    companyId: companySelected.id,
-    document: data.document,
-    description: data.description,
-    expiration: String(expiration),
-    realmId: String(user?.reamlID),
-    requesterId: String(user?.id),
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationKey: ['create-request'],
+    mutationFn: async () =>
+      httpClient({
+        method: 'POST',
+        path: '/requests',
+        data: {
+          document: data.document,
+          description: data.description,
+          companyUuid: companySelected.uuid,
+          requesterUuid: user?.uuid,
+          expiration,
+        },
+      }),
+    onError: (err) => {
+      console.log('e)rror', err);
+    },
+    onSuccess: (data) => {
+      router.navigate('/(tabs)/requests');
+      return queryClient.invalidateQueries({ queryKey: ['requests'] });
+    },
   });
 
   const errModal = (err: string) => {
@@ -40,16 +54,16 @@ export default function NewSolicitation() {
     ]);
   };
 
-  useEffect(() => {
-    if (errorRequest?.response?.data?.message[0]) {
-      const error = newSolicitationError(errorRequest?.response?.data?.message);
-      console.log(error);
-      setError(error);
-    }
-    if (errorRequest?.response?.data?.message[0]) {
-      errModal(error.message);
-    }
-  }, [errorRequest]);
+  // useEffect(() => {
+  //   if (errorRequest?.response?.data?.message[0]) {
+  //     const error = newSolicitationError(errorRequest?.response?.data?.message);
+  //     console.log(error);
+  //     setError(error);
+  //   }
+  //   if (errorRequest?.response?.data?.message[0]) {
+  //     errModal(error.message);
+  //   }
+  // }, [errorRequest]);
 
   return (
     <SafeAreaView style={style.container}>
@@ -80,7 +94,7 @@ export default function NewSolicitation() {
         <SelectCompany companySelected={companySelected} setCompanySelected={setCompanySelected} />
       </Select>
       <SelectDate dateValue={expiration} setDate={setExpiration} placeholder="Selecione um prazo" />
-      <ButtonAnt style={style.button} type="primary" onPress={() => mutate()}>
+      <ButtonAnt style={style.button} type="primary" onPress={() => mutation.mutate()}>
         Abrir solicitação
       </ButtonAnt>
     </SafeAreaView>

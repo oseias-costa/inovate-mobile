@@ -1,70 +1,103 @@
-import { Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Subtitle from '../components/Subtitle';
+import ButtonAnt from '@ant-design/react-native/lib/button';
+import Modal from '@ant-design/react-native/lib/modal';
+import { useIsMutating, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import CustomTextInput from '../components/CustomTextInput';
+import Loading from '../components/Loading';
 import Select from '../components/Select';
 import SelectCompany from '../components/SelectCompany';
 import { SelectDate } from '../components/SelectDate';
-import CustomTextInput from '../components/CustomTextInput';
-import { useIsMutating, useQueryClient } from '@tanstack/react-query';
-import ButtonAnt from '@ant-design/react-native/lib/button';
-import Loading from '../components/Loading';
-import { Stack, router, useLocalSearchParams } from 'expo-router';
+import Subtitle from '../components/Subtitle';
 import useGetCompanys from '../hook/useGetCompanys';
-import useGetDocumentById from '../hook/useGetDocumentById';
-import useMutationUpdateDocument from '../hook/useMutationUpdateDocument';
 import useMutateRemoveDocument from '../hook/useMutateRemoveDocument';
-import Modal from '@ant-design/react-native/lib/modal';
+import useMutationUpdateDocument from '../hook/useMutationUpdateDocument';
+import { httpClient } from '../lib/http.client';
 
 export default function UpdateSolicitation() {
   const { id } = useLocalSearchParams();
-  const { data: document } = useGetDocumentById(String(id));
+
+  const { data: request } = useQuery({
+    queryKey: [`request-${id}`],
+    queryFn: async () =>
+      httpClient({
+        path: `/requests/${id}`,
+        method: 'GET',
+      }),
+  });
+
   const { data: companys } = useGetCompanys();
-  const company = companys?.find((item: any) => item.id === document?.companyId);
+  const company = companys?.find((item: any) => item.name === request.company);
   const [error, setError] = useState({ input: '', message: '' });
   const [data, setData] = useState({
-    document: document.document,
-    description: document.description,
+    document: request.documentName,
+    description: request.description,
   });
   const [companySelected, setCompanySelected] = useState({
-    id: document.companyId,
+    uuid: request.companyId,
     name: company?.name,
   });
-  const [expiration, setExpiration] = useState<Date | undefined>(document?.expiration);
+  const [expiration, setExpiration] = useState<Date | undefined>(request?.expiration);
+
   const isMutation = useIsMutating({ mutationKey: [id], exact: true });
-  const { mutate } = useMutationUpdateDocument({
-    id: String(id),
-    document: data.document,
-    description: data.description,
-    expiration: document.expiration,
-    setError,
-    error,
+
+  const mutation = useMutation({
+    mutationKey: [id],
+    mutationFn: async () =>
+      httpClient({
+        method: 'PATCH',
+        path: `/requests/${id}`,
+        data: {
+          document: data.document,
+          description: data.description,
+          companyUuid: companySelected.uuid,
+          expiration,
+        },
+      }),
+    onError: (err) => {
+      console.log('e)rror', err);
+    },
+    onSuccess: (data) => {
+      router.navigate('/(tabs)/requests');
+      return queryClient.invalidateQueries({ queryKey: ['requests'] });
+    },
   });
+
   const deleteDocument = useMutateRemoveDocument(String(id));
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const deleteModal = () => {
-    Modal.alert(<Text style={{color: 'red'}}>Deseja realmente excluir?</Text>, <Text style={style.descriptionModal}>Atenção, essa ação não poderá ser desfeita.</Text>, [
-      { text: 'Cancel', onPress: () => console.log('cancel'), style: 'cancel' },
-      { text: 'Excluir', onPress: () => deleteDocument.mutate() },
-    ]);
+    Modal.alert(
+      <Text style={{ color: 'red' }}>Deseja realmente excluir?</Text>,
+      <Text style={style.descriptionModal}>Atenção, essa ação não poderá ser desfeita.</Text>,
+      [
+        { text: 'Cancel', onPress: () => console.log('cancel'), style: 'cancel' },
+        { text: 'Excluir', onPress: () => deleteDocument.mutate() },
+      ]
+    );
   };
 
-  const deleteSucess = () => {    
-    router.navigate({pathname: '/docs', params: {
-      type: 'success',
-      text1: 'Solicitação excluída',
-      text2: 'A solicitação foi excluída com sucesso. 👋',
-    }})
-      return queryClient.invalidateQueries({
-        queryKey: ['documents', document.id],
-      });
-  }
+  const deleteSucess = () => {
+    router.navigate({
+      pathname: '/(drawer)/(tabs)/requests',
+      params: {
+        type: 'success',
+        text1: 'Solicitação excluída',
+        text2: 'A solicitação foi excluída com sucesso. 👋',
+      },
+    });
+    return queryClient.invalidateQueries({
+      queryKey: ['documents', request.uuid],
+    });
+  };
 
   useEffect(() => {
-    if(deleteDocument?.isSuccess){
-      deleteSucess()
+    if (deleteDocument?.isSuccess) {
+      deleteSucess();
     }
-  },[deleteDocument])
+  }, [deleteDocument]);
 
   return (
     <>
@@ -108,7 +141,7 @@ export default function UpdateSolicitation() {
           checkValue={companySelected.name}
           title="Selecione a empresa"
           placeholder="Empresa"
-          disable={true}>
+          disable>
           <SelectCompany
             companySelected={companySelected}
             setCompanySelected={setCompanySelected}
@@ -119,7 +152,7 @@ export default function UpdateSolicitation() {
           setDate={setExpiration}
           placeholder="Selecione um prazo"
         />
-        <ButtonAnt style={style.button} type="primary" onPress={() => mutate()}>
+        <ButtonAnt style={style.button} type="primary" onPress={() => mutation.mutate()}>
           Editar solicitação
         </ButtonAnt>
       </SafeAreaView>
@@ -184,5 +217,5 @@ const style = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Lato_400Regular',
     color: '#363636',
-  }
+  },
 });
