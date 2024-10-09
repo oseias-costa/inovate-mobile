@@ -37,10 +37,6 @@ export function SelectDate({ dateValue, setDate, placeholder }: SelectDateProps)
       <Provider>
         <Modal
           popup
-          style={{
-            borderTopEndRadius: 13,
-            borderTopStartRadius: 13,
-          }}
           visible={openModal}
           animationType="slide-up"
           closable
@@ -110,7 +106,7 @@ const styles = StyleSheet.create({
   boxTopText: {
     textAlign: 'center',
     color: '#928787',
-    fontFamily: 'Lato_700Bold',
+    fontFamily: 'Lato_400Regular',
     fontSize: 18,
   },
   dateValue: {

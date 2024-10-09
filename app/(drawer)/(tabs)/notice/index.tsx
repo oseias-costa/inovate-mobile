@@ -91,8 +91,9 @@ export default function Notice() {
                 createdAt={item.createdAt}
                 key={item.uuid}
                 onPress={() => {
-                  setItemUuid(item.uuid);
-                  setOpenModal(true);
+                  return router.navigate(`/screens/notice/Detail?uuid=${item.uuid}`);
+                  // setItemUuid(item.uuid);
+                  // setOpenModal(true);
                 }}
               />
             )}

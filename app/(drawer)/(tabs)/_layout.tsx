@@ -102,6 +102,17 @@ export default function Layout() {
                 />
               </TouchableOpacity>
             ),
+            headerRight: () => (
+              <TouchableOpacity onPress={() => router.navigate('/screens/notice/Create')}>
+                <Text
+                  style={{
+                    marginRight: 20,
+                    color: '#fff',
+                  }}>
+                  Nova
+                </Text>
+              </TouchableOpacity>
+            ),
             tabBarActiveTintColor: '#00264B',
             tabBarIcon: ({ focused, color, size }) =>
               focused ? (
