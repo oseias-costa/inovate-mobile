@@ -1,8 +1,9 @@
 import ButtonAnt from '@ant-design/react-native/lib/button';
 import Modal from '@ant-design/react-native/lib/modal';
-import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-query';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useIsMutating, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
-import { router } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -24,14 +25,13 @@ import CustomTextInput from '../../components/CustomTextInput';
 import Select from '../../components/Select';
 import SelectCompany from '../../components/SelectCompany';
 import { httpClient } from '../../lib/http.client';
-import { Stack } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
 
 const handleHead = ({ tintColor }: { tintColor: ColorValue }) => (
   <Text style={{ color: tintColor }}>H1</Text>
 );
 
-export default function Create() {
+export default function Edit() {
+  const { uuid } = useLocalSearchParams();
   const [error, setError] = useState({ input: '', message: '' });
   const [data, setData] = useState({ title: '', text: '' });
   const [companySelected, setCompanySelected] = useState({ uuid: '', name: '' });
@@ -39,12 +39,27 @@ export default function Create() {
   const queryClient = useQueryClient();
   const richText = useRef<any>();
 
+  const { data: notice } = useQuery({
+    queryKey: [`notice-${uuid}`],
+    queryFn: async () =>
+      httpClient({
+        method: 'GET',
+        path: `/notice/${uuid}`,
+      }),
+  });
+
+  useEffect(() => {
+    if (notice) {
+      setData({ title: notice.title, text: notice.text });
+    }
+  }, [notice]);
+
   const mutation = useMutation({
-    mutationKey: ['create-notice'],
+    mutationKey: ['update-notice'],
     mutationFn: async () =>
       httpClient({
-        method: 'POST',
-        path: '/notice',
+        method: 'PATCH',
+        path: `/notice/${uuid}`,
         data: {
           title: data.title,
           text: data.text,
@@ -106,7 +121,7 @@ export default function Create() {
       <Stack.Screen
         options={{
           headerTitleAlign: 'center',
-          headerTitle: 'Novo aviso',
+          headerTitle: 'Editar aviso',
           headerTintColor: '#fff',
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>
@@ -156,6 +171,7 @@ export default function Create() {
                     console.log('descriptionText:', descriptionText);
                     setData({ title: data.title, text: descriptionText });
                   }}
+                  initialContentHTML={data?.text}
                   editorStyle={{
                     color: '#363636',
                   }}
@@ -191,7 +207,7 @@ export default function Create() {
           </View>
         ) : null}
         <ButtonAnt style={style.button} type="primary" onPress={() => mutation.mutate()}>
-          Enviar aviso
+          Atualizar aviso
         </ButtonAnt>
       </SafeAreaView>
     </>
