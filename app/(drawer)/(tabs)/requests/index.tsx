@@ -63,14 +63,14 @@ export default function Requests() {
         <View style={{ flex: 1, width: '100%', height: '100%' }}>
           {isFetching && !isFetchingNextPage ? (
             <View style={{ marginTop: 10 }}>
-              <RequestItemSkeleton />
-              <RequestItemSkeleton />
-              <RequestItemSkeleton />
-              <RequestItemSkeleton />
-              <RequestItemSkeleton />
-              <RequestItemSkeleton />
-              <RequestItemSkeleton />
-              <RequestItemSkeleton />
+              <RequestItemSkeleton key={1} />
+              <RequestItemSkeleton key={2} />
+              <RequestItemSkeleton key={3} />
+              <RequestItemSkeleton key={4} />
+              <RequestItemSkeleton key={5} />
+              <RequestItemSkeleton key={6} />
+              <RequestItemSkeleton key={7} />
+              <RequestItemSkeleton key={8} />
             </View>
           ) : (
             <FlashList

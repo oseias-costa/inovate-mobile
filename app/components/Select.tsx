@@ -7,7 +7,7 @@ type SelectProps = {
   checkValue: string;
   children: React.JSX.Element;
   placeholder: string;
-  disable?: boolean
+  disable?: boolean;
 };
 
 export default function Select({ title, checkValue, children, placeholder, disable }: SelectProps) {
@@ -36,11 +36,11 @@ export default function Select({ title, checkValue, children, placeholder, disab
           style={{
             color: '#363636',
             fontFamily: 'Lato_400Regular',
-            fontSize: 18,
+            fontSize: 16,
           }}>
           {checkValue || title}
         </Text>
-        <Ionicons name="chevron-down" size={24} color="#7B8A92" />
+        <Ionicons name="chevron-down" size={20} color="#7B8A92" />
       </TouchableOpacity>
     </>
   );
@@ -49,7 +49,7 @@ export default function Select({ title, checkValue, children, placeholder, disab
 const style = StyleSheet.create({
   header: {
     paddingHorizontal: 12,
-    height: 44,
+    height: 40,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -63,7 +63,7 @@ const style = StyleSheet.create({
   title: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: 18,
+    fontSize: 16,
   },
   label: {
     fontFamily: 'Lato_300Light',
@@ -72,7 +72,7 @@ const style = StyleSheet.create({
   button: {
     borderColor: '#DADADA',
     borderWidth: 1,
-    height: 47,
+    height: 40,
     padding: 10,
     borderRadius: 5,
     marginVertical: 5,

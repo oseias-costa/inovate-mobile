@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Stack, router } from 'expo-router';
-import { Button, Text, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { TouchableOpacity } from 'react-native';
 
 export default function Layout() {
   return (
@@ -12,13 +13,13 @@ export default function Layout() {
       }}>
       <Stack.Screen name="notice/Detail" />
       <Stack.Screen name="notice/Create" />
-      {/* <Stack.Screen name="details" />
       <Stack.Screen
-        name="newSolicitation"
+        name="request/Create"
         options={{
           headerTitleAlign: 'center',
           headerTitle: 'Nova solicitação',
           headerTintColor: '#fff',
+          headerBackVisible: true,
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>
               <MaterialIcons name="arrow-back-ios" size={24} color="white" />
@@ -26,32 +27,6 @@ export default function Layout() {
           ),
         }}
       />
-      <Stack.Screen
-        name="SolicitationSucess"
-        options={{
-          headerTitleAlign: 'center',
-          headerTitle: 'Solicitação realizada',
-          headerTintColor: '#fff',
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.replace('/requests')}>
-              <MaterialIcons name="arrow-back-ios" size={24} color="white" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="updateSucess"
-        options={{
-          headerTitleAlign: 'center',
-          headerTitle: 'Edição realizada',
-          headerTintColor: '#fff',
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.replace('/requests')}>
-              <MaterialIcons name="arrow-back-ios" size={24} color="white" />
-            </TouchableOpacity>
-          ),
-        }}
-      /> */}
     </Stack>
   );
 }

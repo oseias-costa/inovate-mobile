@@ -1,10 +1,11 @@
-import { MaterialIcons } from '@expo/vector-icons';
-import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ButtonAnt from '@ant-design/react-native/lib/button';
 import DatePickerView from '@ant-design/react-native/lib/date-picker-view';
 import Modal from '@ant-design/react-native/lib/modal';
 import Provider from '@ant-design/react-native/lib/provider';
+import { MaterialIcons } from '@expo/vector-icons';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 import { formatDate } from '../lib/date';
 
 type SelectDateProps = {
@@ -32,7 +33,7 @@ export function SelectDate({ dateValue, setDate, placeholder }: SelectDateProps)
         <Text numberOfLines={1} style={styles.textButton}>
           {showDate ? showDate : placeholder}
         </Text>
-        <MaterialIcons name="date-range" size={24} color="#7B8A92" />
+        <MaterialIcons name="date-range" size={20} color="#7B8A92" />
       </TouchableOpacity>
       <Provider>
         <Modal
@@ -81,7 +82,7 @@ const styles = StyleSheet.create({
   button: {
     borderColor: '#DADADA',
     borderWidth: 1,
-    height: 47,
+    height: 42,
     padding: 10,
     borderRadius: 5,
     marginVertical: 5,
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
   textButton: {
     color: '#363636',
     fontFamily: 'Lato_400Regular',
-    fontSize: 18,
+    fontSize: 16,
   },
   boxTop: {
     flexDirection: 'row',

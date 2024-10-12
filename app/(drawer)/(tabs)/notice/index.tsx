@@ -11,8 +11,7 @@ import { RefreshControl, ScrollView, StatusBar, View, StyleSheet } from 'react-n
 import NoticeItemDashboard from '~/app/components/NoticeItemDashboard';
 import SelectStatus from '~/app/components/SelectStatus';
 import { useUser } from '~/app/components/UserProvider';
-import ToastTest from '~/app/lib/ToastTest';
-import { RequestData } from '~/app/types/request.type';
+import { RequestData } from '~/app/lib/types/request.type';
 
 export default function Notice() {
   const [status, setStatus] = useState<'' | 'PENDING' | 'FINISH' | 'EXPIRED'>('');
@@ -60,7 +59,6 @@ export default function Notice() {
   return (
     <>
       <View style={{ backgroundColor: '#fff', position: 'relative', flex: 1 }}>
-        <ToastTest ref={ToastRef} message="Solicitação aberta!" />
         <StatusBar barStyle="light-content" hidden={false} />
         <View style={styles.destakContainer}>
           <ScrollView

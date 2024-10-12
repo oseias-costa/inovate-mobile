@@ -3,7 +3,7 @@ import Modal from '@ant-design/react-native/lib/modal';
 import { useIsMutating, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import CustomTextInput from '../../components/CustomTextInput';
 import Loading from '../../components/Loading';
@@ -13,11 +13,16 @@ import { SelectDate } from '../../components/SelectDate';
 import Subtitle from '../../components/Subtitle';
 import useGetCompanys from '../../hook/useGetCompanys';
 import useMutateRemoveDocument from '../../hook/useMutateRemoveDocument';
-import useMutationUpdateDocument from '../../hook/useMutationUpdateDocument';
 import { httpClient } from '../../lib/http.client';
+
+import { useLoading } from '~/app/components/LoadingProvider';
+import { Severity, useToast } from '~/app/components/ToastProvider';
+import { CustomButton } from '~/app/lib/components/CustomButton';
 
 export default function UpdateSolicitation() {
   const { uuid } = useLocalSearchParams();
+  const { setLoading } = useLoading();
+  const { showToast } = useToast();
 
   const { data: request } = useQuery({
     queryKey: [`request-${uuid}`],
@@ -42,6 +47,7 @@ export default function UpdateSolicitation() {
   const [expiration, setExpiration] = useState<Date | undefined>(request?.expiration);
 
   const isMutation = useIsMutating({ mutationKey: [`request-${uuid}`], exact: true });
+  const showToasting = () => showToast('Solicitação editada com sucesso', Severity.SUCCESS);
 
   const mutation = useMutation({
     mutationKey: [`request-${uuid}`],
@@ -60,10 +66,20 @@ export default function UpdateSolicitation() {
       console.log('e)rror', err);
     },
     onSuccess: (data) => {
+      showToasting();
+      setLoading(false);
       router.navigate('/(tabs)/requests');
       return queryClient.invalidateQueries({ queryKey: ['requests'] });
     },
   });
+
+  const showLoading = () => setLoading(true);
+
+  useEffect(() => {
+    if (isMutation) {
+      showLoading();
+    }
+  }, [isMutation]);
 
   const deleteDocument = useMutateRemoveDocument(String(uuid));
   const queryClient = useQueryClient();
@@ -82,11 +98,6 @@ export default function UpdateSolicitation() {
   const deleteSucess = () => {
     router.navigate({
       pathname: '/(drawer)/(tabs)/requests',
-      params: {
-        type: 'success',
-        text1: 'Solicitação excluída',
-        text2: 'A solicitação foi excluída com sucesso. 👋',
-      },
     });
     return queryClient.invalidateQueries({
       queryKey: ['requests', `request-${uuid}`],
@@ -114,7 +125,7 @@ export default function UpdateSolicitation() {
         }}
       />
       <SafeAreaView style={style.container}>
-        <Loading isLoading={!!isMutation} />
+        {/* <Loading isLoading={!!isMutation} /> */}
         <View style={{ paddingBottom: 15, paddingTop: 20 }}>
           <Subtitle text="Editar solicitação" />
           <Text style={style.description}>
@@ -152,9 +163,9 @@ export default function UpdateSolicitation() {
           setDate={setExpiration}
           placeholder="Selecione um prazo"
         />
-        <ButtonAnt style={style.button} type="primary" onPress={() => mutation.mutate()}>
+        <CustomButton type="primary" onPress={() => mutation.mutate()}>
           Editar solicitação
-        </ButtonAnt>
+        </CustomButton>
       </SafeAreaView>
     </>
   );
@@ -182,7 +193,7 @@ const style = StyleSheet.create({
   title: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: 18,
+    fontSize: 16,
   },
   description: {
     fontFamily: 'Lato_300Light',

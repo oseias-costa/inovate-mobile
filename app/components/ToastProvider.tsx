@@ -1,7 +1,7 @@
 import * as Haptics from 'expo-haptics';
-import { ReactNode, createContext, useContext, useRef, useState } from 'react';
+import React, { ReactNode, createContext, useContext, useRef, useState } from 'react';
 
-import ToastTest from '../lib/ToastTest';
+import Toast from '../lib/Toast';
 
 interface ToastContextType {
   showToast: (message: string, type: Severity) => void;
@@ -41,7 +41,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <ToastContext.Provider value={{ showToast }}>
-      <ToastTest ref={ToastRef} message={data.message} />
+      <Toast ref={ToastRef} message={data.message} />
       {children}
     </ToastContext.Provider>
   );

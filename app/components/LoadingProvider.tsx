@@ -1,5 +1,12 @@
 import ActivityIndicator from '@ant-design/react-native/lib/activity-indicator';
-import { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
+import React, {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  createContext,
+  useContext,
+  useState,
+} from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 
 interface LoadingContextType {
@@ -39,7 +46,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
-    backgroundColor: 'white', // ajuste conforme necessário
+    backgroundColor: 'white',
   },
   loadingOverlay: {
     position: 'absolute',
@@ -47,7 +54,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)', // cor com transparência
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
     zIndex: 5000,
     display: 'flex',
     alignItems: 'center',

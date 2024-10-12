@@ -1,33 +1,27 @@
-import React, { useState, useImperativeHandle, forwardRef, useRef } from 'react';
-import { Text, StyleSheet, Animated, Platform, UIManager } from 'react-native';
-
-import { Severity } from '../components/ToastProvider';
-
-type ToastProps = {
-  message: string;
-  severety: Severity;
-};
+import React, { useState, useImperativeHandle, forwardRef, useRef, useEffect } from 'react';
+import { Text, StyleSheet, Animated, Platform, UIManager, View } from 'react-native';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const Toast = (props: ToastProps, ref: React.Ref<unknown> | undefined) => {
+const Toast = (props: any, ref: React.Ref<any>) => {
   const [showToast, setShowToast] = useState(false);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const translateYAnim = useRef(new Animated.Value(-100)).current;
+  const [viewWidth, setViewWidth] = useState(0);
 
   const toast = () => {
     if (!showToast) {
       setShowToast(true);
-      Animated.timing(fadeAnim, {
-        toValue: 1,
+      Animated.timing(translateYAnim, {
+        toValue: 0,
         duration: 300,
         useNativeDriver: true,
       }).start();
       setTimeout(() => {
-        Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 500,
+        Animated.timing(translateYAnim, {
+          toValue: -100,
+          duration: 300,
           useNativeDriver: true,
         }).start(() => {
           setShowToast(false);
@@ -36,14 +30,26 @@ const Toast = (props: ToastProps, ref: React.Ref<unknown> | undefined) => {
     }
   };
 
+  const refContainer = useRef<View>(null);
+
+  useEffect(() => {
+    refContainer.current?.measure((x, y, width, height, pageX, pageY) => setViewWidth(height));
+  }, [props]);
+
   useImperativeHandle(ref, () => ({
     toast,
   }));
 
   if (showToast) {
     return (
-      <Animated.View style={[styles.toastContainer, { opacity: fadeAnim }]}>
+      <Animated.View
+        ref={refContainer}
+        style={[styles.toastContainer, { transform: [{ translateY: translateYAnim }] }]}>
+        <View
+          style={{ width: 8, height: viewWidth, backgroundColor: '#3B3D3E', position: 'absolute' }}
+        />
         <Text style={styles.toastText}>{props.message}</Text>
+        <Text style={styles.description}>{props.message}</Text>
       </Animated.View>
     );
   } else {
@@ -52,28 +58,36 @@ const Toast = (props: ToastProps, ref: React.Ref<unknown> | undefined) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    borderRadius: 30,
-    overflow: 'hidden',
-    flexDirection: 'row',
-    bottom: 20,
-    right: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   toastContainer: {
+    top: 100,
     backgroundColor: '#fff',
-    borderRadius: 10,
+    borderRadius: 6,
     padding: 10,
     position: 'absolute',
-    top: 50,
     alignSelf: 'center',
     zIndex: 1000,
+    width: '94%',
+    paddingLeft: 20,
+    display: 'flex',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+
+    elevation: 6,
   },
   toastText: {
-    color: 'red',
-    fontSize: 20,
+    fontSize: 18,
+    color: '#363636',
+    fontFamily: 'Lato_400Regular',
+  },
+  description: {
+    fontFamily: 'Lato_300Light',
+    fontSize: 16,
+    color: '#716F6F',
   },
 });
 

@@ -3,25 +3,31 @@ import Modal from '@ant-design/react-native/lib/modal';
 import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import CustomTextInput from '../../components/CustomTextInput';
 import Select from '../../components/Select';
 import SelectCompany from '../../components/SelectCompany';
 import { SelectDate } from '../../components/SelectDate';
 import Subtitle from '../../components/Subtitle';
-import useGetUser from '../../hook/useGetUser';
-import { newSolicitationError } from '../../lib/errors';
 import { httpClient } from '../../lib/http.client';
+
+import { useLoading } from '~/app/components/LoadingProvider';
+import { Severity, useToast } from '~/app/components/ToastProvider';
+import { useUser } from '~/app/components/UserProvider';
 
 export default function Create() {
   const [error, setError] = useState({ input: '', message: '' });
   const [data, setData] = useState({ document: '', description: '' });
   const [companySelected, setCompanySelected] = useState({ uuid: '', name: '' });
   const [expiration, setExpiration] = useState<Date | undefined>(undefined);
-  const { user } = useGetUser();
-  const isMutation = useIsMutating({ mutationKey: ['documents'], exact: true });
+  const { user } = useUser();
+  const isMutation = useIsMutating({ mutationKey: ['create-request'], exact: true });
   const queryClient = useQueryClient();
+  const { setLoading } = useLoading();
+  const { showToast } = useToast();
+
+  const showToasting = () => showToast('Solicitação criada com sucesso', Severity.SUCCESS);
 
   const mutation = useMutation({
     mutationKey: ['create-request'],
@@ -37,14 +43,22 @@ export default function Create() {
           expiration,
         },
       }),
-    onError: (err) => {
-      console.log('e)rror', err);
-    },
+    onError: () => setLoading(false),
     onSuccess: (data) => {
+      setLoading(false);
+      showToasting();
       router.navigate('/(tabs)/requests');
       return queryClient.invalidateQueries({ queryKey: ['requests'] });
     },
   });
+
+  const showLoading = () => setLoading(true);
+
+  useEffect(() => {
+    if (isMutation) {
+      showLoading();
+    }
+  }, [isMutation]);
 
   const errModal = (err: string) => {
     Modal.alert('Solicitação', err, [
@@ -74,7 +88,7 @@ export default function Create() {
       </View>
       <CustomTextInput
         item="document"
-        placeholder="Documento"
+        placeholder="Nome do documento"
         state={data}
         setState={setData}
         error={error}
@@ -121,12 +135,12 @@ const style = StyleSheet.create({
   title: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: 18,
+    fontSize: 16,
   },
   description: {
-    fontFamily: 'Lato_300Light',
-    fontSize: 16,
-    color: '#716F6F',
+    fontFamily: 'Lato_400Regular',
+    fontSize: 14,
+    color: '#A49D9D',
     marginHorizontal: 20,
     paddingBottom: 0,
     paddingTop: 6,
