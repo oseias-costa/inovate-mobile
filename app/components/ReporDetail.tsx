@@ -5,8 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import Loading from '../../components/Loading';
-import { formatDate } from '../../lib/date';
+import { formatDate } from '../lib/date';
 
 export default function ReportDetail({ uuid }: { uuid: string }) {
   //const expiration = formatDate(new Date(document?.expiration));

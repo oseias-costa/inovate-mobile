@@ -2,7 +2,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
-import { formatDate } from '../../lib/date';
+import { formatDate } from '../lib/date';
 
 type ReportItemProps = {
   title: string;

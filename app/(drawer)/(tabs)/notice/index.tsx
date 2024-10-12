@@ -5,14 +5,13 @@ import { FlashList } from '@shopify/flash-list';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { RefreshControl, ScrollView, StatusBar, View, StyleSheet } from 'react-native';
 
 import NoticeItemDashboard from '~/app/components/NoticeItemDashboard';
 import SelectStatus from '~/app/components/SelectStatus';
 import { useUser } from '~/app/components/UserProvider';
 import ToastTest from '~/app/lib/ToastTest';
-import NoticeDetail from '~/app/notice/components/detail';
 import { RequestData } from '~/app/types/request.type';
 
 export default function Notice() {
@@ -37,7 +36,6 @@ export default function Notice() {
     queryKey: ['notice'],
     queryFn: async () => {
       const token = await AsyncStorage.getItem('token');
-      console.log(token);
       const documents = await axios({
         method: 'GET',
         baseURL: `${process.env.EXPO_PUBLIC_API_URL}/notice?page=${pagination.page}&limit=${pagination.limit}&companyUuid=${user.uuid}`,
@@ -111,19 +109,6 @@ export default function Notice() {
             showsVerticalScrollIndicator={false}
           />
         </View>
-        <Provider>
-          <Modal
-            popup
-            visible={openModal}
-            animationType="slide-up"
-            closable
-            maskClosable
-            onClose={() => setOpenModal(false)}>
-            <View style={{ height: 'auto' }}>
-              <NoticeDetail uuid={itemUuid} />
-            </View>
-          </Modal>
-        </Provider>
       </View>
     </>
   );

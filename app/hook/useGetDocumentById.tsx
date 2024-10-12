@@ -7,7 +7,6 @@ export default function useGetDocumentById(id: string) {
     queryKey: ['document-' + id],
     queryFn: async () => {
       const token = await AsyncStorage.getItem('token');
-      console.log(token);
       const companys = await axios({
         method: 'GET',
         baseURL: `${process.env.EXPO_PUBLIC_API_URL}/document/get-by-id/${id}`,

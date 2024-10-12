@@ -34,7 +34,6 @@ const ToastTest = (props: any, ref: React.Ref<any>) => {
 
   useEffect(() => {
     refContainer.current?.measure((x, y, width, height, pageX, pageY) => setViewWidth(height));
-    console.log(viewWidth);
   }, [props]);
 
   useImperativeHandle(ref, () => ({

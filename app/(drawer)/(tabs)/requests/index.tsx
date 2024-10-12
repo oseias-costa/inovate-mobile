@@ -1,50 +1,49 @@
 import Modal from '@ant-design/react-native/lib/modal';
 import Provider from '@ant-design/react-native/lib/provider';
 import { FlashList } from '@shopify/flash-list';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { RefreshControl, ScrollView, StatusBar, View, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  RefreshControl,
+  ScrollView,
+  StatusBar,
+  View,
+  StyleSheet,
+  ActivityIndicatorComponent,
+} from 'react-native';
 
 import RequestItemDashboard from '~/app/components/RequestItemDashboard';
 import SelectStatus from '~/app/components/SelectStatus';
 import { useUser } from '~/app/components/UserProvider';
 import { httpClient } from '~/app/lib/http.client';
-import Detail from '~/app/requests/components/detail';
 import { RequestData, RequestType } from '~/app/types/request.type';
 
 export default function Requests() {
   const [status, setStatus] = useState<'' | 'PENDING' | 'FINISH' | 'EXPIRED'>('');
   const { user } = useUser();
-  const [pagination, setPagination] = useState({ page: 1, limit: 10 });
+  const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
-  const [itemUuid, setItemUuid] = useState('');
-  const params = useLocalSearchParams();
 
-  useEffect(() => {
-    if (params?.openItemUuid || params?.openItemUuid === itemUuid) {
-      setItemUuid(String(params.openItemUuid));
-      setOpenModal(true);
-      router.setParams({ openItemUuid: '' });
-    }
-  }, [params?.openItemUuid, itemUuid]);
-
-  const { data, isLoading, refetch } = useQuery<RequestData>({
-    queryKey: [`requests`],
-    queryFn: () =>
-      httpClient({
-        path: `/requests`,
-        method: 'GET',
-        queryString: {
-          page: pagination.page,
-          limit: pagination.limit,
-          companyUuid: user.uuid,
-          status,
-        },
-      }),
-  });
+  const { data, isLoading, refetch, isSuccess, fetchNextPage, hasNextPage, isRefetching } =
+    useInfiniteQuery<RequestData>({
+      queryKey: [`requests`],
+      queryFn: async ({ pageParam }) =>
+        httpClient({
+          path: `/requests`,
+          method: 'GET',
+          queryString: {
+            page: pageParam,
+            limit: 8,
+            companyUuid: user.uuid,
+            status,
+          },
+        }),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) => lastPage.meta.nextPage,
+    });
+  console.log('isRefetching', isRefetching);
 
   useEffect(() => {
     refetch();
@@ -71,7 +70,7 @@ export default function Requests() {
             <SelectStatus item="FINISH" setStatus={setStatus} status={status} />
           </ScrollView>
         </View>
-        <View style={{ width: '100%', height: '100%' }}>
+        <View style={{ flex: 1, width: '100%', height: '100%' }}>
           <FlashList
             renderItem={({ item }: { item: RequestType }) => (
               <RequestItemDashboard
@@ -80,20 +79,23 @@ export default function Requests() {
                 expiration={item?.expiration}
                 key={item?.uuid}
                 status={item?.status}
-                onPress={
-                  () => router.navigate(`/requests/details?id=${item?.uuid}`)
-                  // setItemUuid(item?.uuid);
-                  // setOpenModal(true);
-                }
+                onPress={() => router.navigate(`/screens/request/Detail?uuid=${item?.uuid}`)}
               />
             )}
-            estimatedItemSize={pagination.limit}
+            onEndReached={() => {
+              if (hasNextPage) fetchNextPage();
+            }}
+            estimatedItemSize={12}
             keyExtractor={(item) => item.uuid}
-            data={data?.items}
+            data={data?.pages.flatMap((page) => page.items) || []}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
-                onRefresh={() => queryClient.invalidateQueries({ queryKey: ['requests'] })}
+                onRefresh={() => {
+                  // setPage(1);
+                  // refetch();
+                  return queryClient.invalidateQueries({ queryKey: ['requests'] });
+                }}
                 colors={['#9Bd35A', '#689F38']}
                 progressBackgroundColor="#fff"
               />
@@ -101,19 +103,6 @@ export default function Requests() {
             showsVerticalScrollIndicator={false}
           />
         </View>
-        <Provider>
-          <Modal
-            popup
-            visible={openModal}
-            animationType="slide-up"
-            closable
-            maskClosable
-            onClose={() => setOpenModal(false)}>
-            <View style={{ height: 'auto' }}>
-              <Detail uuid={itemUuid} />
-            </View>
-          </Modal>
-        </Provider>
       </View>
     </>
   );

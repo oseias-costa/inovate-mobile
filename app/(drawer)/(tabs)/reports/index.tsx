@@ -5,13 +5,13 @@ import { FlashList } from '@shopify/flash-list';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RefreshControl, StatusBar, View, StyleSheet } from 'react-native';
 
 import { useFilter } from '~/app/components/FilterProvider';
+import ReportDetail from '~/app/components/ReporDetail';
+import ReportItem from '~/app/components/ReportItem';
 import { useUser } from '~/app/components/UserProvider';
-import ReportDetail from '~/app/notice/components/detail';
-import ReportItem from '~/app/report/components/ReportItem';
 import { RequestData } from '~/app/types/request.type';
 
 export default function Reports() {
@@ -36,7 +36,6 @@ export default function Reports() {
     queryKey: ['reports'],
     queryFn: async () => {
       const token = await AsyncStorage.getItem('token');
-      console.log(token);
       const documents = await axios({
         method: 'GET',
         baseURL: `${process.env.EXPO_PUBLIC_API_URL}/reports?page=${pagination.page}&limit=${pagination.limit}&companyUuid=${user.uuid}`,
@@ -60,8 +59,9 @@ export default function Reports() {
                 createdAt={item.createdAt}
                 key={item.uuid}
                 onPress={() => {
-                  setItemUuid(item.uuid);
-                  setOpenModal(true);
+                  // setItemUuid(item.uuid);
+                  // setOpenModal(true);
+                  router.navigate(`/screens/report/Detail?uuid=${item.uuid}`);
                 }}
               />
             )}

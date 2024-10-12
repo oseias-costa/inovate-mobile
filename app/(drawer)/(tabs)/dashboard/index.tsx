@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Platform,
   ScrollView,
@@ -15,12 +15,12 @@ import {
 
 import { useLoading } from '~/app/components/LoadingProvider';
 import NoticeItemDashboard from '~/app/components/NoticeItemDashboard';
+import ReportItem from '~/app/components/ReportItem';
 import RequestItemDashboard from '~/app/components/RequestItemDashboard';
 import { Severity, useToast } from '~/app/components/ToastProvider';
 import { useUser } from '~/app/components/UserProvider';
 import useDashboard from '~/app/hook/useDashboard';
 import useFontLato from '~/app/hook/useFontLato';
-import ReportItem from '~/app/report/components/ReportItem';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -86,7 +86,10 @@ export default function Dashboard() {
               key={request.uuid}
               status={request?.status}
               onPress={() =>
-                router.navigate({ pathname: '/requests', params: { openItemUuid: request.uuid } })
+                router.navigate({
+                  pathname: '/screens/request/Detail',
+                  params: { uuid: request.uuid },
+                })
               }
             />
           ))}
@@ -103,7 +106,7 @@ export default function Dashboard() {
               description={item.text}
               createdAt={item.createdAt}
               onPress={() =>
-                router.navigate({ pathname: '/notice', params: { openItemUuid: item.uuid } })
+                router.navigate({ pathname: '/screens/notice/Detail', params: { uuid: item.uuid } })
               }
               key={item.uuid}
             />
@@ -111,7 +114,7 @@ export default function Dashboard() {
           <View style={{ paddingBottom: 120 }}>
             <View style={[styles.titleBox, { paddingBottom: 15 }]}>
               <Text style={[styles.title, { marginTop: 25 }]}>Relatórios</Text>
-              <TouchableOpacity onPress={() => router.navigate('/notice')}>
+              <TouchableOpacity onPress={() => router.navigate('/reports')}>
                 <Text style={styles.seeAll}>Ver todos</Text>
               </TouchableOpacity>
             </View>
@@ -119,7 +122,12 @@ export default function Dashboard() {
               <ReportItem
                 title={report.title}
                 createdAt={report.createdAt}
-                onPress={() => console.log('test')}
+                onPress={() =>
+                  router.navigate({
+                    pathname: '/screens/report/Detail',
+                    params: { uuid: report.uuid },
+                  })
+                }
                 uuid={report.uuid}
               />
             ))}
@@ -176,7 +184,6 @@ async function registerForPushNotificationsAsync() {
           projectId,
         })
       ).data;
-      console.log(token);
     } catch (e) {
       token = `${e}`;
     }

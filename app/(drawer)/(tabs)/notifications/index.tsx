@@ -7,7 +7,7 @@ import { RefreshControl, ScrollView, View, StyleSheet } from 'react-native';
 
 import SelectNotificationFilter from '~/app/components/SelectNotificationFilter';
 import { useUser } from '~/app/components/UserProvider';
-import NotificationItem from '~/app/notifications/notificationItem';
+import NotificationItem from '~/app/components/notificationItem';
 
 type Notification = {
   type: string;
@@ -37,7 +37,6 @@ export default function Notifications() {
       return notifications.data;
     },
   });
-  console.log('data  aaa', data);
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.destakContainer}>

@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { formatDate } from '../lib/date';
-import { RequestStatus } from '../requests/components/RequestStatus';
+import { RequestStatus } from '../components/RequestStatus';
 
 type RequestItemDashboardProps = {
   title: string;

@@ -20,15 +20,14 @@ export default function Login() {
     input: '',
     color: '#DADADA',
   });
-  const { user } = useGetUser()
-  const token = async () => await AsyncStorage.getItem('token')
+  const { user } = useGetUser();
+  const token = async () => await AsyncStorage.getItem('token');
 
   const isMutating = useIsMutating({ mutationKey: ['login'], exact: true });
   const getEmail = async () => {
     const email = await AsyncStorage.getItem('email');
     if (email) setData({ ...data, email: email });
   };
-  console.log(process.env.EXPO_PUBLIC_API_URL)
   useEffect(() => {
     if (!data.email) {
       getEmail();

@@ -2,28 +2,28 @@ import ButtonAnt from '@ant-design/react-native/lib/button';
 import Modal from '@ant-design/react-native/lib/modal';
 import { useIsMutating, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import CustomTextInput from '../components/CustomTextInput';
-import Loading from '../components/Loading';
-import Select from '../components/Select';
-import SelectCompany from '../components/SelectCompany';
-import { SelectDate } from '../components/SelectDate';
-import Subtitle from '../components/Subtitle';
-import useGetCompanys from '../hook/useGetCompanys';
-import useMutateRemoveDocument from '../hook/useMutateRemoveDocument';
-import useMutationUpdateDocument from '../hook/useMutationUpdateDocument';
-import { httpClient } from '../lib/http.client';
+import CustomTextInput from '../../components/CustomTextInput';
+import Loading from '../../components/Loading';
+import Select from '../../components/Select';
+import SelectCompany from '../../components/SelectCompany';
+import { SelectDate } from '../../components/SelectDate';
+import Subtitle from '../../components/Subtitle';
+import useGetCompanys from '../../hook/useGetCompanys';
+import useMutateRemoveDocument from '../../hook/useMutateRemoveDocument';
+import useMutationUpdateDocument from '../../hook/useMutationUpdateDocument';
+import { httpClient } from '../../lib/http.client';
 
 export default function UpdateSolicitation() {
-  const { id } = useLocalSearchParams();
+  const { uuid } = useLocalSearchParams();
 
   const { data: request } = useQuery({
-    queryKey: [`request-${id}`],
+    queryKey: [`request-${uuid}`],
     queryFn: async () =>
       httpClient({
-        path: `/requests/${id}`,
+        path: `/requests/${uuid}`,
         method: 'GET',
       }),
   });
@@ -41,14 +41,14 @@ export default function UpdateSolicitation() {
   });
   const [expiration, setExpiration] = useState<Date | undefined>(request?.expiration);
 
-  const isMutation = useIsMutating({ mutationKey: [id], exact: true });
+  const isMutation = useIsMutating({ mutationKey: [`request-${uuid}`], exact: true });
 
   const mutation = useMutation({
-    mutationKey: [id],
+    mutationKey: [`request-${uuid}`],
     mutationFn: async () =>
       httpClient({
         method: 'PATCH',
-        path: `/requests/${id}`,
+        path: `/requests/${uuid}`,
         data: {
           document: data.document,
           description: data.description,
@@ -65,7 +65,7 @@ export default function UpdateSolicitation() {
     },
   });
 
-  const deleteDocument = useMutateRemoveDocument(String(id));
+  const deleteDocument = useMutateRemoveDocument(String(uuid));
   const queryClient = useQueryClient();
 
   const deleteModal = () => {
@@ -89,7 +89,7 @@ export default function UpdateSolicitation() {
       },
     });
     return queryClient.invalidateQueries({
-      queryKey: ['documents', request.uuid],
+      queryKey: ['requests', `request-${uuid}`],
     });
   };
 

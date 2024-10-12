@@ -16,5 +16,7 @@ export type RequestData = {
     itemsPerPage: number;
     totalPages: number;
     currentPage: number;
+    previusPage: number;
+    nextPage: number;
   };
 };

@@ -28,7 +28,6 @@ export default function useGetUser() {
       baseURL: `${process.env.EXPO_PUBLIC_API_URL}/users/get-user/${token}`,
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log(user);
     return user.data;
   };
 

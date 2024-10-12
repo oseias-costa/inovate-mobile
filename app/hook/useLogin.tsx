@@ -18,7 +18,6 @@ export const useLogin = (setError: Dispatch<SetStateAction<string>>) => {
       method: 'POST',
       data,
     });
-    console.log(response);
     return response.data;
   };
 

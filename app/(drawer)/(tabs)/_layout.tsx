@@ -92,16 +92,7 @@ export default function Layout() {
             headerTintColor: '#fff',
             headerShadowVisible: false,
             headerTitleAlign: 'center',
-            headerLeft: () => (
-              <TouchableOpacity onPress={() => router.back()}>
-                <MaterialIcons
-                  name="arrow-back-ios-new"
-                  color="#fff"
-                  size={22}
-                  style={{ marginLeft: 20 }}
-                />
-              </TouchableOpacity>
-            ),
+            headerLeft: () => <DrawerToggleButton tintColor="#fff" />,
             headerRight: () => (
               <TouchableOpacity onPress={() => router.navigate('/screens/notice/Create')}>
                 <Text
@@ -127,51 +118,21 @@ export default function Layout() {
           options={{
             headerStyle: {
               backgroundColor: '#00264B',
-              height: 120,
             },
             title: 'Relatórios',
             headerTintColor: '#fff',
             headerShadowVisible: false,
             headerTitleAlign: 'center',
-            header: () => (
-              <View style={{ backgroundColor: '#00264B', height: 150, paddingTop: 50 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <DrawerToggleButton tintColor="#fff" />
-                  <Text
-                    style={{
-                      color: '#fff',
-                      fontFamily: ' Lato_700Bold',
-                      fontSize: 22,
-                    }}>
-                    Relatórios
-                  </Text>
-                  <DrawerToggleButton tintColor="#fff" />
-                </View>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  decelerationRate="normal"
-                  contentContainerStyle={{
-                    marginHorizontal: 15,
-                    marginTop: 20,
-                    flexDirection: 'row',
-                    paddingRight: 20,
+            headerLeft: () => <DrawerToggleButton tintColor="#fff" />,
+            headerRight: () => (
+              <TouchableOpacity onPress={() => router.navigate('/screens/report/Create')}>
+                <Text
+                  style={{
+                    marginRight: 20,
+                    color: '#fff',
                   }}>
-                  <SelectStatus item="" setStatus={setReportFilter} status={reportFilter} />
-                  <SelectStatus item="PENDING" setStatus={setReportFilter} status={reportFilter} />
-                  <SelectStatus item="EXPIRED" setStatus={setReportFilter} status={reportFilter} />
-                  <SelectStatus item="FINISH" setStatus={setReportFilter} status={reportFilter} />
-                </ScrollView>
-              </View>
-            ),
-            headerLeft: () => (
-              <TouchableOpacity onPress={() => router.back()}>
-                <MaterialIcons
-                  name="arrow-back-ios-new"
-                  color="#fff"
-                  size={22}
-                  style={{ marginLeft: 20 }}
-                />
+                  Nova
+                </Text>
               </TouchableOpacity>
             ),
             tabBarActiveTintColor: '#00264B',

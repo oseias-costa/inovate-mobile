@@ -2,20 +2,19 @@ import ButtonAnt from '@ant-design/react-native/lib/button';
 import Modal from '@ant-design/react-native/lib/modal';
 import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import CustomTextInput from '../components/CustomTextInput';
-import Loading from '../components/Loading';
-import Select from '../components/Select';
-import SelectCompany from '../components/SelectCompany';
-import { SelectDate } from '../components/SelectDate';
-import Subtitle from '../components/Subtitle';
-import useGetUser from '../hook/useGetUser';
-import { newSolicitationError } from '../lib/errors';
-import { httpClient } from '../lib/http.client';
+import CustomTextInput from '../../components/CustomTextInput';
+import Select from '../../components/Select';
+import SelectCompany from '../../components/SelectCompany';
+import { SelectDate } from '../../components/SelectDate';
+import Subtitle from '../../components/Subtitle';
+import useGetUser from '../../hook/useGetUser';
+import { newSolicitationError } from '../../lib/errors';
+import { httpClient } from '../../lib/http.client';
 
-export default function NewSolicitation() {
+export default function Create() {
   const [error, setError] = useState({ input: '', message: '' });
   const [data, setData] = useState({ document: '', description: '' });
   const [companySelected, setCompanySelected] = useState({ uuid: '', name: '' });
@@ -67,7 +66,6 @@ export default function NewSolicitation() {
 
   return (
     <SafeAreaView style={style.container}>
-      <Loading isLoading={!!isMutation} />
       <View style={{ paddingBottom: 15, paddingTop: 20 }}>
         <Subtitle text="Nova solicitação" />
         <Text style={style.description}>
