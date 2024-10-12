@@ -1,32 +1,23 @@
-import Modal from '@ant-design/react-native/lib/modal';
-import Provider from '@ant-design/react-native/lib/provider';
 import { FlashList } from '@shopify/flash-list';
-import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import {
-  RefreshControl,
-  ScrollView,
-  StatusBar,
-  View,
-  StyleSheet,
-  ActivityIndicatorComponent,
-} from 'react-native';
+import { RefreshControl, ScrollView, StatusBar, View, StyleSheet } from 'react-native';
 
 import RequestItemDashboard from '~/app/components/RequestItemDashboard';
 import SelectStatus from '~/app/components/SelectStatus';
 import { useUser } from '~/app/components/UserProvider';
+import RequestItemSkeleton from '~/app/lib/Loader/RequestItemSkeleton';
 import { httpClient } from '~/app/lib/http.client';
 import { RequestData, RequestType } from '~/app/types/request.type';
 
 export default function Requests() {
   const [status, setStatus] = useState<'' | 'PENDING' | 'FINISH' | 'EXPIRED'>('');
   const { user } = useUser();
-  const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
 
-  const { data, isLoading, refetch, isSuccess, fetchNextPage, hasNextPage, isRefetching } =
+  const { data, refetch, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery<RequestData>({
       queryKey: [`requests`],
       queryFn: async ({ pageParam }) =>
@@ -43,7 +34,6 @@ export default function Requests() {
       initialPageParam: 1,
       getNextPageParam: (lastPage) => lastPage.meta.nextPage,
     });
-  console.log('isRefetching', isRefetching);
 
   useEffect(() => {
     refetch();
@@ -71,37 +61,46 @@ export default function Requests() {
           </ScrollView>
         </View>
         <View style={{ flex: 1, width: '100%', height: '100%' }}>
-          <FlashList
-            renderItem={({ item }: { item: RequestType }) => (
-              <RequestItemDashboard
-                uuid={item?.uuid}
-                title={item?.documentName}
-                expiration={item?.expiration}
-                key={item?.uuid}
-                status={item?.status}
-                onPress={() => router.navigate(`/screens/request/Detail?uuid=${item?.uuid}`)}
-              />
-            )}
-            onEndReached={() => {
-              if (hasNextPage) fetchNextPage();
-            }}
-            estimatedItemSize={12}
-            keyExtractor={(item) => item.uuid}
-            data={data?.pages.flatMap((page) => page.items) || []}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={() => {
-                  // setPage(1);
-                  // refetch();
-                  return queryClient.invalidateQueries({ queryKey: ['requests'] });
-                }}
-                colors={['#9Bd35A', '#689F38']}
-                progressBackgroundColor="#fff"
-              />
-            }
-            showsVerticalScrollIndicator={false}
-          />
+          {isFetching && !isFetchingNextPage ? (
+            <View style={{ marginTop: 10 }}>
+              <RequestItemSkeleton />
+              <RequestItemSkeleton />
+              <RequestItemSkeleton />
+              <RequestItemSkeleton />
+              <RequestItemSkeleton />
+              <RequestItemSkeleton />
+              <RequestItemSkeleton />
+              <RequestItemSkeleton />
+            </View>
+          ) : (
+            <FlashList
+              renderItem={({ item }: { item: RequestType }) => (
+                <RequestItemDashboard
+                  uuid={item?.uuid}
+                  title={item?.documentName}
+                  expiration={item?.expiration}
+                  key={item?.uuid}
+                  status={item?.status}
+                  onPress={() => router.navigate(`/screens/request/Detail?uuid=${item?.uuid}`)}
+                />
+              )}
+              onEndReached={() => {
+                if (hasNextPage) fetchNextPage();
+              }}
+              estimatedItemSize={12}
+              keyExtractor={(item) => item.uuid}
+              data={data?.pages.flatMap((page) => page.items) || []}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={() => queryClient.invalidateQueries({ queryKey: ['requests'] })}
+                  colors={['#9Bd35A', '#689F38']}
+                  progressBackgroundColor="#fff"
+                />
+              }
+              showsVerticalScrollIndicator={false}
+            />
+          )}
         </View>
       </View>
     </>

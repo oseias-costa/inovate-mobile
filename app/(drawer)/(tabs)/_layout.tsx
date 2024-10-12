@@ -5,7 +5,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import { DrawerToggleButton } from '@react-navigation/drawer';
 import { Tabs, router } from 'expo-router';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import { useFilter } from '~/app/components/FilterProvider';
@@ -59,7 +59,7 @@ export default function Layout() {
             title: 'Solicitações',
             headerLeft: () => <DrawerToggleButton tintColor="#fff" />,
             headerRight: () => (
-              <TouchableOpacity onPress={() => router.navigate('/requests/newSolicitation')}>
+              <TouchableOpacity onPress={() => router.navigate('/screens/request/Create')}>
                 <Text
                   style={{
                     marginRight: 20,

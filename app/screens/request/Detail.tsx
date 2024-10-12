@@ -8,6 +8,7 @@ import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-na
 
 import { RequestStatus } from '~/app/components/RequestStatus';
 import { useUpload } from '~/app/hook/useUpload';
+import RequestDetailSkeleton from '~/app/lib/Loader/RequestDetailSkeleton';
 import { formatDate } from '~/app/lib/date';
 import { httpClient } from '~/app/lib/http.client';
 
@@ -15,7 +16,7 @@ export default function Detail() {
   const { uuid } = useLocalSearchParams();
   const { pickDocument, error } = useUpload(String(uuid), 'REQUEST');
 
-  const { data } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: [`request-${uuid}`],
     queryFn: async () =>
       httpClient({
@@ -48,24 +49,34 @@ export default function Detail() {
       />
       <SafeAreaView style={{ backgroundColor: '#fff', flex: 1 }}>
         <View style={{ paddingBottom: 25, paddingTop: 20, marginHorizontal: 20 }}>
-          <RequestStatus size="small" status={data?.status} />
-          <Text style={styles.title}>{data?.documentName}</Text>
-          <View style={styles.expirationContainer}>
-            <MaterialIcons name="access-alarm" size={14} color="#AEA4A4" />
-            <Text style={styles.expiration}>Prazo {formatDate(new Date(data?.expiration))}</Text>
-          </View>
-          <Text style={styles.description}>{data?.description}</Text>
-          <TouchableOpacity style={styles.uploadContainer} onPress={pickDocument}>
-            <Ionicons name="cloud-upload-outline" size={24} color="#6D6D6D" />
-            <Text style={styles.uploadTitle}>Enviar arquivo</Text>
-            <Text style={styles.uploadDescription}>Selecione um arquivo de no máximo 20mb.</Text>
-          </TouchableOpacity>
-          {data?.documents?.map((document: any) => (
-            <View style={styles.attachContainer}>
-              <Ionicons name="attach" size={24} color="#005AB1" />
-              <Text style={styles.attachTitle}>{document.name}</Text>
-            </View>
-          ))}
+          {isFetching ? (
+            <RequestDetailSkeleton />
+          ) : (
+            <>
+              <RequestStatus size="small" status={data?.status} />
+              <Text style={styles.title}>{data?.documentName}</Text>
+              <View style={styles.expirationContainer}>
+                <MaterialIcons name="access-alarm" size={14} color="#AEA4A4" />
+                <Text style={styles.expiration}>
+                  Prazo {formatDate(new Date(data?.expiration))}
+                </Text>
+              </View>
+              <Text style={styles.description}>{data?.description}</Text>
+              <TouchableOpacity style={styles.uploadContainer} onPress={pickDocument}>
+                <Ionicons name="cloud-upload-outline" size={24} color="#6D6D6D" />
+                <Text style={styles.uploadTitle}>Enviar arquivo</Text>
+                <Text style={styles.uploadDescription}>
+                  Selecione um arquivo de no máximo 20mb.
+                </Text>
+              </TouchableOpacity>
+              {data?.documents?.map((document: any) => (
+                <View style={styles.attachContainer}>
+                  <Ionicons name="attach" size={24} color="#005AB1" />
+                  <Text style={styles.attachTitle}>{document.name}</Text>
+                </View>
+              ))}
+            </>
+          )}
         </View>
         <ButtonAnt type="ghost" style={styles.button} onPress={() => router.navigate('/requests')}>
           voltar
