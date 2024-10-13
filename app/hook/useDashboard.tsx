@@ -37,16 +37,16 @@ export default function useDashboard() {
     refetch: refetchNotice,
   } = useQuery({
     queryKey: ['notice'],
-    queryFn: async () => {
-      const token = await AsyncStorage.getItem('token');
-      const companys = await axios({
+    queryFn: async () =>
+      httpClient({
         method: 'GET',
-        baseURL: `${process.env.EXPO_PUBLIC_API_URL}/notice?companyUuid=${user?.uuid}&limit=3`,
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      return companys.data;
-    },
+        path: '/notice',
+        queryString: {
+          companyUuid: user?.uuid,
+          limit: 3,
+          page: 1,
+        },
+      }),
   });
 
   const {

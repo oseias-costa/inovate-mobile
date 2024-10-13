@@ -9,23 +9,24 @@ import SelectStatus from '~/app/components/SelectStatus';
 import { useUser } from '~/app/components/UserProvider';
 import RequestItemSkeleton from '~/app/lib/Loader/RequestItemSkeleton';
 import { httpClient } from '~/app/lib/http.client';
-import { RequestData, RequestType } from '~/app/types/request.type';
+import { PaginateReponse } from '~/app/lib/types/paginate-response.type';
+import { RequestType } from '~/app/lib/types/request.type';
 
 export default function Requests() {
-  const [status, setStatus] = useState<'' | 'PENDING' | 'FINISH' | 'EXPIRED'>('');
+  const [status, setStatus] = useState<'' | 'PENDING' | 'FINISH' | 'DUE'>('');
   const { user } = useUser();
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
 
   const { data, refetch, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery<RequestData>({
+    useInfiniteQuery<PaginateReponse<RequestType>>({
       queryKey: [`requests`],
       queryFn: async ({ pageParam }) =>
         httpClient({
           path: `/requests`,
           method: 'GET',
           queryString: {
-            page: pageParam,
+            page: Number(pageParam),
             limit: 8,
             companyUuid: user.uuid,
             status,
@@ -56,7 +57,7 @@ export default function Requests() {
             }}>
             <SelectStatus item="" setStatus={setStatus} status={status} />
             <SelectStatus item="PENDING" setStatus={setStatus} status={status} />
-            <SelectStatus item="EXPIRED" setStatus={setStatus} status={status} />
+            <SelectStatus item="DUE" setStatus={setStatus} status={status} />
             <SelectStatus item="FINISH" setStatus={setStatus} status={status} />
           </ScrollView>
         </View>

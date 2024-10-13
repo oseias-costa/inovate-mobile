@@ -26,6 +26,9 @@ import Select from '../../components/Select';
 import SelectCompany from '../../components/SelectCompany';
 import { httpClient } from '../../lib/http.client';
 
+import { useLoading } from '~/app/components/LoadingProvider';
+import { Severity, useToast } from '~/app/components/ToastProvider';
+
 const handleHead = ({ tintColor }: { tintColor: ColorValue }) => (
   <Text style={{ color: tintColor }}>H1</Text>
 );
@@ -35,9 +38,14 @@ export default function Edit() {
   const [error, setError] = useState({ input: '', message: '' });
   const [data, setData] = useState({ title: '', text: '' });
   const [companySelected, setCompanySelected] = useState({ uuid: '', name: '' });
-  const isMutation = useIsMutating({ mutationKey: ['reports'], exact: true });
+  const isMutation = useIsMutating({ mutationKey: ['update-report'], exact: true });
   const queryClient = useQueryClient();
   const richText = useRef<any>();
+  const { setLoading } = useLoading();
+  const { showToast } = useToast();
+
+  const showToasting = () => showToast('Relatório criado com sucesso', Severity.SUCCESS);
+  const showLoading = () => setLoading(true);
 
   const { data: notice } = useQuery({
     queryKey: [`reports-${uuid}`],
@@ -47,6 +55,12 @@ export default function Edit() {
         path: `/reports/${uuid}`,
       }),
   });
+
+  useEffect(() => {
+    if (isMutation) {
+      showLoading();
+    }
+  }, [isMutation]);
 
   useEffect(() => {
     if (notice) {
@@ -66,9 +80,12 @@ export default function Edit() {
         },
       }),
     onError: (err) => {
+      setLoading(false);
       console.log('e)rror', err);
     },
     onSuccess: (data) => {
+      setLoading(false);
+      showToasting();
       router.navigate('/(drawer)/(tabs)/reports');
       return queryClient.invalidateQueries({ queryKey: ['reports'] });
     },

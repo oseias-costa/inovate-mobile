@@ -5,7 +5,7 @@ interface HttpClient {
   path: string;
   method: string;
   data?: any;
-  queryString?: { [key: string]: string | number | unknown };
+  queryString?: { [key: string]: string | number };
 }
 
 export const httpClient = async (httpData: HttpClient) => {

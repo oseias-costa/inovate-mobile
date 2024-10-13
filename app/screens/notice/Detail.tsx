@@ -14,7 +14,7 @@ export default function NoticeDetail() {
   const richText = useRef<any>();
 
   const { data } = useQuery({
-    queryKey: [`request-${uuid}`],
+    queryKey: [`notice-${uuid}`],
     queryFn: async () =>
       httpClient({
         path: `/notice/${uuid}`,

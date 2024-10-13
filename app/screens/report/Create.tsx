@@ -26,6 +26,8 @@ import Select from '../../components/Select';
 import SelectCompany from '../../components/SelectCompany';
 import { httpClient } from '../../lib/http.client';
 
+import { useLoading } from '~/app/components/LoadingProvider';
+import { Severity, useToast } from '~/app/components/ToastProvider';
 import { useUser } from '~/app/components/UserProvider';
 
 const handleHead = ({ tintColor }: { tintColor: ColorValue }) => (
@@ -40,6 +42,11 @@ export default function CreateReport() {
   const queryClient = useQueryClient();
   const richText = useRef<any>();
   const { user } = useUser();
+  const { setLoading } = useLoading();
+  const { showToast } = useToast();
+
+  const showToasting = () => showToast('Relatório criado com sucesso', Severity.SUCCESS);
+  const showLoading = () => setLoading(true);
 
   const mutation = useMutation({
     mutationKey: ['create-report'],
@@ -55,13 +62,22 @@ export default function CreateReport() {
         },
       }),
     onError: (err) => {
+      setLoading(false);
       console.log('e)rror', err);
     },
     onSuccess: (data) => {
+      setLoading(false);
+      showToasting();
       router.navigate('/(drawer)/(tabs)/reports');
       return queryClient.invalidateQueries({ queryKey: ['reports'] });
     },
   });
+
+  useEffect(() => {
+    if (isMutation) {
+      showLoading();
+    }
+  }, [isMutation]);
 
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 

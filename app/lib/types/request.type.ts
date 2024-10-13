@@ -7,16 +7,3 @@ export type RequestType = {
   uuid: string;
   status: 'Pendente' | 'Vencido' | 'Concluído';
 };
-
-export type RequestData = {
-  items: RequestType[];
-  meta: {
-    totalItems: number;
-    itemCount: number;
-    itemsPerPage: number;
-    totalPages: number;
-    currentPage: number;
-    previusPage: number;
-    nextPage: number;
-  };
-};

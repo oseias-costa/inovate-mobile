@@ -1,8 +1,8 @@
 import React from 'react';
-import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
+import ContentLoader, { Rect, Circle, Path } from 'react-content-loader/native';
 import { View } from 'react-native';
 
-const RequestItemSkeleton = () => (
+const NoticeItemSkeleton = () => (
   <View
     style={{
       height: 80,
@@ -25,4 +25,4 @@ const RequestItemSkeleton = () => (
   </View>
 );
 
-export default RequestItemSkeleton;
+export default NoticeItemSkeleton;

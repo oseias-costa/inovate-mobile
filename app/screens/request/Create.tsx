@@ -1,4 +1,3 @@
-import ButtonAnt from '@ant-design/react-native/lib/button';
 import Modal from '@ant-design/react-native/lib/modal';
 import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
@@ -15,6 +14,7 @@ import { httpClient } from '../../lib/http.client';
 import { useLoading } from '~/app/components/LoadingProvider';
 import { Severity, useToast } from '~/app/components/ToastProvider';
 import { useUser } from '~/app/components/UserProvider';
+import { CustomButton } from '~/app/lib/components/CustomButton';
 
 export default function Create() {
   const [error, setError] = useState({ input: '', message: '' });
@@ -28,6 +28,7 @@ export default function Create() {
   const { showToast } = useToast();
 
   const showToasting = () => showToast('Solicitação criada com sucesso', Severity.SUCCESS);
+  const showLoading = () => setLoading(true);
 
   const mutation = useMutation({
     mutationKey: ['create-request'],
@@ -51,8 +52,6 @@ export default function Create() {
       return queryClient.invalidateQueries({ queryKey: ['requests'] });
     },
   });
-
-  const showLoading = () => setLoading(true);
 
   useEffect(() => {
     if (isMutation) {
@@ -106,9 +105,9 @@ export default function Create() {
         <SelectCompany companySelected={companySelected} setCompanySelected={setCompanySelected} />
       </Select>
       <SelectDate dateValue={expiration} setDate={setExpiration} placeholder="Selecione um prazo" />
-      <ButtonAnt style={style.button} type="primary" onPress={() => mutation.mutate()}>
+      <CustomButton type="primary" onPress={() => mutation.mutate()}>
         Abrir solicitação
-      </ButtonAnt>
+      </CustomButton>
     </SafeAreaView>
   );
 }
@@ -155,10 +154,5 @@ const style = StyleSheet.create({
     color: '#363636',
     fontFamily: 'Lato_400Regular',
     fontSize: 18,
-  },
-  button: {
-    marginHorizontal: 20,
-    marginTop: 'auto',
-    zIndex: 1,
   },
 });

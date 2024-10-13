@@ -1,10 +1,10 @@
-import { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 type SelectStatusProps = {
-  status: '' | 'PENDING' | 'FINISH' | 'EXPIRED';
-  item: '' | 'PENDING' | 'FINISH' | 'EXPIRED';
-  setStatus: Dispatch<SetStateAction<'' | 'PENDING' | 'FINISH' | 'EXPIRED'>>;
+  status: '' | 'PENDING' | 'FINISH' | 'DUE';
+  item: '' | 'PENDING' | 'FINISH' | 'DUE';
+  setStatus: Dispatch<SetStateAction<'' | 'PENDING' | 'FINISH' | 'DUE'>>;
 };
 
 const SelectStatus = ({ status, item, setStatus }: SelectStatusProps) => {
@@ -12,7 +12,7 @@ const SelectStatus = ({ status, item, setStatus }: SelectStatusProps) => {
   const title = {
     '': 'Todas',
     PENDING: 'Pendentes',
-    EXPIRED: 'Vencidas',
+    DUE: 'Vencidas',
     FINISH: 'Concluídas',
   };
   return (

@@ -26,6 +26,9 @@ import Select from '../../components/Select';
 import SelectCompany from '../../components/SelectCompany';
 import { httpClient } from '../../lib/http.client';
 
+import { useLoading } from '~/app/components/LoadingProvider';
+import { Severity, useToast } from '~/app/components/ToastProvider';
+
 const handleHead = ({ tintColor }: { tintColor: ColorValue }) => (
   <Text style={{ color: tintColor }}>H1</Text>
 );
@@ -35,8 +38,10 @@ export default function Edit() {
   const [error, setError] = useState({ input: '', message: '' });
   const [data, setData] = useState({ title: '', text: '' });
   const [companySelected, setCompanySelected] = useState({ uuid: '', name: '' });
-  const isMutation = useIsMutating({ mutationKey: ['documents'], exact: true });
+  const isMutation = useIsMutating({ mutationKey: ['update-notice'], exact: true });
   const queryClient = useQueryClient();
+  const { setLoading } = useLoading();
+  const { showToast } = useToast();
   const richText = useRef<any>();
 
   const { data: notice } = useQuery({
@@ -54,6 +59,9 @@ export default function Edit() {
     }
   }, [notice]);
 
+  const showToasting = () => showToast('Aviso enviado com sucesso', Severity.SUCCESS);
+  const showLoading = () => setLoading(true);
+
   const mutation = useMutation({
     mutationKey: ['update-notice'],
     mutationFn: async () =>
@@ -70,10 +78,17 @@ export default function Edit() {
       console.log('e)rror', err);
     },
     onSuccess: (data) => {
+      showToasting();
       router.navigate('/(drawer)/(tabs)/notice');
       return queryClient.invalidateQueries({ queryKey: ['notice'] });
     },
   });
+
+  useEffect(() => {
+    if (isMutation) {
+      showLoading();
+    }
+  }, [isMutation]);
 
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
@@ -95,7 +110,7 @@ export default function Edit() {
   }, []);
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,

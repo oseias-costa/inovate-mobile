@@ -1,60 +1,38 @@
-import Modal from '@ant-design/react-native/lib/modal';
-import Provider from '@ant-design/react-native/lib/provider';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlashList } from '@shopify/flash-list';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
 import { RefreshControl, ScrollView, StatusBar, View, StyleSheet } from 'react-native';
 
 import NoticeItemDashboard from '~/app/components/NoticeItemDashboard';
 import SelectStatus from '~/app/components/SelectStatus';
 import { useUser } from '~/app/components/UserProvider';
-import { RequestData } from '~/app/lib/types/request.type';
+import NoticeItemSkeleton from '~/app/lib/Loader/NoticeItemSkeleton';
+import { httpClient } from '~/app/lib/http.client';
+import { NoticeType } from '~/app/lib/types/notice.type';
+import { PaginateReponse } from '~/app/lib/types/paginate-response.type';
 
 export default function Notice() {
-  const [status, setStatus] = useState<'' | 'PENDING' | 'FINISH' | 'EXPIRED'>('');
   const { user } = useUser();
-  const [pagination, setPagination] = useState({ page: '1', limit: '20' });
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
-  const [itemUuid, setItemUuid] = useState('');
-  const params = useLocalSearchParams();
 
-  useEffect(() => {
-    if (params?.openItemUuid || params?.openItemUuid === itemUuid) {
-      setItemUuid(String(params.openItemUuid));
-      setOpenModal(true);
-      router.setParams({ openItemUuid: '' });
-    }
-  }, [params?.openItemUuid, itemUuid]);
-
-  const { data, isLoading, refetch } = useQuery<RequestData>({
-    queryKey: ['notice'],
-    queryFn: async () => {
-      const token = await AsyncStorage.getItem('token');
-      const documents = await axios({
-        method: 'GET',
-        baseURL: `${process.env.EXPO_PUBLIC_API_URL}/notice?page=${pagination.page}&limit=${pagination.limit}&companyUuid=${user.uuid}`,
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      return documents.data;
-    },
-  });
-
-  useEffect(() => {
-    refetch();
-  }, [status]);
-
-  const ToastRef = useRef(null);
-  const showToast = () => {
-    if (ToastRef.current) {
-      ToastRef?.current?.toast();
-    }
-  };
+  const { data, refetch, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery<PaginateReponse<NoticeType>>({
+      queryKey: [`notice-list`],
+      queryFn: async ({ pageParam }) =>
+        httpClient({
+          path: `/notice`,
+          method: 'GET',
+          queryString: {
+            page: Number(pageParam),
+            limit: 8,
+            companyUuid: user.uuid,
+          },
+        }),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) => lastPage.meta.nextPage,
+    });
 
   return (
     <>
@@ -71,41 +49,53 @@ export default function Notice() {
               flexDirection: 'row',
               paddingRight: 20,
             }}>
-            <SelectStatus item="" setStatus={setStatus} status={status} />
+            {/* <SelectStatus item="" setStatus={setStatus} status={status} />
             <SelectStatus item="PENDING" setStatus={setStatus} status={status} />
             <SelectStatus item="EXPIRED" setStatus={setStatus} status={status} />
-            <SelectStatus item="FINISH" setStatus={setStatus} status={status} />
+            <SelectStatus item="FINISH" setStatus={setStatus} status={status} /> */}
           </ScrollView>
         </View>
         <View style={{ width: '100%', height: 400, paddingTop: 10 }}>
-          <FlashList
-            renderItem={({ item }: { item: any }) => (
-              <NoticeItemDashboard
-                uuid={item.uuid}
-                title={item.title}
-                description={item.text}
-                createdAt={item.createdAt}
-                key={item.uuid}
-                onPress={() => {
-                  return router.navigate(`/screens/notice/Detail?uuid=${item.uuid}`);
-                  // setItemUuid(item.uuid);
-                  // setOpenModal(true);
-                }}
-              />
-            )}
-            estimatedItemSize={5}
-            keyExtractor={(item) => item.uuid}
-            data={data?.items}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={() => queryClient.invalidateQueries({ queryKey: ['notice'] })}
-                colors={['#9Bd35A', '#689F38']}
-                progressBackgroundColor="#fff"
-              />
-            }
-            showsVerticalScrollIndicator={false}
-          />
+          {isFetching && !isFetchingNextPage ? (
+            <View>
+              <NoticeItemSkeleton key={1} />
+              <NoticeItemSkeleton key={2} />
+              <NoticeItemSkeleton key={3} />
+              <NoticeItemSkeleton key={4} />
+              <NoticeItemSkeleton key={5} />
+              <NoticeItemSkeleton key={6} />
+              <NoticeItemSkeleton key={7} />
+              <NoticeItemSkeleton key={8} />
+            </View>
+          ) : (
+            <FlashList
+              renderItem={({ item }: { item: NoticeType }) => (
+                <NoticeItemDashboard
+                  uuid={item.uuid}
+                  title={item.title}
+                  description={item.text}
+                  createdAt={item.createdAt}
+                  key={item.uuid}
+                  onPress={() => router.navigate(`/screens/notice/Detail?uuid=${item.uuid}`)}
+                />
+              )}
+              estimatedItemSize={5}
+              keyExtractor={(item) => item.uuid}
+              data={data?.pages.flatMap((page) => page.items) || []}
+              onEndReached={() => {
+                if (hasNextPage) fetchNextPage();
+              }}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={() => queryClient.invalidateQueries({ queryKey: ['notice-list'] })}
+                  colors={['#9Bd35A', '#689F38']}
+                  progressBackgroundColor="#fff"
+                />
+              }
+              showsVerticalScrollIndicator={false}
+            />
+          )}
         </View>
       </View>
     </>

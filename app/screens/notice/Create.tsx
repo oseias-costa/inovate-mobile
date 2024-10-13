@@ -1,8 +1,8 @@
-import ButtonAnt from '@ant-design/react-native/lib/button';
 import Modal from '@ant-design/react-native/lib/modal';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
-import { router } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -24,8 +24,10 @@ import CustomTextInput from '../../components/CustomTextInput';
 import Select from '../../components/Select';
 import SelectCompany from '../../components/SelectCompany';
 import { httpClient } from '../../lib/http.client';
-import { Stack } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
+
+import { useLoading } from '~/app/components/LoadingProvider';
+import { Severity, useToast } from '~/app/components/ToastProvider';
+import { CustomButton } from '~/app/lib/components/CustomButton';
 
 const handleHead = ({ tintColor }: { tintColor: ColorValue }) => (
   <Text style={{ color: tintColor }}>H1</Text>
@@ -35,9 +37,14 @@ export default function Create() {
   const [error, setError] = useState({ input: '', message: '' });
   const [data, setData] = useState({ title: '', text: '' });
   const [companySelected, setCompanySelected] = useState({ uuid: '', name: '' });
-  const isMutation = useIsMutating({ mutationKey: ['documents'], exact: true });
+  const isMutation = useIsMutating({ mutationKey: ['create-notice'], exact: true });
   const queryClient = useQueryClient();
+  const { setLoading } = useLoading();
+  const { showToast } = useToast();
   const richText = useRef<any>();
+
+  const showToasting = () => showToast('Aviso enviado com sucesso', Severity.SUCCESS);
+  const showLoading = () => setLoading(true);
 
   const mutation = useMutation({
     mutationKey: ['create-notice'],
@@ -52,13 +59,22 @@ export default function Create() {
         },
       }),
     onError: (err) => {
+      setLoading(false);
       console.log('e)rror', err);
     },
     onSuccess: (data) => {
+      setLoading(false);
+      showToasting();
       router.navigate('/(drawer)/(tabs)/notice');
       return queryClient.invalidateQueries({ queryKey: ['notice'] });
     },
   });
+
+  useEffect(() => {
+    if (isMutation) {
+      showLoading();
+    }
+  }, [isMutation]);
 
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
@@ -80,7 +96,7 @@ export default function Create() {
   }, []);
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
@@ -190,9 +206,9 @@ export default function Create() {
             />
           </View>
         ) : null}
-        <ButtonAnt style={style.button} type="primary" onPress={() => mutation.mutate()}>
+        <CustomButton type="primary" onPress={() => mutation.mutate()}>
           Enviar aviso
-        </ButtonAnt>
+        </CustomButton>
       </SafeAreaView>
     </>
   );
@@ -240,11 +256,6 @@ const style = StyleSheet.create({
     color: '#363636',
     fontFamily: 'Lato_400Regular',
     fontSize: 18,
-  },
-  button: {
-    marginHorizontal: 20,
-    marginTop: 'auto',
-    zIndex: 1,
   },
   root: {
     flex: 1,
