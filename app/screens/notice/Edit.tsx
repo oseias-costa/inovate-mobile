@@ -28,6 +28,7 @@ import { httpClient } from '../../lib/http.client';
 
 import { useLoading } from '~/app/components/LoadingProvider';
 import { Severity, useToast } from '~/app/components/ToastProvider';
+import { CustomButton } from '~/app/lib/components/CustomButton';
 
 const handleHead = ({ tintColor }: { tintColor: ColorValue }) => (
   <Text style={{ color: tintColor }}>H1</Text>
@@ -75,9 +76,11 @@ export default function Edit() {
         },
       }),
     onError: (err) => {
+      setLoading(false);
       console.log('e)rror', err);
     },
     onSuccess: (data) => {
+      setLoading(false);
       showToasting();
       router.navigate('/(drawer)/(tabs)/notice');
       return queryClient.invalidateQueries({ queryKey: ['notice'] });
@@ -221,9 +224,9 @@ export default function Edit() {
             />
           </View>
         ) : null}
-        <ButtonAnt style={style.button} type="primary" onPress={() => mutation.mutate()}>
+        <CustomButton type="primary" onPress={() => mutation.mutate()}>
           Atualizar aviso
-        </ButtonAnt>
+        </CustomButton>
       </SafeAreaView>
     </>
   );
@@ -271,11 +274,6 @@ const style = StyleSheet.create({
     color: '#363636',
     fontFamily: 'Lato_400Regular',
     fontSize: 18,
-  },
-  button: {
-    marginHorizontal: 20,
-    marginTop: 'auto',
-    zIndex: 1,
   },
   root: {
     flex: 1,

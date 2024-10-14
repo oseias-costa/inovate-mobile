@@ -1,5 +1,5 @@
 import RadioItem from '@ant-design/react-native/lib/radio/RadioItem';
-import { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { Text, View } from 'react-native';
 
 import useGetCompanys from '../hook/useGetCompanys';

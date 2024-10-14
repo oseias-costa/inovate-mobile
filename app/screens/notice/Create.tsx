@@ -21,11 +21,10 @@ import {
 import { actions, RichEditor, RichToolbar } from 'react-native-pell-rich-editor';
 
 import CustomTextInput from '../../components/CustomTextInput';
-import Select from '../../components/Select';
-import SelectCompany from '../../components/SelectCompany';
 import { httpClient } from '../../lib/http.client';
 
 import { useLoading } from '~/app/components/LoadingProvider';
+import { DestinationUsers, NoticeSelectUsers } from '~/app/components/NoticeSelectUsers';
 import { Severity, useToast } from '~/app/components/ToastProvider';
 import { CustomButton } from '~/app/lib/components/CustomButton';
 
@@ -36,7 +35,8 @@ const handleHead = ({ tintColor }: { tintColor: ColorValue }) => (
 export default function Create() {
   const [error, setError] = useState({ input: '', message: '' });
   const [data, setData] = useState({ title: '', text: '' });
-  const [companySelected, setCompanySelected] = useState({ uuid: '', name: '' });
+  const [destinationUsers, setDestinationUsers] = useState<DestinationUsers | undefined>();
+  const [companies, setCompanies] = useState<{ name: string; uuid: string }[]>();
   const isMutation = useIsMutating({ mutationKey: ['create-notice'], exact: true });
   const queryClient = useQueryClient();
   const { setLoading } = useLoading();
@@ -55,7 +55,7 @@ export default function Create() {
         data: {
           title: data.title,
           text: data.text,
-          companyUuid: companySelected.uuid,
+          companies,
         },
       }),
     onError: (err) => {
@@ -132,29 +132,23 @@ export default function Create() {
         }}
       />
       <SafeAreaView style={style.container}>
-        <View style={{ height: 25 }} />
-        <CustomTextInput
-          item="title"
-          placeholder="Título"
-          error={error}
-          setError={setError}
-          state={data}
-          setState={setData}
-        />
-        <Select checkValue={companySelected.name} title="Selecione a empresa" placeholder="Empresa">
-          <SelectCompany
-            companySelected={companySelected}
-            setCompanySelected={setCompanySelected}
-          />
-        </Select>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={{ flex: 1 }}>
+            <View style={{ height: 25 }} />
+            <CustomTextInput
+              item="title"
+              placeholder="Título"
+              error={error}
+              setError={setError}
+              state={data}
+              setState={setData}
+            />
             <Text style={style.label}>Texto</Text>
             <View
               style={{
-                height: 150,
+                height: 240,
                 borderColor: '#DADADA',
                 borderWidth: 1,
                 marginHorizontal: 20,
@@ -187,28 +181,35 @@ export default function Create() {
                 />
               </ScrollView>
             </View>
+            <NoticeSelectUsers
+              placeholder="Selecione o destinatário"
+              noticeDestination={destinationUsers}
+              setNoticeDestionation={setDestinationUsers}
+              setCompanies={setCompanies}
+              companies={companies}
+            />
+            {isKeyboardVisible ? (
+              <View style={style.inner}>
+                <RichToolbar
+                  editor={richText}
+                  actions={[
+                    actions.setBold,
+                    actions.setItalic,
+                    actions.setUnderline,
+                    actions.insertImage,
+                    actions.keyboard,
+                  ]}
+                  selectedIconTint="#00264B"
+                  iconMap={{ [actions.heading1]: handleHead }}
+                  onPressAddImage={pickImage}
+                />
+              </View>
+            ) : null}
+            <CustomButton type="primary" onPress={() => mutation.mutate()}>
+              Enviar aviso
+            </CustomButton>
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
-        {isKeyboardVisible ? (
-          <View style={style.inner}>
-            <RichToolbar
-              editor={richText}
-              actions={[
-                actions.setBold,
-                actions.setItalic,
-                actions.setUnderline,
-                actions.insertImage,
-                actions.keyboard,
-              ]}
-              selectedIconTint="#00264B"
-              iconMap={{ [actions.heading1]: handleHead }}
-              onPressAddImage={pickImage}
-            />
-          </View>
-        ) : null}
-        <CustomButton type="primary" onPress={() => mutation.mutate()}>
-          Enviar aviso
-        </CustomButton>
       </SafeAreaView>
     </>
   );
@@ -218,7 +219,7 @@ const style = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     paddingTop: 20,
-    flex: 1,
+    flex: 2,
     justifyContent: 'flex-start',
   },
   header: {
@@ -259,7 +260,6 @@ const style = StyleSheet.create({
   },
   root: {
     flex: 1,
-    // marginTop: StatusBar.currentHeight || 0,
     backgroundColor: '#eaeaea',
   },
   editor: {
@@ -273,11 +273,12 @@ const style = StyleSheet.create({
   },
   inner: {
     flex: 1,
-    top: 6,
+    bottom: 40,
   },
   label: {
     fontFamily: 'Lato_300Light',
     marginHorizontal: 20,
+    paddingTop: 10,
   },
   headerButton: {
     color: '#fff',

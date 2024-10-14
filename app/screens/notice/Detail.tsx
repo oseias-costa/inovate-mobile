@@ -6,6 +6,8 @@ import React, { useRef } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RichEditor } from 'react-native-pell-rich-editor';
 
+import NoticeDetailSkeleton from '~/app/lib/Loader/NoticeDetailSkeleton';
+import { CustomButton } from '~/app/lib/components/CustomButton';
 import { formatDate } from '~/app/lib/date';
 import { httpClient } from '~/app/lib/http.client';
 
@@ -13,7 +15,7 @@ export default function NoticeDetail() {
   const { uuid } = useLocalSearchParams();
   const richText = useRef<any>();
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: [`notice-${uuid}`],
     queryFn: async () =>
       httpClient({
@@ -45,57 +47,56 @@ export default function NoticeDetail() {
         }}
       />
       <SafeAreaView style={{ backgroundColor: '#fff', flex: 1 }}>
-        <View style={{ paddingBottom: 25, paddingTop: 20, marginHorizontal: 20 }}>
-          <View style={notice.expirationContainer}>
-            <Text style={notice.expiration}>Data {formatDate(new Date(data?.createdAt))}</Text>
-          </View>
-          <Text style={notice.title}>{data?.title}</Text>
-          <View
-            style={{
-              borderColor: '#DADADA',
-              borderWidth: 1,
-              borderRadius: 5,
-              marginVertical: 5,
-              marginBottom: 10,
-            }}>
-            <ScrollView
-              bounces={false}
-              showsVerticalScrollIndicator
-              contentContainerStyle={{ borderRadius: 5 }}>
-              <RichEditor
-                ref={richText}
-                initialContentHTML={`<h2>Novo teste de aviso</h2>${data?.text}`}
-                disabled
-                editorStyle={{
-                  color: '#363636',
-                }}
-                style={{
-                  borderRadius: 5,
-                }}
-                containerStyle={{
-                  borderRadius: 5,
-                }}
+        {isLoading ? (
+          <NoticeDetailSkeleton />
+        ) : (
+          <View style={{ paddingBottom: 25, paddingTop: 20, marginHorizontal: 10 }}>
+            <View style={notice.expirationContainer}>
+              <Text style={notice.expiration}>Data {formatDate(new Date(data?.createdAt))}</Text>
+            </View>
+            <View
+              style={{
+                borderRadius: 5,
+                marginBottom: 10,
+                bottom: 20,
+              }}>
+              <ScrollView
+                bounces={false}
                 showsVerticalScrollIndicator
-                initialHeight={100}
-                scrollEnabled
-              />
-            </ScrollView>
+                contentContainerStyle={{ borderRadius: 5 }}>
+                <RichEditor
+                  ref={richText}
+                  initialContentHTML={`<h2>${data?.title} teste com um titulo maior </h2>${data?.text}`}
+                  disabled
+                  editorStyle={{
+                    color: '#363636',
+                    backgroundColor: 'transparent',
+                  }}
+                  style={{
+                    borderRadius: 5,
+                  }}
+                  containerStyle={{
+                    borderRadius: 5,
+                  }}
+                  showsVerticalScrollIndicator
+                  initialHeight={100}
+                  scrollEnabled
+                />
+              </ScrollView>
+            </View>
+            <View style={{ height: 0 }}>
+              {data?.documents?.map((document: any) => (
+                <View style={notice.attachContainer}>
+                  <Ionicons name="attach" size={24} color="#005AB1" />
+                  <Text style={notice.attachTitle}>{document.name}</Text>
+                </View>
+              ))}
+            </View>
           </View>
-          <View style={{ height: 0 }}>
-            {data?.documents?.map((document: any) => (
-              <View style={notice.attachContainer}>
-                <Ionicons name="attach" size={24} color="#005AB1" />
-                <Text style={notice.attachTitle}>{document.name}</Text>
-              </View>
-            ))}
-          </View>
-          <ButtonAnt
-            type="ghost"
-            style={notice.button}
-            onPress={() => router.navigate('/(drawer)/(tabs)/notice')}>
-            voltar
-          </ButtonAnt>
-        </View>
+        )}
+        <CustomButton type="ghost" onPress={() => router.navigate('/(drawer)/(tabs)/notice')}>
+          voltar
+        </CustomButton>
       </SafeAreaView>
     </>
   );
@@ -225,7 +226,10 @@ const notice = StyleSheet.create({
     fontSize: 14,
     color: '#6D6D6D',
     fontFamily: 'Lato_300Light',
-    paddingLeft: 4,
+    paddingBottom: 10,
+    paddingLeft: 14,
+    zIndex: 2,
+    top: 10,
   },
   description: {
     color: '#6D6D6D',

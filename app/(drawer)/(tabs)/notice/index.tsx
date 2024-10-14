@@ -4,8 +4,8 @@ import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { RefreshControl, ScrollView, StatusBar, View, StyleSheet } from 'react-native';
 
+import NoticeFilterItem from '~/app/components/NoticeFilterItem';
 import NoticeItemDashboard from '~/app/components/NoticeItemDashboard';
-import SelectStatus from '~/app/components/SelectStatus';
 import { useUser } from '~/app/components/UserProvider';
 import NoticeItemSkeleton from '~/app/lib/Loader/NoticeItemSkeleton';
 import { httpClient } from '~/app/lib/http.client';
@@ -13,6 +13,7 @@ import { NoticeType } from '~/app/lib/types/notice.type';
 import { PaginateReponse } from '~/app/lib/types/paginate-response.type';
 
 export default function Notice() {
+  const [filter, setFilter] = useState<'' | 'GENERAL' | 'FINANTIAL' | 'DEADLINES'>('');
   const { user } = useUser();
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
@@ -25,7 +26,7 @@ export default function Notice() {
           path: `/notice`,
           method: 'GET',
           queryString: {
-            page: Number(pageParam),
+            page: pageParam,
             limit: 8,
             companyUuid: user.uuid,
           },
@@ -49,13 +50,13 @@ export default function Notice() {
               flexDirection: 'row',
               paddingRight: 20,
             }}>
-            {/* <SelectStatus item="" setStatus={setStatus} status={status} />
-            <SelectStatus item="PENDING" setStatus={setStatus} status={status} />
-            <SelectStatus item="EXPIRED" setStatus={setStatus} status={status} />
-            <SelectStatus item="FINISH" setStatus={setStatus} status={status} /> */}
+            <NoticeFilterItem item="" setFilter={setFilter} filter={filter} />
+            <NoticeFilterItem item="GENERAL" setFilter={setFilter} filter={filter} />
+            <NoticeFilterItem item="FINANTIAL" setFilter={setFilter} filter={filter} />
+            <NoticeFilterItem item="DEADLINES" setFilter={setFilter} filter={filter} />
           </ScrollView>
         </View>
-        <View style={{ width: '100%', height: 400, paddingTop: 10 }}>
+        <View style={{ flex: 1, width: '100%', height: 400, paddingTop: 10 }}>
           {isFetching && !isFetchingNextPage ? (
             <View>
               <NoticeItemSkeleton key={1} />

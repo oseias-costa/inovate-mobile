@@ -100,7 +100,7 @@ export default function Layout() {
                     marginRight: 20,
                     color: '#fff',
                   }}>
-                  Nova
+                  Novo
                 </Text>
               </TouchableOpacity>
             ),
