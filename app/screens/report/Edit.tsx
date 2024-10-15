@@ -28,6 +28,7 @@ import { httpClient } from '../../lib/http.client';
 
 import { useLoading } from '~/app/components/LoadingProvider';
 import { Severity, useToast } from '~/app/components/ToastProvider';
+import { CustomButton } from '~/app/lib/components/CustomButton';
 
 const handleHead = ({ tintColor }: { tintColor: ColorValue }) => (
   <Text style={{ color: tintColor }}>H1</Text>
@@ -87,7 +88,7 @@ export default function Edit() {
       setLoading(false);
       showToasting();
       router.navigate('/(drawer)/(tabs)/reports');
-      return queryClient.invalidateQueries({ queryKey: ['reports'] });
+      return queryClient.invalidateQueries({ queryKey: ['reports', `reports-${uuid}`] });
     },
   });
 
@@ -222,9 +223,9 @@ export default function Edit() {
             />
           </View>
         ) : null}
-        <ButtonAnt style={style.button} type="primary" onPress={() => mutation.mutate()}>
-          Atualizar aviso
-        </ButtonAnt>
+        <CustomButton type="primary" onPress={() => mutation.mutate()}>
+          Editar
+        </CustomButton>
       </SafeAreaView>
     </>
   );

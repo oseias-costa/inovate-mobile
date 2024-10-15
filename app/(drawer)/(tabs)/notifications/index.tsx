@@ -1,22 +1,14 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlashList } from '@shopify/flash-list';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-import { useState } from 'react';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import React, { useState } from 'react';
 import { RefreshControl, ScrollView, View, StyleSheet } from 'react-native';
 
 import SelectNotificationFilter from '~/app/components/SelectNotificationFilter';
 import { useUser } from '~/app/components/UserProvider';
 import NotificationItem from '~/app/components/notificationItem';
-
-type Notification = {
-  type: string;
-  title: string;
-  description: string;
-  isRead: boolean;
-  itemUuid: string;
-  createAt: Date;
-};
+import { httpClient } from '~/app/lib/http.client';
+import { Notification } from '~/app/lib/types/notification.type';
+import { PaginateReponse } from '~/app/lib/types/paginate-response.type';
 
 export default function Notifications() {
   const [status, setStatus] = useState<'' | 'REQUEST' | 'REPORT' | 'NOTICE'>('');
@@ -24,19 +16,23 @@ export default function Notifications() {
   const [refreshing, setRefreshing] = useState(false);
   const queryClient = useQueryClient();
 
-  const { data, isError, isSuccess, error, refetch } = useQuery({
-    queryKey: ['notifications'],
-    queryFn: async () => {
-      const token = await AsyncStorage.getItem('token');
-      const notifications = await axios.get(`${process.env.EXPO_PUBLIC_API_URL}/notifications`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: {
-          subjectUuid: user.uuid,
-        },
-      });
-      return notifications.data;
-    },
-  });
+  const { data, refetch, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery<PaginateReponse<Notification>>({
+      queryKey: [`notification-list`],
+      queryFn: async ({ pageParam }) =>
+        httpClient({
+          path: `/notifications`,
+          method: 'GET',
+          queryString: {
+            page: pageParam,
+            limit: 8,
+            subjectUuid: user.uuid,
+          },
+        }),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) => lastPage.meta.nextPage,
+    });
+
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.destakContainer}>
@@ -60,22 +56,23 @@ export default function Notifications() {
         renderItem={({ item }: { item: Notification }) => {
           return (
             <NotificationItem
-              id={item.itemUuid}
+              key={item.itemUuid}
+              itemUuid={item.itemUuid}
               title={item.title}
               description={item.description}
-              time={new Date(item.createAt)}
+              createAt={new Date(item.createAt)}
               type={item.type}
-              read={item.isRead}
+              isRead={item.isRead}
             />
           );
         }}
         estimatedItemSize={15}
         keyExtractor={(item) => item.itemUuid}
-        data={data.items}
+        data={data?.pages.flatMap((page) => page.items) || []}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={() => queryClient.invalidateQueries({ queryKey: ['notifications'] })}
+            onRefresh={() => queryClient.invalidateQueries({ queryKey: ['notification-list'] })}
             colors={['#9Bd35A', '#689F38']}
             progressBackgroundColor="#fff"
           />
@@ -90,7 +87,6 @@ const styles = StyleSheet.create({
   destakContainer: {
     position: 'relative',
     bottom: 1,
-    marginBottom: 10,
     zIndex: 1,
     backgroundColor: '#00264B',
     height: 60,

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 import { useLoading } from '../components/LoadingProvider';
 import { Severity, useToast } from '../components/ToastProvider';
-import { DocumentPickerResult } from '../types/document-picker-result.type';
+import { DocumentPickerResult } from '../lib/types/document-picker-result.type';
 
 export function useUpload(uuid: string, type: 'REQUEST' | 'REPORT' | 'NOTICE') {
   const [files, setFiles] = useState<DocumentPickerResult | any>(null);
@@ -20,16 +20,16 @@ export function useUpload(uuid: string, type: 'REQUEST' | 'REPORT' | 'NOTICE') {
       multiple: false,
     });
     if (result.canceled === true) {
-      setLoading(true);
-      setFiles(result);
-    } else {
-      setTimeout(() => {
-        setFiles(JSON.stringify(result));
-      }, 100);
+      return;
     }
+
+    setTimeout(() => {
+      setFiles(JSON.stringify(result));
+    }, 100);
   };
 
   function upload() {
+    if (!files) return;
     setLoading(true);
     const name = JSON.parse(files).assets[0].name;
     const mimeType = JSON.parse(files).assets[0].mimeType;

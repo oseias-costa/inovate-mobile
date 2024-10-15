@@ -1,4 +1,3 @@
-import ButtonAnt from '@ant-design/react-native/lib/button';
 import Modal from '@ant-design/react-native/lib/modal';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -29,6 +28,7 @@ import { httpClient } from '../../lib/http.client';
 import { useLoading } from '~/app/components/LoadingProvider';
 import { Severity, useToast } from '~/app/components/ToastProvider';
 import { useUser } from '~/app/components/UserProvider';
+import { CustomButton } from '~/app/lib/components/CustomButton';
 
 const handleHead = ({ tintColor }: { tintColor: ColorValue }) => (
   <Text style={{ color: tintColor }}>H1</Text>
@@ -68,7 +68,7 @@ export default function CreateReport() {
     onSuccess: (data) => {
       setLoading(false);
       showToasting();
-      router.navigate('/(drawer)/(tabs)/reports');
+      router.navigate(`/screens/report/UploadDocument?uuid=${data}`);
       return queryClient.invalidateQueries({ queryKey: ['reports'] });
     },
   });
@@ -209,9 +209,9 @@ export default function CreateReport() {
             />
           </View>
         ) : null}
-        <ButtonAnt style={style.button} type="primary" onPress={() => mutation.mutate()}>
-          Enviar aviso
-        </ButtonAnt>
+        <CustomButton type="primary" onPress={() => mutation.mutate()}>
+          Próximo
+        </CustomButton>
       </SafeAreaView>
     </>
   );

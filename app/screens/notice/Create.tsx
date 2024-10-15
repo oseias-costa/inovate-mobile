@@ -206,7 +206,7 @@ export default function Create() {
               </View>
             ) : null}
             <CustomButton type="primary" onPress={() => mutation.mutate()}>
-              Enviar aviso
+              Criar aviso
             </CustomButton>
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>

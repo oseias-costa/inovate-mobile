@@ -1,4 +1,3 @@
-import ButtonAnt from '@ant-design/react-native/lib/button';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
@@ -6,6 +5,8 @@ import React, { useRef } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RichEditor } from 'react-native-pell-rich-editor';
 
+import NoticeDetailSkeleton from '~/app/lib/Loader/NoticeDetailSkeleton';
+import { CustomButton } from '~/app/lib/components/CustomButton';
 import { formatDate } from '~/app/lib/date';
 import { httpClient } from '~/app/lib/http.client';
 
@@ -13,7 +14,7 @@ export default function NoticeDetail() {
   const { uuid } = useLocalSearchParams();
   const richText = useRef<any>();
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: [`report-${uuid}`],
     queryFn: async () =>
       httpClient({
@@ -22,6 +23,7 @@ export default function NoticeDetail() {
       }),
   });
 
+  console.log('data.documents', data?.documents);
   return (
     <>
       <Stack.Screen
@@ -45,43 +47,50 @@ export default function NoticeDetail() {
         }}
       />
       <SafeAreaView style={{ backgroundColor: '#fff', flex: 1 }}>
-        <View style={{ paddingBottom: 25, paddingTop: 20, marginHorizontal: 20 }}>
-          <View style={notice.expirationContainer}>
-            <Text style={notice.expiration}>Data {formatDate(new Date(data?.createdAt))}</Text>
-          </View>
-          <Text style={notice.title}>{data?.title}</Text>
+        {isLoading ? (
+          <NoticeDetailSkeleton />
+        ) : (
           <View
             style={{
-              borderColor: '#DADADA',
-              borderWidth: 1,
-              borderRadius: 5,
-              marginVertical: 5,
-              marginBottom: 10,
+              paddingBottom: 25,
+              paddingTop: 20,
+              marginHorizontal: 10,
             }}>
-            <ScrollView
-              bounces={false}
-              showsVerticalScrollIndicator
-              contentContainerStyle={{ borderRadius: 5 }}>
-              <RichEditor
-                ref={richText}
-                initialContentHTML={`<h2>Novo teste de aviso</h2>${data?.text}`}
-                disabled
-                editorStyle={{
-                  color: '#363636',
-                }}
-                style={{
-                  borderRadius: 5,
-                }}
-                containerStyle={{
-                  borderRadius: 5,
-                }}
+            <View style={notice.expirationContainer}>
+              <Text style={notice.expiration}>Data {formatDate(new Date(data?.createdAt))}</Text>
+            </View>
+            <View
+              style={{
+                borderRadius: 5,
+                marginVertical: 5,
+                marginBottom: 10,
+                backgroundColor: 'transparent',
+              }}>
+              <ScrollView
+                bounces={false}
                 showsVerticalScrollIndicator
-                initialHeight={100}
-                scrollEnabled
-              />
-            </ScrollView>
-          </View>
-          <View style={{ height: 0 }}>
+                contentContainerStyle={{ borderRadius: 5 }}>
+                <RichEditor
+                  ref={richText}
+                  initialContentHTML={`<h2>${data?.title}</h2>${data?.text}`}
+                  disabled
+                  editorStyle={{
+                    color: '#363636',
+                    backgroundColor: 'transparent',
+                  }}
+                  style={{
+                    borderRadius: 5,
+                    bottom: 10,
+                  }}
+                  containerStyle={{
+                    borderRadius: 5,
+                  }}
+                  showsVerticalScrollIndicator
+                  initialHeight={100}
+                  scrollEnabled
+                />
+              </ScrollView>
+            </View>
             {data?.documents?.map((document: any) => (
               <View style={notice.attachContainer}>
                 <Ionicons name="attach" size={24} color="#005AB1" />
@@ -89,13 +98,10 @@ export default function NoticeDetail() {
               </View>
             ))}
           </View>
-          <ButtonAnt
-            type="ghost"
-            style={notice.button}
-            onPress={() => router.navigate('/(drawer)/(tabs)/notice')}>
-            voltar
-          </ButtonAnt>
-        </View>
+        )}
+        <CustomButton type="ghost" onPress={() => router.navigate('/(drawer)/(tabs)/notice')}>
+          voltar
+        </CustomButton>
       </SafeAreaView>
     </>
   );
@@ -225,7 +231,7 @@ const notice = StyleSheet.create({
     fontSize: 14,
     color: '#6D6D6D',
     fontFamily: 'Lato_300Light',
-    paddingLeft: 4,
+    paddingLeft: 14,
   },
   description: {
     color: '#6D6D6D',

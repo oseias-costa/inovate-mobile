@@ -27,7 +27,7 @@ export default function Reports() {
         path: `/reports`,
         method: 'GET',
         queryString: {
-          page: Number(pageParam),
+          page: pageParam,
           limit: 8,
           companyUuid: user.uuid,
         },
@@ -40,7 +40,7 @@ export default function Reports() {
     <>
       <View style={{ backgroundColor: '#fff', position: 'relative', flex: 1 }}>
         <StatusBar barStyle="light-content" hidden={false} />
-        <View style={{ width: '100%', height: 400, paddingTop: 10 }}>
+        <View style={{ flex: 1, width: '100%', height: 400, paddingTop: 10 }}>
           {isFetching && !isFetchingNextPage ? (
             <View>
               <ReporItemSkeleton key={1} />
@@ -48,6 +48,11 @@ export default function Reports() {
               <ReporItemSkeleton key={3} />
               <ReporItemSkeleton key={4} />
               <ReporItemSkeleton key={5} />
+              <ReporItemSkeleton key={6} />
+              <ReporItemSkeleton key={7} />
+              <ReporItemSkeleton key={8} />
+              <ReporItemSkeleton key={9} />
+              <ReporItemSkeleton key={10} />
             </View>
           ) : (
             <FlashList

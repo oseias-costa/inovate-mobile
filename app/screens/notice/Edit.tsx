@@ -1,4 +1,3 @@
-import ButtonAnt from '@ant-design/react-native/lib/button';
 import Modal from '@ant-design/react-native/lib/modal';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useIsMutating, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';

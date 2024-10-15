@@ -1,28 +1,41 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import React, { useEffect } from 'react';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-type Notification = {
-  type: string;
-  title: string;
-  description: string;
-  time: Date;
-  id: string;
-  read: boolean;
-};
+import { Notification } from '../lib/types/notification.type';
 
 export default function NotificationItem(notification: Notification) {
   const width = Dimensions.get('screen').width;
 
+  const typeDescription = {
+    REPORT: 'Relatório',
+    NOTICE: 'Aviso',
+    REQUEST: 'Solicitação de documentos',
+  };
+
+  const result = formatDistanceToNow(notification?.createAt, { addSuffix: true, locale: ptBR });
+
   return (
     <TouchableOpacity
-      style={[styles.button, { backgroundColor: notification.read ? '#00264B09' : '' }]}>
-      {notification.read ? (
+      style={[styles.button, { backgroundColor: notification.isRead ? '#fff' : '#00264B09' }]}>
+      {!notification.isRead ? (
         <FontAwesome name="circle" size={12} color="#6597C9" style={styles.circle} />
       ) : null}
       <View style={styles.container}>
         <Image style={styles.img} source={require('../../assets/dashboard/logo.png')} />
         <View style={styles.box}>
-          <Text style={styles.type}>Status da notificação</Text>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}>
+            <Text style={styles.type}>{typeDescription[notification.type]}</Text>
+            <Text style={styles.notificationTime}>{result}</Text>
+          </View>
           <Text style={[styles.title, { width: width - 115 }]} numberOfLines={1}>
             {notification.title}
           </Text>
@@ -31,7 +44,6 @@ export default function NotificationItem(notification: Notification) {
           </Text>
         </View>
       </View>
-      <Text style={styles.notificationTime}>1 hora atrás</Text>
     </TouchableOpacity>
   );
 }
@@ -52,7 +64,6 @@ const styles = StyleSheet.create({
   },
   type: {
     color: '#6597C9',
-    marginBottom: 5,
   },
   title: {
     color: '#3F3D56',
@@ -65,14 +76,15 @@ const styles = StyleSheet.create({
     color: '#716F6F',
   },
   notificationTime: {
-    alignSelf: 'flex-end',
-    paddingRight: 20,
+    // alignSelf: 'flex-end',
     color: '#3B3D3E',
     fontFamily: 'Lato_400Regular',
+    fontSize: 12,
   },
   img: {
-    width: 45,
-    height: 45,
+    width: 35,
+    height: 35,
+    top: 5,
   },
   circle: {
     position: 'absolute',
