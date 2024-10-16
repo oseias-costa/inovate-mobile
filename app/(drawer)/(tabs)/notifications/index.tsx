@@ -1,17 +1,18 @@
 import { FlashList } from '@shopify/flash-list';
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useState } from 'react';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, View, StyleSheet } from 'react-native';
 
-import SelectNotificationFilter from '~/app/components/SelectNotificationFilter';
+import NotificationFilterItem from '~/app/components/NotificationFilterItem';
 import { useUser } from '~/app/components/UserProvider';
 import NotificationItem from '~/app/components/notificationItem';
+import NotificationItemSkeleton from '~/app/lib/Loader/NotificationItemSkeleton';
 import { httpClient } from '~/app/lib/http.client';
 import { Notification } from '~/app/lib/types/notification.type';
 import { PaginateReponse } from '~/app/lib/types/paginate-response.type';
 
 export default function Notifications() {
-  const [status, setStatus] = useState<'' | 'REQUEST' | 'REPORT' | 'NOTICE'>('');
+  const [filter, setFilter] = useState<'' | 'REQUEST' | 'NOTICE' | 'REPORT'>('');
   const { user } = useUser();
   const [refreshing, setRefreshing] = useState(false);
   const queryClient = useQueryClient();
@@ -27,11 +28,37 @@ export default function Notifications() {
             page: pageParam,
             limit: 8,
             subjectUuid: user.uuid,
+            type: filter,
           },
         }),
       initialPageParam: 1,
       getNextPageParam: (lastPage) => lastPage.meta.nextPage,
     });
+
+  const mutate = useMutation({
+    mutationKey: ['update-notifications'],
+    mutationFn: async () =>
+      httpClient({
+        path: '/notifications',
+        method: 'PATCH',
+        queryString: {
+          userUuid: user.uuid,
+        },
+      }),
+  });
+
+  const update = () => mutate.mutate();
+
+  useEffect(() => {
+    if (user && data) {
+      console.log('eeeeeeee');
+      update();
+    }
+  }, [data, user]);
+
+  useEffect(() => {
+    refetch();
+  }, [filter]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -42,43 +69,61 @@ export default function Notifications() {
           decelerationRate="normal"
           contentContainerStyle={{
             marginHorizontal: 15,
-            marginTop: 10,
+            paddingTop: 15,
             flexDirection: 'row',
             paddingRight: 20,
+            bottom: 5,
           }}>
-          <SelectNotificationFilter item="" setStatus={setStatus} status={status} />
-          <SelectNotificationFilter item="REQUEST" setStatus={setStatus} status={status} />
-          <SelectNotificationFilter item="REPORT" setStatus={setStatus} status={status} />
-          <SelectNotificationFilter item="NOTICE" setStatus={setStatus} status={status} />
+          <NotificationFilterItem item="" setFilter={setFilter} filter={filter} />
+          <NotificationFilterItem item="REQUEST" setFilter={setFilter} filter={filter} />
+          <NotificationFilterItem item="NOTICE" setFilter={setFilter} filter={filter} />
+          <NotificationFilterItem item="REPORT" setFilter={setFilter} filter={filter} />
         </ScrollView>
       </View>
-      <FlashList
-        renderItem={({ item }: { item: Notification }) => {
-          return (
-            <NotificationItem
-              key={item.itemUuid}
-              itemUuid={item.itemUuid}
-              title={item.title}
-              description={item.description}
-              createAt={new Date(item.createAt)}
-              type={item.type}
-              isRead={item.isRead}
+      {isFetching && !isFetchingNextPage ? (
+        <>
+          <NotificationItemSkeleton key={1} />
+          <NotificationItemSkeleton key={2} />
+          <NotificationItemSkeleton key={3} />
+          <NotificationItemSkeleton key={4} />
+          <NotificationItemSkeleton key={5} />
+          <NotificationItemSkeleton key={6} />
+          <NotificationItemSkeleton key={7} />
+          <NotificationItemSkeleton key={8} />
+          <NotificationItemSkeleton key={9} />
+        </>
+      ) : (
+        <FlashList
+          renderItem={({ item }: { item: Notification }) => {
+            return (
+              <NotificationItem
+                key={item.itemUuid}
+                itemUuid={item.itemUuid}
+                title={item.title}
+                description={item.description}
+                createAt={new Date(item.createAt)}
+                type={item.type}
+                isRead={item.isRead}
+              />
+            );
+          }}
+          estimatedItemSize={15}
+          onEndReached={() => {
+            if (hasNextPage) fetchNextPage();
+          }}
+          keyExtractor={(item) => item.itemUuid}
+          data={data?.pages.flatMap((page) => page.items) || []}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => queryClient.invalidateQueries({ queryKey: ['notification-list'] })}
+              colors={['#9Bd35A', '#689F38']}
+              progressBackgroundColor="#fff"
             />
-          );
-        }}
-        estimatedItemSize={15}
-        keyExtractor={(item) => item.itemUuid}
-        data={data?.pages.flatMap((page) => page.items) || []}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => queryClient.invalidateQueries({ queryKey: ['notification-list'] })}
-            colors={['#9Bd35A', '#689F38']}
-            progressBackgroundColor="#fff"
-          />
-        }
-        showsVerticalScrollIndicator={false}
-      />
+          }
+          showsVerticalScrollIndicator={false}
+        />
+      )}
     </View>
   );
 }

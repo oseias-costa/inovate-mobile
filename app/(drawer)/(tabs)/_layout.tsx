@@ -30,7 +30,7 @@ export default function Layout() {
             headerTitle: () => <Logo />,
             headerLeft: () => <DrawerToggleButton tintColor="#fff" />,
             headerRight: () => (
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => router.navigate('/(drawer)/(tabs)/notifications')}>
                 <Badge
                   text={9}
                   style={{ marginRight: 25 }}
@@ -149,6 +149,8 @@ export default function Layout() {
           options={{
             title: 'Notificações',
             headerTintColor: '#fff',
+            headerShadowVisible: false,
+            headerLeft: () => <DrawerToggleButton tintColor="#fff" />,
             headerStyle: {
               backgroundColor: '#00264B',
             },
