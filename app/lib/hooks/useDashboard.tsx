@@ -4,9 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import React, { useEffect } from 'react';
 
-import useError from './useError';
-import { useUser } from '../components/UserProvider';
-import { httpClient } from '../lib/http.client';
+import { useUser } from '../../components/UserProvider';
+import { httpClient } from '../http.client';
 
 export default function useDashboard() {
   const { user } = useUser();
@@ -67,6 +66,22 @@ export default function useDashboard() {
     },
   });
 
+  const {
+    data: numbers,
+    isFetching: isFetchingNumbers,
+    refetch: refetchNumbers,
+  } = useQuery({
+    queryKey: ['numbers'],
+    queryFn: async () =>
+      httpClient({
+        method: 'GET',
+        path: `/notifications/numbers`,
+        queryString: {
+          uuid: user.uuid,
+        },
+      }),
+  });
+
   useFocusEffect(
     React.useCallback(() => {
       refetchReport();
@@ -79,10 +94,19 @@ export default function useDashboard() {
     refetchReport();
     refetchNotice();
     refetchRequest();
+    refetchNumbers();
   }, [user]);
 
+  const refetchAllItems = async () => {
+    refetchRequest();
+    refetchReport();
+    refetchNotice();
+    refetchNumbers();
+  };
+
   return {
-    data: { requests, notice, reports },
-    isFetching: isFetchingNotice || isFetchingReports || isFetchingRequests,
+    data: { requests, notice, reports, numbers },
+    isFetching: isFetchingNotice || isFetchingReports || isFetchingRequests || isFetchingNumbers,
+    refetch: async () => refetchAllItems(),
   };
 }

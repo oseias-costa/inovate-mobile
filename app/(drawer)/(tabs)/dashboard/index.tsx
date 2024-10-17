@@ -3,9 +3,10 @@ import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Platform,
+  RefreshControl,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -18,10 +19,14 @@ import { useLoading } from '~/app/components/LoadingProvider';
 import NoticeItemDashboard from '~/app/components/NoticeItemDashboard';
 import ReportItem from '~/app/components/ReportItem';
 import RequestItemDashboard from '~/app/components/RequestItemDashboard';
-import { Severity, useToast } from '~/app/components/ToastProvider';
+import { useToast } from '~/app/components/ToastProvider';
 import { useUser } from '~/app/components/UserProvider';
-import useDashboard from '~/app/hook/useDashboard';
 import useFontLato from '~/app/hook/useFontLato';
+import NoticeItemSkeleton from '~/app/lib/Loader/NoticeItemSkeleton';
+import NumbersSkeleton from '~/app/lib/Loader/NumbersSkeleton';
+import ReporItemSkeleton from '~/app/lib/Loader/ReporItemSkeleton';
+import RequestItemSkeleton from '~/app/lib/Loader/RequestItemSkeleton';
+import useDashboard from '~/app/lib/hooks/useDashboard';
 import { httpClient } from '~/app/lib/http.client';
 
 Notifications.setNotificationHandler({
@@ -35,10 +40,11 @@ Notifications.setNotificationHandler({
 export default function Dashboard() {
   const fontsLoades = useFontLato();
   const [expoPushToken, setExpoPushToken] = useState('');
-  const { data } = useDashboard();
+  const { data, isFetching, refetch } = useDashboard();
   const { user } = useUser();
   const { showToast } = useToast();
   const { setLoading } = useLoading();
+  const [refreshing, setRefreshing] = useState(false);
 
   const mutation = useMutation({
     mutationKey: ['device-token'],
@@ -83,6 +89,10 @@ export default function Dashboard() {
   if (!fontsLoades) {
     return <Text>Loading</Text>;
   }
+  const onRefresh = async () => {
+    await refetch();
+  };
+
   return (
     <>
       <StatusBar barStyle="light-content" hidden={false} />
@@ -93,51 +103,80 @@ export default function Dashboard() {
             <Text style={styles.welcomeNameUser}>{user?.name}.</Text>
           </View>
           <View style={[styles.numbersBox]}>
-            <NumberItem description="Solicitações" number={1} />
-            <NumberItem description="Avisos" number={2} />
-            <NumberItem description="Relatórios" number={6} />
+            {isFetching ? (
+              <NumbersSkeleton />
+            ) : (
+              <>
+                <NumberItem description="Solicitações" number={data?.numbers?.requests} />
+                <NumberItem description="Avisos" number={data?.numbers?.notice} />
+                <NumberItem description="Relatórios" number={data?.numbers?.reports} />
+              </>
+            )}
           </View>
         </View>
-        <ScrollView showsHorizontalScrollIndicator={false} decelerationRate="normal">
+        <ScrollView
+          showsHorizontalScrollIndicator={false}
+          decelerationRate="normal"
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
           <View style={styles.titleBox}>
             <Text style={[styles.title, { marginTop: 60 }]}>Solicitações</Text>
             <TouchableOpacity onPress={() => router.navigate('/requests')}>
               <Text style={styles.seeAll}>Ver todos</Text>
             </TouchableOpacity>
           </View>
-          {data.requests?.items?.map((request: any) => (
-            <RequestItemDashboard
-              uuid={request.uuid}
-              title={request.documentName}
-              expiration={request.expiration}
-              key={request.uuid}
-              status={request?.status}
-              onPress={() =>
-                router.navigate({
-                  pathname: '/screens/request/Detail',
-                  params: { uuid: request.uuid },
-                })
-              }
-            />
-          ))}
+          {isFetching ? (
+            <>
+              <RequestItemSkeleton key={1} />
+              <RequestItemSkeleton key={2} />
+              <RequestItemSkeleton key={3} />
+            </>
+          ) : (
+            data.requests?.items?.map((request: any) => (
+              <RequestItemDashboard
+                uuid={request.uuid}
+                title={request.documentName}
+                expiration={request.expiration}
+                key={request.uuid}
+                status={request?.status}
+                onPress={() =>
+                  router.navigate({
+                    pathname: '/screens/request/Detail',
+                    params: { uuid: request.uuid },
+                  })
+                }
+              />
+            ))
+          )}
           <View style={[styles.titleBox, { paddingBottom: 15 }]}>
             <Text style={[styles.title, { marginTop: 25 }]}>Avisos</Text>
             <TouchableOpacity onPress={() => router.navigate('/notice')}>
               <Text style={styles.seeAll}>Ver todos</Text>
             </TouchableOpacity>
           </View>
-          {data?.notice?.items?.map((item: any) => (
-            <NoticeItemDashboard
-              uuid={item.uuid}
-              title={item.title}
-              description={item.text}
-              createdAt={item.createdAt}
-              onPress={() =>
-                router.navigate({ pathname: '/screens/notice/Detail', params: { uuid: item.uuid } })
-              }
-              key={item.uuid}
-            />
-          ))}
+          {isFetching ? (
+            <>
+              <NoticeItemSkeleton key={1} />
+              <NoticeItemSkeleton key={2} />
+              <NoticeItemSkeleton key={3} />
+            </>
+          ) : (
+            data?.notice?.items?.map((item: any) => (
+              <NoticeItemDashboard
+                uuid={item.uuid}
+                title={item.title}
+                description={item.text}
+                createdAt={item.createdAt}
+                onPress={() =>
+                  router.navigate({
+                    pathname: '/screens/notice/Detail',
+                    params: { uuid: item.uuid },
+                  })
+                }
+                key={item.uuid}
+              />
+            ))
+          )}
+
           <View style={{ paddingBottom: 120 }}>
             <View style={[styles.titleBox, { paddingBottom: 15 }]}>
               <Text style={[styles.title, { marginTop: 25 }]}>Relatórios</Text>
@@ -145,19 +184,27 @@ export default function Dashboard() {
                 <Text style={styles.seeAll}>Ver todos</Text>
               </TouchableOpacity>
             </View>
-            {data?.reports?.items?.map((report: any) => (
-              <ReportItem
-                title={report.title}
-                createdAt={report.createdAt}
-                onPress={() =>
-                  router.navigate({
-                    pathname: '/screens/report/Detail',
-                    params: { uuid: report.uuid },
-                  })
-                }
-                uuid={report.uuid}
-              />
-            ))}
+            {isFetching ? (
+              <>
+                <ReporItemSkeleton key={1} />
+                <ReporItemSkeleton key={2} />
+                <ReporItemSkeleton key={3} />
+              </>
+            ) : (
+              data?.reports?.items?.map((report: any) => (
+                <ReportItem
+                  title={report.title}
+                  createdAt={report.createdAt}
+                  onPress={() =>
+                    router.navigate({
+                      pathname: '/screens/report/Detail',
+                      params: { uuid: report.uuid },
+                    })
+                  }
+                  uuid={report.uuid}
+                />
+              ))
+            )}
           </View>
         </ScrollView>
       </View>

@@ -22,7 +22,7 @@ export default function Notifications() {
       queryKey: [`notification-list`],
       queryFn: async ({ pageParam }) =>
         httpClient({
-          path: `/notifications/token`,
+          path: `/notifications`,
           method: 'GET',
           queryString: {
             page: pageParam,
