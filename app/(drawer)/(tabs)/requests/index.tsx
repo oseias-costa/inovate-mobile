@@ -75,6 +75,7 @@ export default function Requests() {
             </View>
           ) : (
             <FlashList
+              contentContainerStyle={{ paddingTop: 10 }}
               renderItem={({ item }: { item: RequestType }) => (
                 <RequestItemDashboard
                   uuid={item?.uuid}
@@ -112,7 +113,6 @@ const styles = StyleSheet.create({
   destakContainer: {
     position: 'relative',
     bottom: 1,
-    marginBottom: 10,
     zIndex: 1,
     backgroundColor: '#00264B',
     height: 60,

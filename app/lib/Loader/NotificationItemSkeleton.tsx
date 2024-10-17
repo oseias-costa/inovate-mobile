@@ -11,6 +11,7 @@ const NotificationItemSkeleton = () => {
         borderBottomColor: '#E9E9E9',
         borderBottomWidth: 1,
         paddingBottom: 10,
+        backgroundColor: '#fff',
       }}>
       <ContentLoader
         speed={2}

@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
@@ -21,6 +22,7 @@ import { Severity, useToast } from '~/app/components/ToastProvider';
 import { useUser } from '~/app/components/UserProvider';
 import useDashboard from '~/app/hook/useDashboard';
 import useFontLato from '~/app/hook/useFontLato';
+import { httpClient } from '~/app/lib/http.client';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -38,11 +40,29 @@ export default function Dashboard() {
   const { showToast } = useToast();
   const { setLoading } = useLoading();
 
-  console.log(data);
+  const mutation = useMutation({
+    mutationKey: ['device-token'],
+    mutationFn: async () =>
+      httpClient({
+        method: 'POST',
+        path: '/notifications/token',
+        data: {
+          userUuid: user.uuid,
+          deviceToken: expoPushToken,
+          type: Platform.OS === 'android' ? 'ANDROID' : 'IOS',
+          active: true,
+        },
+      }),
+  });
+
+  if (mutation.isError) {
+    console.log(mutation.error);
+  }
+
   useEffect(() => {
     registerForPushNotificationsAsync()
       .then((token) => {
-        console.log(token);
+        console.log('TTTKKKK', token);
         token && setExpoPushToken(token);
       })
       .catch(console.log);
@@ -52,6 +72,13 @@ export default function Dashboard() {
   const sendNotification = () => {
     console.log('send notification');
   };
+
+  useEffect(() => {
+    if (expoPushToken) {
+      console.log('PUSSSSH', expoPushToken);
+      mutation.mutate();
+    }
+  }, [expoPushToken]);
 
   if (!fontsLoades) {
     return <Text>Loading</Text>;

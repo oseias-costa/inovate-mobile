@@ -22,7 +22,7 @@ export default function Notifications() {
       queryKey: [`notification-list`],
       queryFn: async ({ pageParam }) =>
         httpClient({
-          path: `/notifications`,
+          path: `/notifications/token`,
           method: 'GET',
           queryString: {
             page: pageParam,
@@ -94,6 +94,7 @@ export default function Notifications() {
         </>
       ) : (
         <FlashList
+          contentContainerStyle={{ paddingTop: 10 }}
           renderItem={({ item }: { item: Notification }) => {
             return (
               <NotificationItem
