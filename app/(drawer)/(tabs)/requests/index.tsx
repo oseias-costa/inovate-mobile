@@ -8,6 +8,7 @@ import RequestItemDashboard from '~/app/components/RequestItemDashboard';
 import SelectStatus from '~/app/components/SelectStatus';
 import { useUser } from '~/app/components/UserProvider';
 import RequestItemSkeleton from '~/app/lib/Loader/RequestItemSkeleton';
+import { EmptyData } from '~/app/lib/components/EmptyData';
 import { httpClient } from '~/app/lib/http.client';
 import { PaginateReponse } from '~/app/lib/types/paginate-response.type';
 import { RequestType } from '~/app/lib/types/request.type';
@@ -62,6 +63,11 @@ export default function Requests() {
           </ScrollView>
         </View>
         <View style={{ flex: 1, width: '100%', height: '100%' }}>
+          <View style={{ paddingTop: 20 }}>
+            {!isFetching && !isFetchingNextPage && data?.pages[0].items.length === 0 ? (
+              <EmptyData text="Você não tem solicitações de documentos" size="medium" />
+            ) : null}
+          </View>
           {isFetching && !isFetchingNextPage ? (
             <View style={{ marginTop: 10 }}>
               <RequestItemSkeleton key={1} />

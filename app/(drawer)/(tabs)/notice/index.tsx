@@ -8,6 +8,7 @@ import NoticeFilterItem from '~/app/components/NoticeFilterItem';
 import NoticeItemDashboard from '~/app/components/NoticeItemDashboard';
 import { useUser } from '~/app/components/UserProvider';
 import NoticeItemSkeleton from '~/app/lib/Loader/NoticeItemSkeleton';
+import { EmptyData } from '~/app/lib/components/EmptyData';
 import { httpClient } from '~/app/lib/http.client';
 import { NoticeType } from '~/app/lib/types/notice.type';
 import { PaginateReponse } from '~/app/lib/types/paginate-response.type';
@@ -57,6 +58,11 @@ export default function Notice() {
           </ScrollView>
         </View>
         <View style={{ flex: 1, width: '100%', height: 400, paddingTop: 10 }}>
+          <View style={{ paddingTop: 10 }}>
+            {!isFetching && !isFetchingNextPage && data?.pages[0].items.length === 0 ? (
+              <EmptyData text="Você ainda não tem avisos" size="medium" />
+            ) : null}
+          </View>
           {isFetching && !isFetchingNextPage ? (
             <View>
               <NoticeItemSkeleton key={1} />

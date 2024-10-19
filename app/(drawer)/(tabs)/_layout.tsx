@@ -42,12 +42,10 @@ export default function Layout() {
                 </Badge>
               </TouchableOpacity>
             ),
-            tabBarIcon: ({ focused, color, size }) => {
-              if (focused) {
-                return <MaterialIcons name="dashboard" color="#00264B" size={size} />;
-              }
-              return <MaterialIcons name="dashboard" color={color} size={size} />;
-            },
+            tabBarIcon: ({ focused, color, size }) => (
+              <MaterialIcons name="dashboard" color={focused ? '#00264B' : '#AFACA7'} size={size} />
+            ),
+
             tabBarActiveTintColor: '#00264B',
           }}
         />
@@ -75,12 +73,13 @@ export default function Layout() {
             headerTitleStyle: { color: '#fff' },
             headerShadowVisible: false,
             tabBarActiveTintColor: '#00264B',
-            tabBarIcon: ({ focused, color, size }) => {
-              if (focused) {
-                return <MaterialCommunityIcons name="folder-plus" size={size} color="#00264B" />;
-              }
-              return <MaterialCommunityIcons name="folder-plus" size={size} color={color} />;
-            },
+            tabBarIcon: ({ focused, color, size }) => (
+              <MaterialCommunityIcons
+                color={focused ? '#00264B' : '#AFACA7'}
+                name="folder-plus"
+                size={size}
+              />
+            ),
           }}
         />
         <Tabs.Screen
@@ -106,12 +105,9 @@ export default function Layout() {
               </TouchableOpacity>
             ),
             tabBarActiveTintColor: '#00264B',
-            tabBarIcon: ({ focused, color, size }) =>
-              focused ? (
-                <Foundation name="megaphone" size={size} color="#00264B" />
-              ) : (
-                <Foundation name="megaphone" size={size} color={color} />
-              ),
+            tabBarIcon: ({ focused, color, size }) => (
+              <Foundation color={focused ? '#00264B' : '#AFACA7'} name="megaphone" size={size} />
+            ),
           }}
         />
         <Tabs.Screen
@@ -137,12 +133,9 @@ export default function Layout() {
               </TouchableOpacity>
             ),
             tabBarActiveTintColor: '#00264B',
-            tabBarIcon: ({ focused, color, size }) =>
-              focused ? (
-                <Ionicons name="documents" size={size} color="#00264B" />
-              ) : (
-                <Ionicons name="documents" size={size} color={color} />
-              ),
+            tabBarIcon: ({ focused, color, size }) => (
+              <Ionicons name="documents" size={size} color={focused ? '#00264B' : '#AFACA7'} />
+            ),
           }}
         />
         <Tabs.Screen
@@ -156,15 +149,16 @@ export default function Layout() {
               backgroundColor: '#00264B',
             },
             tabBarActiveTintColor: '#00264B',
-            tabBarIcon: ({ focused, color, size }) => {
-              if (focused) {
-                return <MaterialCommunityIcons name="bell" color="#00264B" size={size} />;
-              }
-              return <MaterialCommunityIcons name="bell" color={color} size={size} />;
-            },
+            tabBarIcon: ({ focused, color, size }) => (
+              <MaterialCommunityIcons
+                name="bell"
+                color={focused ? '#00264B' : '#AFACA7'}
+                size={size}
+              />
+            ),
           }}
         />
-        <Tabs.Screen
+        {/* <Tabs.Screen
           name="account/index"
           options={{
             headerStyle: {
@@ -192,7 +186,7 @@ export default function Layout() {
               return <FontAwesome name="user" color={color} size={size} />;
             },
           }}
-        />
+        /> */}
       </Tabs>
     </>
   );

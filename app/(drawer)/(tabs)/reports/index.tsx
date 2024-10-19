@@ -8,6 +8,7 @@ import { useFilter } from '~/app/components/FilterProvider';
 import ReportItem from '~/app/components/ReportItem';
 import { useUser } from '~/app/components/UserProvider';
 import ReporItemSkeleton from '~/app/lib/Loader/ReporItemSkeleton';
+import { EmptyData } from '~/app/lib/components/EmptyData';
 import { httpClient } from '~/app/lib/http.client';
 import { PaginateReponse } from '~/app/lib/types/paginate-response.type';
 import { ReportType } from '~/app/lib/types/report.type';
@@ -41,6 +42,11 @@ export default function Reports() {
       <View style={{ backgroundColor: '#fff', position: 'relative', flex: 1 }}>
         <StatusBar barStyle="light-content" hidden={false} />
         <View style={{ flex: 1, width: '100%', height: 400, paddingTop: 10 }}>
+          <View style={{ paddingTop: 10 }}>
+            {!isFetching && !isFetchingNextPage && data?.pages[0].items.length === 0 ? (
+              <EmptyData text="Você ainda não tem relatórios" size="medium" />
+            ) : null}
+          </View>
           {isFetching && !isFetchingNextPage ? (
             <View>
               <ReporItemSkeleton key={1} />

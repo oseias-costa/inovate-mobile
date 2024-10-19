@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useMutation } from '@tanstack/react-query';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
@@ -24,6 +25,7 @@ import NoticeItemSkeleton from '~/app/lib/Loader/NoticeItemSkeleton';
 import NumbersSkeleton from '~/app/lib/Loader/NumbersSkeleton';
 import ReporItemSkeleton from '~/app/lib/Loader/ReporItemSkeleton';
 import RequestItemSkeleton from '~/app/lib/Loader/RequestItemSkeleton';
+import { EmptyData } from '~/app/lib/components/EmptyData';
 import useDashboard from '~/app/lib/hooks/useDashboard';
 import { httpClient } from '~/app/lib/http.client';
 
@@ -92,7 +94,7 @@ export default function Dashboard() {
   return (
     <>
       <StatusBar barStyle="light-content" hidden={false} />
-      <View style={{ backgroundColor: '#fff', position: 'relative' }}>
+      <View style={{ backgroundColor: '#fff', position: 'relative', flex: 1 }}>
         <View style={styles.destakBox}>
           <View style={styles.welcomeBox}>
             <Text style={styles.welcomeText}>Bem vindo, </Text>
@@ -113,8 +115,9 @@ export default function Dashboard() {
         <ScrollView
           showsHorizontalScrollIndicator={false}
           decelerationRate="normal"
+          contentContainerStyle={{ flex: 1 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-          <View style={styles.titleBox}>
+          <View style={[styles.titleBox, { paddingBottom: 15 }]}>
             <Text style={[styles.title, { marginTop: 60 }]}>Solicitações</Text>
             <TouchableOpacity onPress={() => router.navigate('/requests')}>
               <Text style={styles.seeAll}>Ver todos</Text>
@@ -143,6 +146,9 @@ export default function Dashboard() {
               />
             ))
           )}
+          {!isFetching && data?.requests?.items.length === 0 ? (
+            <EmptyData text="Você não tem solicitações de documentos pendentes" size="small" />
+          ) : null}
           <View style={[styles.titleBox, { paddingBottom: 15 }]}>
             <Text style={[styles.title, { marginTop: 25 }]}>Avisos</Text>
             <TouchableOpacity onPress={() => router.navigate('/notice')}>
@@ -172,6 +178,9 @@ export default function Dashboard() {
               />
             ))
           )}
+          {!isFetching && data?.notice?.items.length === 0 ? (
+            <EmptyData text="Você ainda não tem avisos" size="small" />
+          ) : null}
 
           <View style={{ paddingBottom: 120 }}>
             <View style={[styles.titleBox, { paddingBottom: 15 }]}>
@@ -202,6 +211,9 @@ export default function Dashboard() {
                 />
               ))
             )}
+            {!isFetching && data?.reports?.items.length === 0 ? (
+              <EmptyData text="Você ainda não tem relatórios" size="small" />
+            ) : null}
           </View>
         </ScrollView>
       </View>

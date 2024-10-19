@@ -7,6 +7,7 @@ import NotificationFilterItem from '~/app/components/NotificationFilterItem';
 import { useUser } from '~/app/components/UserProvider';
 import NotificationItem from '~/app/components/notificationItem';
 import NotificationItemSkeleton from '~/app/lib/Loader/NotificationItemSkeleton';
+import { EmptyData } from '~/app/lib/components/EmptyData';
 import { httpClient } from '~/app/lib/http.client';
 import { Notification } from '~/app/lib/types/notification.type';
 import { PaginateReponse } from '~/app/lib/types/paginate-response.type';
@@ -61,7 +62,7 @@ export default function Notifications() {
   }, [filter]);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: '#F8F8F8' }}>
       <View style={styles.destakContainer}>
         <ScrollView
           horizontal
@@ -79,6 +80,11 @@ export default function Notifications() {
           <NotificationFilterItem item="NOTICE" setFilter={setFilter} filter={filter} />
           <NotificationFilterItem item="REPORT" setFilter={setFilter} filter={filter} />
         </ScrollView>
+      </View>
+      <View style={{ paddingTop: 20 }}>
+        {!isFetching && !isFetchingNextPage && data?.pages[0].items.length === 0 ? (
+          <EmptyData text="Você ainda não tem notificações" size="medium" />
+        ) : null}
       </View>
       {isFetching && !isFetchingNextPage ? (
         <>
