@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Platform,
   RefreshControl,
@@ -15,11 +15,9 @@ import {
   View,
 } from 'react-native';
 
-import { useLoading } from '~/app/components/LoadingProvider';
 import NoticeItemDashboard from '~/app/components/NoticeItemDashboard';
 import ReportItem from '~/app/components/ReportItem';
 import RequestItemDashboard from '~/app/components/RequestItemDashboard';
-import { useToast } from '~/app/components/ToastProvider';
 import { useUser } from '~/app/components/UserProvider';
 import useFontLato from '~/app/hook/useFontLato';
 import NoticeItemSkeleton from '~/app/lib/Loader/NoticeItemSkeleton';
@@ -42,8 +40,6 @@ export default function Dashboard() {
   const [expoPushToken, setExpoPushToken] = useState('');
   const { data, isFetching, refetch } = useDashboard();
   const { user } = useUser();
-  const { showToast } = useToast();
-  const { setLoading } = useLoading();
   const [refreshing, setRefreshing] = useState(false);
 
   const mutation = useMutation({
@@ -193,6 +189,7 @@ export default function Dashboard() {
             ) : (
               data?.reports?.items?.map((report: any) => (
                 <ReportItem
+                  key={report.uuid}
                   title={report.title}
                   createdAt={report.createdAt}
                   onPress={() =>

@@ -10,11 +10,12 @@ import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import { useFilter } from '~/app/components/FilterProvider';
 import SelectStatus from '~/app/components/SelectStatus';
+import useDashboard from '~/app/lib/hooks/useDashboard';
 import Logo from '~/assets/svg/Logo';
 
 export default function Layout() {
-  const { reportFilter, setReportFilter } = useFilter();
-  //ExponentPushToken[Ca-7RyIAIVL2NAzyWpsoSE]
+  const { data } = useDashboard();
+
   return (
     <>
       <Tabs>
@@ -32,7 +33,7 @@ export default function Layout() {
             headerRight: () => (
               <TouchableOpacity onPress={() => router.navigate('/(drawer)/(tabs)/notifications')}>
                 <Badge
-                  text={9}
+                  text={data?.numbers?.notifications}
                   style={{ marginRight: 25 }}
                   styles={{
                     dot: { backgroundColor: '#000' },

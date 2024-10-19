@@ -1,6 +1,6 @@
 import Button from '@ant-design/react-native/lib/button';
-import { Link, Redirect, Tabs } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { Link, Redirect, Tabs, router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useFonts, Lato_400Regular, Lato_300Light } from '@expo-google-fonts/lato';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -8,8 +8,8 @@ import { Feather } from '@expo/vector-icons';
 import { useLogin } from '../hook/useLogin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsMutating } from '@tanstack/react-query';
-import { router } from 'expo-router';
 import useGetUser from '../hook/useGetUser';
+import { useUser } from '../components/UserProvider';
 
 export default function Login() {
   const [error, setError] = useState('');
@@ -20,13 +20,12 @@ export default function Login() {
     input: '',
     color: '#DADADA',
   });
-  const { user } = useGetUser();
-  const token = async () => await AsyncStorage.getItem('token');
+  const { user } = useUser();
 
   const isMutating = useIsMutating({ mutationKey: ['login'], exact: true });
   const getEmail = async () => {
     const email = await AsyncStorage.getItem('email');
-    if (email) setData({ ...data, email: email });
+    if (email) setData({ ...data, email });
   };
   useEffect(() => {
     if (!data.email) {
@@ -39,9 +38,9 @@ export default function Login() {
     Lato_300Light,
   });
 
-  // if(user){
-  //   return <Redirect href="/(drawer)/(tabs)/dashboard" />
-  // }
+  if (user) {
+    return <Redirect href="/(drawer)/(tabs)/dashboard" />;
+  }
 
   if (!fontsLoades) {
     return <Text>Loading</Text>;
@@ -169,7 +168,7 @@ export default function Login() {
             onPress={() => mutate.mutate(data)}
             type="primary"
             style={{ marginBottom: 10 }}
-            loading={isMutating ? true : false}>
+            loading={!!isMutating}>
             {!isMutating && 'Entrar'}
           </Button>
           <Button onPress={() => router.navigate('/auth/firstAcess')}>Primeiro Acesso</Button>
