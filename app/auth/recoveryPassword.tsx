@@ -1,25 +1,13 @@
 import Button from '@ant-design/react-native/lib/button';
-import { Link, Redirect } from 'expo-router';
-import {
-  ActivityIndicator,
-  Dimensions,
-  Image,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import PageLayout from './PageLayout';
-import { useFonts, Lato_400Regular, Lato_300Light } from '@expo-google-fonts/lato';
-import { useRef, useState } from 'react';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import axios from 'axios';
 import { useIsMutating, useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 import { router } from 'expo-router';
+import React, { useRef, useState } from 'react';
+import { Dimensions, Image, ScrollView, Text, TextInput, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
+import PageLayout from './PageLayout';
+import { CustomButton } from '../lib/components/CustomButton';
 
 export default function RecoveryPassword() {
   const [other, setOther] = useState({
@@ -27,19 +15,16 @@ export default function RecoveryPassword() {
     color: '#DADADA',
   });
   const [email, setEmail] = useState('');
-  let [fontsLoades] = useFonts({
-    Lato_400Regular,
-    Lato_300Light,
-  });
+
   const { height } = Dimensions.get('window');
   const scrollView = useRef<ScrollView>(null);
   const [error, setError] = useState('');
 
   const postRecovery = async () => {
     const response = await axios({
-      baseURL: 'http://10.0.0.101:3009/users/recovery-password',
+      baseURL: `${process.env.EXPO_PUBLIC_API_URL}/users/recovery-password`,
       method: 'POST',
-      data: { email: email },
+      data: { email },
     });
     return response.data;
   };
@@ -51,19 +36,16 @@ export default function RecoveryPassword() {
     mutationKey: ['recovery-passord'],
     onSuccess: () => {
       router.push({
-        pathname: '/auth/verifyCode', 
+        pathname: '/auth/verifyCode',
         params: {
-          email
-      }})
+          email,
+        },
+      });
     },
     onError: () => {
-      setError('O e-mail é inválido')
+      setError('O e-mail é inválido');
     },
   });
-
-  if (!fontsLoades) {
-    return <Text>Loading</Text>;
-  }
 
   return (
     <KeyboardAwareScrollView
@@ -81,17 +63,18 @@ export default function RecoveryPassword() {
             source={require('../../assets/auth/forget-password.png')}
             style={[
               {
-                width: 300,
-                height: 240,
+                width: 225,
+                height: 180,
                 alignSelf: 'center',
                 marginTop: 15,
+                marginBottom: 20,
               },
             ]}
           />
           <Text
             style={{
               fontFamily: 'Lato_400Regular',
-              fontSize: 36,
+              fontSize: 24,
               color: '#716F6F',
               marginBottom: 5,
             }}>
@@ -100,7 +83,7 @@ export default function RecoveryPassword() {
           <Text
             style={{
               fontFamily: 'Lato_300Light',
-              fontSize: 20,
+              fontSize: 14,
               color: '#716F6F',
             }}>
             Você receberá um e-mail com um código de verificação no seu e-mail.
@@ -111,13 +94,13 @@ export default function RecoveryPassword() {
               marginTop: 20,
               borderColor: other.input === 'email' ? '#75BCEE' : '#DADADA',
               borderWidth: 1,
-              height: 47,
+              height: 40,
               padding: 10,
               color: '#363636',
               borderRadius: 5,
               marginVertical: 5,
               fontFamily: 'Lato_400Regular',
-              fontSize: 18,
+              fontSize: 15,
             }}
             placeholder="E-mail"
             onChange={(e) => setEmail(e.nativeEvent.text)}
@@ -130,16 +113,16 @@ export default function RecoveryPassword() {
           />
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, width: '100%' }}>
-          <Button
-            loading={isMutation ? true : false}
+          <CustomButton
+            loading={!!isMutation}
             type="primary"
             onPress={() => !isMutation && mutate.mutate()}
-            style={{ marginBottom: 10 }}>
+            style={{ marginBottom: 10, height: 40 }}>
             {!isMutation && 'Recuperar'}
-          </Button>
-          <Button style={{ width: '100%' }} onPress={() => router.back()}>
+          </CustomButton>
+          <CustomButton style={{ width: '100%', height: 40 }} onPress={() => router.back()}>
             Voltar
-          </Button>
+          </CustomButton>
         </View>
       </PageLayout>
     </KeyboardAwareScrollView>

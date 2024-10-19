@@ -1,26 +1,25 @@
+import { Feather } from '@expo/vector-icons';
+import { useFonts, Lato_400Regular, Lato_300Light } from '@expo-google-fonts/lato';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsMutating, useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import PageLayout from './PageLayout';
-import { useFonts, Lato_400Regular, Lato_300Light } from '@expo-google-fonts/lato';
-import { useLocalSearchParams } from 'expo-router';
-import Button from '@ant-design/react-native/lib/button';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import axios from 'axios';
-import { useIsMutating, useMutation } from '@tanstack/react-query';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
-import { Feather } from '@expo/vector-icons';
+
+import PageLayout from './PageLayout';
+import { Severity, useToast } from '../components/ToastProvider';
+import { CustomButton } from '../lib/components/CustomButton';
 
 export default function VerifyCode() {
-  const { verifyCode } = useLocalSearchParams();
   const [other, setOther] = useState({
     input: '',
     color: '#DADADA',
   });
-  const local = useLocalSearchParams();
-  const [code, setCode] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const { showToast } = useToast();
   const [data, setData] = useState({
     password: '',
     passwordConfirmation: '',
@@ -35,10 +34,10 @@ export default function VerifyCode() {
     const email = await AsyncStorage.getItem('email');
 
     const response = await axios({
-      baseURL: 'http://10.0.0.101:3009/users/update-password',
+      baseURL: `${process.env.EXPO_PUBLIC_API_URL}/users/update-password`,
       method: 'POST',
       data: {
-        email: email,
+        email,
         password: data.password,
         passwordConfirmation: data.passwordConfirmation,
       },
@@ -54,12 +53,11 @@ export default function VerifyCode() {
     mutationFn: updatePassword,
     mutationKey: ['update-password'],
     onSuccess: async () => {
+      showToast('Senha criada com sucesso', Severity.SUCCESS);
       await AsyncStorage.removeItem('token');
       return router.replace('/auth/login');
     },
-    onError: (err) => {
-      setError('Ocorreu um erro');
-    },
+    onError: (err) => setError('Ocorreu um erro'),
   });
 
   return (
@@ -77,7 +75,7 @@ export default function VerifyCode() {
           <Text
             style={{
               fontFamily: 'Lato_400Regular',
-              fontSize: 36,
+              fontSize: 24,
               color: '#716F6F',
               marginBottom: 5,
               marginTop: 30,
@@ -87,7 +85,7 @@ export default function VerifyCode() {
           <Text
             style={{
               fontFamily: 'Lato_300Light',
-              fontSize: 20,
+              fontSize: 14,
               color: '#716F6F',
               marginBottom: 20,
             }}>
@@ -106,13 +104,13 @@ export default function VerifyCode() {
                 flex: 1,
                 borderColor: other.input === 'password' ? '#75BCEE' : '#DADADA',
                 borderWidth: 1,
-                height: 47,
+                height: 40,
                 padding: 10,
                 borderRadius: 5,
                 color: '#363636',
                 marginVertical: 5,
                 fontFamily: 'Lato_400Regular',
-                fontSize: 18,
+                fontSize: 16,
               }}
               secureTextEntry={!showPassword}
               onFocus={() => setOther({ color: '#2E77FF', input: 'password' })}
@@ -128,7 +126,7 @@ export default function VerifyCode() {
                 right: 10,
                 width: 40,
                 height: 37,
-                top: 10,
+                top: 5,
               }}
               onPress={() => {
                 setShowPassword(!showPassword);
@@ -153,13 +151,13 @@ export default function VerifyCode() {
                 flex: 1,
                 borderColor: other.input === 'password' ? '#75BCEE' : '#DADADA',
                 borderWidth: 1,
-                height: 47,
+                height: 40,
                 padding: 10,
                 borderRadius: 5,
                 color: '#363636',
                 marginVertical: 5,
                 fontFamily: 'Lato_400Regular',
-                fontSize: 18,
+                fontSize: 16,
               }}
               secureTextEntry={!showPassword}
               onFocus={() => setOther({ color: '#2E77FF', input: 'password' })}
@@ -175,7 +173,7 @@ export default function VerifyCode() {
                 right: 10,
                 width: 40,
                 height: 37,
-                top: 10,
+                top: 5,
               }}
               onPress={() => {
                 setShowPassword(!showPassword);
@@ -189,13 +187,13 @@ export default function VerifyCode() {
           </View>
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, width: '100%' }}>
-          <Button
+          <CustomButton
             type="primary"
-            style={{ marginBottom: 10 }}
-            loading={isMutation ? true : false}
+            loading={!!isMutation}
+            style={{ height: 40 }}
             onPress={() => !isMutation && mutation.mutate()}>
             {!isMutation && 'Criar senha'}
-          </Button>
+          </CustomButton>
         </View>
       </PageLayout>
     </KeyboardAwareScrollView>

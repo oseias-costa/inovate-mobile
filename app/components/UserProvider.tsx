@@ -1,12 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery } from '@tanstack/react-query';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import { router } from 'expo-router';
-import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
+import React, { ReactNode, createContext, useContext, useEffect, useState } from 'react';
+
+import { httpClient } from '../lib/http.client';
 
 interface UserContextType {
   user: User;
   setUser: React.Dispatch<React.SetStateAction<User>>;
+  refetch: () => void;
 }
 
 type User = {
@@ -27,20 +30,20 @@ export const UserContext = createContext<UserContextType | n>(null);
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User>(initialValue);
 
-  const { data, isError, error, isSuccess } = useQuery<User>({
+  const { data, isError, error, isSuccess, refetch } = useQuery<User>({
     queryKey: ['user'],
     queryFn: async () => {
       const token = await AsyncStorage.getItem('token');
-      const user = await axios({
+      return httpClient({
         method: 'GET',
-        baseURL: `${process.env.EXPO_PUBLIC_API_URL}/users/get-user/${token}`,
-        headers: { Authorization: `Bearer ${token}` },
+        path: `/users/get-user/${token}`,
       });
-
-      return user.data;
     },
-    // retry: false,
   });
+
+  if (isError) {
+    console.log('error user', error);
+  }
 
   useEffect(() => {
     if (isSuccess) {
@@ -56,7 +59,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [data, error]);
 
-  return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
+  return <UserContext.Provider value={{ user, setUser, refetch }}>{children}</UserContext.Provider>;
 };
 
 export const useUser = () => useContext(UserContext);

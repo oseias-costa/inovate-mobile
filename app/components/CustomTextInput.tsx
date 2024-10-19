@@ -52,6 +52,8 @@ export default function CustomTextInput({
 const styles = StyleSheet.create({
   container: {
     paddingBottom: 6,
+
+    minWidth: '100%',
   },
   input: {
     borderWidth: 1,

@@ -10,6 +10,7 @@ export const CustomButton = (props: ButtonProps) => {
         marginTop: 'auto',
         zIndex: 1,
         height: 40,
+        width: '100%',
       }}
       {...props}>
       <Text

@@ -9,6 +9,8 @@ import axios from 'axios';
 import { useIsMutating, useMutation } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import { CustomButton } from '../lib/components/CustomButton';
+import { httpClient } from '../lib/http.client';
 
 export default function VerifyCode() {
   const [other, setOther] = useState({
@@ -18,15 +20,15 @@ export default function VerifyCode() {
   const local = useLocalSearchParams();
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
-  const params = useLocalSearchParams()
+  const params = useLocalSearchParams();
   let [fontsLoades] = useFonts({
     Lato_400Regular,
     Lato_300Light,
   });
-
-  const postRecovery = async () => {
+  console.log('params, email', params.email, code);
+  const checkCode = async () => {
     const response = await axios({
-      baseURL: 'http://10.0.0.101:3009/users/check-code',
+      baseURL: `${process.env.EXPO_PUBLIC_API_URL}/users/check-code`,
       method: 'POST',
       data: { code: Number(code), email: params.email },
     });
@@ -35,12 +37,12 @@ export default function VerifyCode() {
 
   const isMutation = useIsMutating({ mutationKey: ['verify-code'], exact: true });
   const mutation = useMutation({
-    mutationFn: postRecovery,
+    mutationFn: checkCode,
     mutationKey: ['verify-code'],
-    onSuccess:  async (data) => {
-       await AsyncStorage.setItem('token', data.token);
-       await AsyncStorage.setItem('email', String(params.email));
-      return router.navigate('/auth/updatePassword')
+    onSuccess: async (data) => {
+      await AsyncStorage.setItem('token', data.token);
+      await AsyncStorage.setItem('email', String(params.email));
+      return router.navigate('/auth/updatePassword');
     },
     onError: (err) => {
       console.log(err);
@@ -62,12 +64,20 @@ export default function VerifyCode() {
           />
           <Image
             source={require('../../assets/auth/forgot-pass.png')}
-            style={[{ width: 300, height: 280, marginVertical: 20, alignSelf: 'center' }]}
+            style={[
+              {
+                width: 225,
+                height: 180,
+                marginVertical: 20,
+                alignSelf: 'center',
+                paddingBottom: 20,
+              },
+            ]}
           />
           <Text
             style={{
               fontFamily: 'Lato_400Regular',
-              fontSize: 36,
+              fontSize: 24,
               color: '#716F6F',
               marginBottom: 5,
             }}>
@@ -76,7 +86,7 @@ export default function VerifyCode() {
           <Text
             style={{
               fontFamily: 'Lato_300Light',
-              fontSize: 20,
+              fontSize: 14,
               color: '#716F6F',
               marginBottom: 20,
             }}>
@@ -88,7 +98,7 @@ export default function VerifyCode() {
                 width: '100%',
                 borderColor: other.input === 'email' ? '#75BCEE' : '#DADADA',
                 borderWidth: 1,
-                height: 54,
+                height: 48,
                 textAlign: 'center',
                 color: '#363636',
                 padding: 10,
@@ -114,14 +124,16 @@ export default function VerifyCode() {
           </View>
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, width: '100%' }}>
-          <Button
+          <CustomButton
             type="primary"
-            style={{ marginBottom: 10 }}
-            loading={isMutation ? true : false}
+            style={{ marginBottom: 10, height: 40 }}
+            loading={!!isMutation}
             onPress={() => !isMutation && mutation.mutate()}>
             {!isMutation && 'Verificar'}
-          </Button>
-          <Button onPress={() => router.back()}>Voltar</Button>
+          </CustomButton>
+          <CustomButton style={{ marginBottom: 10, height: 40 }} onPress={() => router.back()}>
+            Voltar
+          </CustomButton>
         </View>
       </PageLayout>
     </KeyboardAwareScrollView>

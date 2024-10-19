@@ -1,15 +1,16 @@
 import Button from '@ant-design/react-native/lib/button';
+import { Feather } from '@expo/vector-icons';
+import { useFonts, Lato_400Regular, Lato_300Light } from '@expo-google-fonts/lato';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsMutating } from '@tanstack/react-query';
 import { Link, Redirect, Tabs, router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useFonts, Lato_400Regular, Lato_300Light } from '@expo-google-fonts/lato';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { Feather } from '@expo/vector-icons';
-import { useLogin } from '../hook/useLogin';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useIsMutating } from '@tanstack/react-query';
-import useGetUser from '../hook/useGetUser';
+
 import { useUser } from '../components/UserProvider';
+import { useLogin } from '../hook/useLogin';
+import { CustomButton } from '../lib/components/CustomButton';
 
 export default function Login() {
   const [error, setError] = useState('');
@@ -76,20 +77,39 @@ export default function Login() {
           />
           <Image
             source={require('../../assets/auth/loginn.png')}
-            style={[{ width: 300, height: 240, marginVertical: 20, alignSelf: 'center' }]}
+            style={[{ width: 225, height: 180, marginVertical: 20, alignSelf: 'center' }]}
           />
+          <Text
+            style={{
+              fontFamily: 'Lato_400Regular',
+              fontSize: 24,
+              color: '#716F6F',
+              marginBottom: 5,
+            }}>
+            Bem vindo!
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'Lato_300Light',
+              fontSize: 14,
+              color: '#716F6F',
+              marginBottom: 20,
+            }}>
+            Faça o login informando abaixo o e-mail e a senha, caso não tenha uma senha ainda,
+            clique em primeiro acesso.
+          </Text>
           <TextInput
             style={{
               width: '100%',
               borderColor: other.input === 'email' ? '#75BCEE' : '#DADADA',
               borderWidth: 1,
-              height: 47,
+              height: 40,
               padding: 10,
               borderRadius: 5,
               color: '#363636',
               marginVertical: 5,
               fontFamily: 'Lato_400Regular',
-              fontSize: 18,
+              fontSize: 15,
             }}
             defaultValue={data.email}
             onFocus={() => setOther({ color: '#2E77FF', input: 'email' })}
@@ -113,13 +133,13 @@ export default function Login() {
                 flex: 1,
                 borderColor: other.input === 'password' ? '#75BCEE' : '#DADADA',
                 borderWidth: 1,
-                height: 47,
+                height: 40,
                 padding: 10,
                 borderRadius: 5,
                 color: '#363636',
                 marginVertical: 5,
                 fontFamily: 'Lato_400Regular',
-                fontSize: 18,
+                fontSize: 15,
               }}
               secureTextEntry={!showPassword}
               onFocus={() => setOther({ color: '#2E77FF', input: 'password' })}
@@ -135,7 +155,7 @@ export default function Login() {
                 right: 10,
                 width: 40,
                 height: 37,
-                top: 10,
+                top: 5,
               }}
               onPress={() => {
                 setShowPassword(!showPassword);
@@ -155,7 +175,7 @@ export default function Login() {
                   paddingVertical: 10,
                   fontFamily: 'Lato_400Regular',
                   alignSelf: 'flex-end',
-                  fontSize: 18,
+                  fontSize: 16,
                   paddingHorizontal: 10,
                 }}>
                 Esqueci a senha
@@ -164,14 +184,17 @@ export default function Login() {
           </Link>
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, width: '100%' }}>
-          <Button
+          <CustomButton
             onPress={() => mutate.mutate(data)}
             type="primary"
-            style={{ marginBottom: 10 }}
+            style={{ marginBottom: 10, height: 40 }}
             loading={!!isMutating}>
             {!isMutating && 'Entrar'}
-          </Button>
-          <Button onPress={() => router.navigate('/auth/firstAcess')}>Primeiro Acesso</Button>
+          </CustomButton>
+
+          <CustomButton style={{ height: 40 }} onPress={() => router.navigate('/auth/firstAcess')}>
+            Primeiro Acesso
+          </CustomButton>
         </View>
       </View>
     </KeyboardAwareScrollView>

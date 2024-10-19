@@ -8,7 +8,7 @@ import { useUser } from '../../components/UserProvider';
 import { httpClient } from '../http.client';
 
 export default function useDashboard() {
-  const { user } = useUser();
+  const { user, refetch } = useUser();
 
   const {
     data: requests,
@@ -28,6 +28,7 @@ export default function useDashboard() {
           page: 1,
         },
       }),
+    enabled: false,
   });
 
   const {
@@ -46,6 +47,7 @@ export default function useDashboard() {
           page: 1,
         },
       }),
+    enabled: false,
   });
 
   const {
@@ -64,12 +66,14 @@ export default function useDashboard() {
 
       return companys.data;
     },
+    enabled: false,
   });
 
   const {
     data: numbers,
     isFetching: isFetchingNumbers,
     refetch: refetchNumbers,
+    error: numbersError,
   } = useQuery({
     queryKey: ['numbers'],
     queryFn: async () =>
@@ -80,29 +84,38 @@ export default function useDashboard() {
           uuid: user.uuid,
         },
       }),
+    enabled: false,
   });
 
-  useFocusEffect(
-    React.useCallback(() => {
-      refetchReport();
-      refetchNotice();
-      refetchRequest();
-    }, [])
-  );
+  if (numbersError) {
+    console.log(numbersError);
+  }
 
-  useEffect(() => {
-    refetchReport();
-    refetchNotice();
-    refetchRequest();
-    refetchNumbers();
-  }, [user]);
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     refetchReport();
+  //     refetchNotice();
+  //     refetchRequest();
+  //   }, [])
+  // );
 
   const refetchAllItems = async () => {
-    refetchRequest();
-    refetchReport();
-    refetchNotice();
-    refetchNumbers();
+    await refetchRequest();
+    await refetchReport();
+    await refetchNotice();
+    await refetchNumbers();
   };
+
+  useEffect(() => {
+    if (!user) {
+      refetch();
+    }
+    if (user) {
+      refetchAllItems();
+    }
+  }, [user]);
+
+  console.log('KKKKKKAKKAKKAKAKk', { requests, notice, reports, numbers });
 
   return {
     data: { requests, notice, reports, numbers },
