@@ -2,8 +2,8 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
-import { formatDate } from '../lib/date';
 import { RequestStatus } from '../components/RequestStatus';
+import { formatDate } from '../lib/date';
 
 type RequestItemDashboardProps = {
   title: string;

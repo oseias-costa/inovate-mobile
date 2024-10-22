@@ -1,20 +1,24 @@
-import ButtonAnt from '@ant-design/react-native/lib/button';
 import { MaterialIcons } from '@expo/vector-icons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import * as FileSystem from 'expo-file-system';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import React from 'react';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { RequestStatus } from '~/app/components/RequestStatus';
 import { useUpload } from '~/app/hook/useUpload';
 import RequestDetailSkeleton from '~/app/lib/Loader/RequestDetailSkeleton';
+import { CustomButton } from '~/app/lib/components/CustomButton';
+import { DocumentDownloadButton } from '~/app/lib/components/DocumentDownloadButton';
 import { formatDate } from '~/app/lib/date';
 import { httpClient } from '~/app/lib/http.client';
 
 export default function Detail() {
   const { uuid } = useLocalSearchParams();
   const { pickDocument, error } = useUpload(String(uuid), 'REQUEST');
+  const [key, setKey] = useState('');
 
   const { data, isFetching } = useQuery({
     queryKey: [`request-${uuid}`],
@@ -24,6 +28,67 @@ export default function Detail() {
         method: 'GET',
       }),
   });
+
+  const downloadFile = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.EXPO_PUBLIC_API_URL}/document/download?key=${key}`,
+        {
+          responseType: 'blob',
+        }
+      );
+
+      if (!response.data) {
+        throw new Error('No data received from the API');
+      }
+
+      const fileUri = FileSystem.documentDirectory + key;
+
+      // Check if response.data is a string or blob
+      if (typeof response.data === 'string') {
+        await FileSystem.writeAsStringAsync(fileUri, response.data, {
+          encoding: FileSystem.EncodingType.UTF8, // Adjust encoding as needed
+        });
+      } else if (response.data instanceof Blob) {
+        // Handle blob data (e.g., using a library like react-native-fs)
+        // ...
+      } else {
+        throw new Error('Unexpected data type from API');
+      }
+
+      return fileUri;
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      throw error;
+    }
+  };
+
+  const {
+    refetch,
+    isError,
+    error: errorDownload,
+  } = useQuery({
+    queryKey: [`download-${key}`],
+    queryFn: downloadFile,
+    enabled: false,
+    retry: false,
+  });
+
+  useEffect(() => {
+    if (isError) {
+      console.log(errorDownload);
+    }
+  }, [isError]);
+
+  const handleDownload = async () => {
+    console.log('download');
+    try {
+      const uri = await refetch();
+      Alert.alert('Download completo!', `Arquivo salvo em: ${uri.data}`);
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao fazer o download do arquivo');
+    }
+  };
 
   return (
     <>
@@ -70,17 +135,31 @@ export default function Detail() {
                 </Text>
               </TouchableOpacity>
               {data?.documents?.map((document: any) => (
-                <View style={styles.attachContainer}>
-                  <Ionicons name="attach" size={24} color="#005AB1" />
-                  <Text style={styles.attachTitle}>{document.name}</Text>
+                <View>
+                  <Text
+                    style={{
+                      color: '#3B3D3E',
+                      fontSize: 16,
+                      fontFamily: 'Lato_400Regular',
+                      paddingBottom: 5,
+                    }}>
+                    Anexos:
+                  </Text>
+                  <DocumentDownloadButton
+                    name={document.name}
+                    onPress={async () => {
+                      setKey(document.path);
+                      await handleDownload();
+                    }}
+                  />
                 </View>
               ))}
             </>
           )}
         </View>
-        <ButtonAnt type="ghost" style={styles.button} onPress={() => router.navigate('/requests')}>
+        <CustomButton style={styles.button} onPress={() => router.navigate('/requests')}>
           voltar
-        </ButtonAnt>
+        </CustomButton>
       </SafeAreaView>
     </>
   );
@@ -96,6 +175,7 @@ const styles = StyleSheet.create({
   button: {
     marginHorizontal: 20,
     marginTop: 'auto',
+    height: 40,
     zIndex: 1,
   },
   headerButton: {

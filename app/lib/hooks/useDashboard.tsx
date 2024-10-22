@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import React, { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { useUser } from '../../components/UserProvider';
 import { httpClient } from '../http.client';
@@ -81,7 +81,7 @@ export default function useDashboard() {
         method: 'GET',
         path: `/notifications/numbers`,
         queryString: {
-          uuid: user.uuid,
+          uuid: user?.uuid,
         },
       }),
     enabled: false,
@@ -91,19 +91,19 @@ export default function useDashboard() {
     console.log(numbersError);
   }
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     refetchReport();
-  //     refetchNotice();
-  //     refetchRequest();
-  //   }, [])
-  // );
+  useFocusEffect(
+    useCallback(() => {
+      refetchReport();
+      refetchNotice();
+      refetchRequest();
+    }, [])
+  );
 
-  const refetchAllItems = async () => {
-    await refetchRequest();
-    await refetchReport();
-    await refetchNotice();
-    await refetchNumbers();
+  const refetchAllItems = () => {
+    refetchRequest();
+    refetchReport();
+    refetchNotice();
+    refetchNumbers();
   };
 
   useEffect(() => {
@@ -114,8 +114,6 @@ export default function useDashboard() {
       refetchAllItems();
     }
   }, [user]);
-
-  console.log('KKKKKKAKKAKKAKAKk', { requests, notice, reports, numbers });
 
   return {
     data: { requests, notice, reports, numbers },

@@ -1,25 +1,12 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Redirect, SplashScreen } from 'expo-router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import useGetUser from './hook/useGetUser';
+import { useUser } from './components/UserProvider';
 
 export default function Home() {
-  const [token, setToken] = useState('');
-  const { user } = useGetUser();
+  const { user } = useUser();
 
-  const getToken = async () => {
-    const token = await AsyncStorage.getItem('token');
-    if (token) {
-      setToken(token);
-    }
-  };
-
-  useEffect(() => {
-    getToken();
-  }, []);
-
-  if (!user?.id.length) {
+  if (user?.name === '') {
     return <Redirect href="/auth/login" />;
   }
 

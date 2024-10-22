@@ -43,7 +43,7 @@ export default function Notifications() {
         path: '/notifications',
         method: 'PATCH',
         queryString: {
-          userUuid: user.uuid,
+          userUuid: user?.uuid,
         },
       }),
   });
@@ -81,11 +81,11 @@ export default function Notifications() {
           <NotificationFilterItem item="REPORT" setFilter={setFilter} filter={filter} />
         </ScrollView>
       </View>
-      <View style={{ paddingTop: 20 }}>
-        {!isFetching && !isFetchingNextPage && data?.pages[0].items.length === 0 ? (
+      {!isFetching && !isFetchingNextPage && data?.pages[0].items.length === 0 ? (
+        <View style={{ paddingTop: 20 }}>
           <EmptyData text="Você ainda não tem notificações" size="medium" />
-        ) : null}
-      </View>
+        </View>
+      ) : null}
       {isFetching && !isFetchingNextPage ? (
         <>
           <NotificationItemSkeleton key={1} />
@@ -100,7 +100,6 @@ export default function Notifications() {
         </>
       ) : (
         <FlashList
-          contentContainerStyle={{ paddingTop: 10 }}
           renderItem={({ item }: { item: Notification }) => {
             return (
               <NotificationItem

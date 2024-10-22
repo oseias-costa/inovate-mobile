@@ -1,6 +1,4 @@
-import Button from '@ant-design/react-native/lib/button';
 import { Feather } from '@expo/vector-icons';
-import { useFonts, Lato_400Regular, Lato_300Light } from '@expo-google-fonts/lato';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsMutating } from '@tanstack/react-query';
 import { Link, Redirect, Tabs, router } from 'expo-router';
@@ -34,17 +32,8 @@ export default function Login() {
     }
   }, []);
 
-  let [fontsLoades] = useFonts({
-    Lato_400Regular,
-    Lato_300Light,
-  });
-
-  if (user) {
+  if (user?.name === '') {
     return <Redirect href="/(drawer)/(tabs)/dashboard" />;
-  }
-
-  if (!fontsLoades) {
-    return <Text>Loading</Text>;
   }
 
   return (

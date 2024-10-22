@@ -35,6 +35,7 @@ export default function useGetUser() {
     queryKey: ['user'],
     queryFn: getUser,
     retry: false,
+    enabled: false,
   });
 
   const redirectUser = async () => {

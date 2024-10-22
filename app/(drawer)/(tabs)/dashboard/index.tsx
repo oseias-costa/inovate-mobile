@@ -1,10 +1,9 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Platform,
   RefreshControl,
@@ -32,8 +31,8 @@ import { httpClient } from '~/app/lib/http.client';
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
   }),
 });
 
@@ -41,8 +40,14 @@ export default function Dashboard() {
   const fontsLoades = useFontLato();
   const [expoPushToken, setExpoPushToken] = useState('');
   const { data, isFetching, refetch } = useDashboard();
-  const { user } = useUser();
+  const { user, refetch: refetchUser } = useUser();
   const [refreshing, setRefreshing] = useState(false);
+  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+    undefined
+  );
+  const queryClient = useQueryClient();
+  const notificationListener = useRef<Notifications.Subscription>();
+  const responseListener = useRef<Notifications.Subscription>();
 
   const mutation = useMutation({
     mutationKey: ['device-token'],
@@ -51,7 +56,7 @@ export default function Dashboard() {
         method: 'POST',
         path: '/notifications/token',
         data: {
-          userUuid: user.uuid,
+          userUuid: user?.uuid,
           deviceToken: expoPushToken,
           type: Platform.OS === 'android' ? 'ANDROID' : 'IOS',
           active: true,
@@ -66,23 +71,45 @@ export default function Dashboard() {
   useEffect(() => {
     registerForPushNotificationsAsync()
       .then((token) => {
-        console.log('TTTKKKK', token);
         token && setExpoPushToken(token);
+        mutation.mutate();
       })
       .catch(console.log);
-    console.log('Registering for push notification');
   }, []);
 
-  const sendNotification = () => {
-    console.log('send notification');
-  };
-
   useEffect(() => {
-    if (expoPushToken) {
-      console.log('PUSSSSH', expoPushToken);
-      mutation.mutate();
-    }
-  }, [expoPushToken]);
+    console.log('tentando pegar');
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+      setNotification(notification);
+      console.log(notification);
+
+      const notificationBody = notification.request.content.data;
+      refetch();
+      if (notificationBody['type'] === 'REQUEST') {
+        return queryClient.invalidateQueries({ queryKey: ['requests-pending', 'requests'] });
+      }
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      const notificationBody = response.notification.request.content.data;
+      if (notificationBody['type'] === 'REQUEST') {
+        return router.navigate(`/screens/request/Detail?uuid=${notificationBody['uuid']}`);
+      }
+      if (notificationBody['type'] === 'NOTICE') {
+        return router.navigate(`/screens/notice/Detail?uuid=${notificationBody['uuid']}`);
+      }
+      if (notificationBody['type'] === 'REPORT') {
+        return router.navigate(`/screens/report/Detail?uuid=${notificationBody['uuid']}`);
+      }
+    });
+
+    return () => {
+      notificationListener.current &&
+        Notifications.removeNotificationSubscription(notificationListener.current);
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, [notificationListener, responseListener]);
 
   if (!fontsLoades) {
     return <Text>Loading</Text>;
@@ -115,7 +142,7 @@ export default function Dashboard() {
         <ScrollView
           showsHorizontalScrollIndicator={false}
           decelerationRate="normal"
-          contentContainerStyle={{ flex: 1 }}
+          contentContainerStyle={{ height: 700 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
           <View style={[styles.titleBox, { paddingBottom: 15 }]}>
             <Text style={[styles.title, { marginTop: 60 }]}>Solicitações</Text>
@@ -326,6 +353,7 @@ const styles = StyleSheet.create({
   seeAll: {
     fontSize: 14,
     color: '#3B3D3E',
+    fontFamily: 'Lato_400Regular',
   },
   numbersBox: {
     width: '90%',

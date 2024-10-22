@@ -1,4 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import React from 'react';
@@ -110,7 +111,8 @@ export default function Account() {
         </View>
       </TouchableOpacity>
       <CustomButton
-        onPress={() => {
+        onPress={async () => {
+          await AsyncStorage.removeItem('token');
           setUser(null);
           router.replace('/auth/login');
           return queryClient.invalidateQueries({ queryKey: ['login', 'user'] });

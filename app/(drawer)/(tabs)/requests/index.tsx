@@ -29,7 +29,7 @@ export default function Requests() {
           queryString: {
             page: Number(pageParam),
             limit: 8,
-            companyUuid: user.uuid,
+            companyUuid: user?.uuid,
             status,
           },
         }),
@@ -63,11 +63,11 @@ export default function Requests() {
           </ScrollView>
         </View>
         <View style={{ flex: 1, width: '100%', height: '100%' }}>
-          <View style={{ paddingTop: 20 }}>
-            {!isFetching && !isFetchingNextPage && data?.pages[0].items.length === 0 ? (
+          {!isFetching && !isFetchingNextPage && data?.pages[0].items.length === 0 ? (
+            <View style={{ paddingTop: 20 }}>
               <EmptyData text="Você não tem solicitações de documentos" size="medium" />
-            ) : null}
-          </View>
+            </View>
+          ) : null}
           {isFetching && !isFetchingNextPage ? (
             <View style={{ marginTop: 10 }}>
               <RequestItemSkeleton key={1} />

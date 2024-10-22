@@ -4,6 +4,9 @@ import axios from 'axios';
 import { router } from 'expo-router';
 import { Dispatch, SetStateAction, useState } from 'react';
 
+import { useUser } from '../components/UserProvider';
+import { User } from '../lib/types/user.type';
+
 type LoginData = {
   email: string;
   password: string;
@@ -11,6 +14,7 @@ type LoginData = {
 
 export const useLogin = (setError: Dispatch<SetStateAction<string>>) => {
   const [fetchToken, setFetchToken] = useState(false);
+  const { setUser } = useUser();
 
   const postData = async (data: LoginData) => {
     const response = await axios({
@@ -24,9 +28,10 @@ export const useLogin = (setError: Dispatch<SetStateAction<string>>) => {
   const mutate = useMutation({
     mutationFn: postData,
     mutationKey: ['login'],
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       AsyncStorage.setItem('token', data['token']);
-      setFetchToken(true);
+      setUser(data.user);
+
       router.replace('/(drawer)/(tabs)/dashboard');
     },
     onError: (error) => {
