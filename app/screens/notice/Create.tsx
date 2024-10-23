@@ -55,9 +55,10 @@ export default function Create() {
         data: {
           title: data.title,
           text: data.text,
-          companies,
+          user: companies,
         },
       }),
+    retry: false,
     onError: (err) => {
       setLoading(false);
       console.log('e)rror', err);

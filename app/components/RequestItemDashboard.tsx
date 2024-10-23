@@ -1,5 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
+import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { RequestStatus } from '../components/RequestStatus';
@@ -50,7 +51,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     color: '#3B3D3E',
-    fontFamily: 'Lato_400Regular',
     paddingBottom: 4,
   },
   description: {

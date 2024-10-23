@@ -9,7 +9,7 @@ import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { router, usePathname } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import React from 'react';
-import { Image, TouchableOpacity, Text, View } from 'react-native';
+import { Image, View } from 'react-native';
 
 const CustomDrawerContent = (props: any) => {
   const pathname = usePathname();

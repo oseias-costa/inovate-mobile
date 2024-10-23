@@ -29,7 +29,7 @@ export default function Notice() {
           queryString: {
             page: pageParam,
             limit: 8,
-            companyUuid: user.uuid,
+            uuid: user?.uuid,
           },
         }),
       initialPageParam: 1,

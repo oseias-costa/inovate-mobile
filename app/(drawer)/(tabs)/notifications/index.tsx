@@ -18,6 +18,12 @@ export default function Notifications() {
   const [refreshing, setRefreshing] = useState(false);
   const queryClient = useQueryClient();
 
+  const empty: { [key: string]: string } = {
+    REQUEST: ' de solicitações ',
+    NOTICE: ' de avisos',
+    REPORT: ' de relatórios',
+  };
+
   const { data, refetch, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery<PaginateReponse<Notification>>({
       queryKey: [`notification-list`],
@@ -28,10 +34,11 @@ export default function Notifications() {
           queryString: {
             page: pageParam,
             limit: 8,
-            subjectUuid: user.uuid,
+            subjectUuid: user?.uuid,
             type: filter,
           },
         }),
+      retry: false,
       initialPageParam: 1,
       getNextPageParam: (lastPage) => lastPage.meta.nextPage,
     });
@@ -83,7 +90,7 @@ export default function Notifications() {
       </View>
       {!isFetching && !isFetchingNextPage && data?.pages[0].items.length === 0 ? (
         <View style={{ paddingTop: 20 }}>
-          <EmptyData text="Você ainda não tem notificações" size="medium" />
+          <EmptyData text={`Você ainda não tem notificações${empty[filter]}`} size="medium" />
         </View>
       ) : null}
       {isFetching && !isFetchingNextPage ? (

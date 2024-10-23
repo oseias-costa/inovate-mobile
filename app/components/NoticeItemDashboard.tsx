@@ -1,3 +1,4 @@
+import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { formatDate } from '../lib/date';
@@ -40,6 +41,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#E4E4E4',
     paddingHorizontal: 16,
     marginVertical: 3,
+    shadowColor: '#00264B',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.17,
+    shadowRadius: 3.05,
+    elevation: 2,
   },
   createAt: {
     fontSize: 9,
