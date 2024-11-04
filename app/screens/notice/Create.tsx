@@ -55,7 +55,8 @@ export default function Create() {
         data: {
           title: data.title,
           text: data.text,
-          user: companies,
+          users: companies,
+          type: destinationUsers?.type,
         },
       }),
     retry: false,
@@ -206,7 +207,10 @@ export default function Create() {
                 />
               </View>
             ) : null}
-            <CustomButton type="primary" onPress={() => mutation.mutate()}>
+            <CustomButton
+              style={{ marginHorizontal: 20, height: 40 }}
+              type="primary"
+              onPress={() => mutation.mutate()}>
               Criar aviso
             </CustomButton>
           </KeyboardAvoidingView>

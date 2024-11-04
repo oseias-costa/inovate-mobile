@@ -8,6 +8,7 @@ import { Radio } from './Radio';
 import Select from './Select';
 import SelectMultipleCompanies from './SelectMultipleCompanies';
 import { CustomButton } from '../lib/components/CustomButton';
+import SelectMultiplesUsers from '../lib/components/SelectMultipleUsers';
 
 export type DestinationUsers = {
   type: 'ALL' | 'ALL_COMPANYS' | 'ALL_USERS' | 'SELECTED_COMPANYS' | 'SELECTED_USERS';
@@ -58,7 +59,14 @@ export function NoticeSelectUsers({
           closable
           maskClosable
           onClose={() => setOpenModal(false)}>
-          <View style={{ height: 440, paddingBottom: 25 }}>
+          <View
+            style={{
+              height: 360,
+              paddingBottom: 25,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-start',
+            }}>
             <View style={{ borderBottomColor: '#d3d3d3', borderBottomWidth: 1, marginBottom: 20 }}>
               <Text
                 style={{
@@ -112,14 +120,30 @@ export function NoticeSelectUsers({
                 </Select>
               </View>
             ) : null}
-            <CustomButton
-              type="primary"
-              onPress={() => {
-                setOpenModal(false);
-              }}>
-              Selecionar
-            </CustomButton>
+            {noticeDestination?.type === 'SELECTED_USERS' ? (
+              <View style={{ paddingTop: 20 }}>
+                <Select
+                  checkValue={companySelected.name}
+                  title="Selecione os usuários"
+                  placeholder="Usuários">
+                  <SelectMultiplesUsers users={companies} setUsers={setCompanies} />
+                </Select>
+              </View>
+            ) : null}
           </View>
+          <CustomButton
+            type="primary"
+            style={{
+              marginHorizontal: 20,
+              height: 40,
+              marginTop: 20,
+              bottom: 0,
+            }}
+            onPress={() => {
+              setOpenModal(false);
+            }}>
+            Selecionar
+          </CustomButton>
         </Modal>
       </Provider>
     </>

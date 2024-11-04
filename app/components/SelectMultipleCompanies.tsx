@@ -3,6 +3,8 @@ import React, { Dispatch, SetStateAction } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import useGetCompanys from '../hook/useGetCompanys';
+import { useQuery } from '@tanstack/react-query';
+import { httpClient } from '../lib/http.client';
 
 type SelectCompanyProps = {
   setCompanies: Dispatch<SetStateAction<{ name: string; uuid: string }[] | undefined>>;
@@ -10,7 +12,14 @@ type SelectCompanyProps = {
 };
 
 export default function SelectMultipleCompanies({ companies, setCompanies }: SelectCompanyProps) {
-  const { data: companys } = useGetCompanys();
+  const { data: companys } = useQuery({
+    queryKey: ['companys-list'],
+    queryFn: async () =>
+      httpClient({
+        path: '/users/companys',
+        method: 'GET',
+      }),
+  });
 
   return (
     <View style={{ paddingTop: 10 }}>

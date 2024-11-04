@@ -5,24 +5,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { router, Stack } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Alert,
-  ColorValue,
   KeyboardAvoidingView,
-  Platform,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
-  Text,
   View,
-  Keyboard,
-  TouchableWithoutFeedback,
   TouchableOpacity,
 } from 'react-native';
-import { actions, RichEditor, RichToolbar } from 'react-native-pell-rich-editor';
 
 import CustomTextInput from '../../components/CustomTextInput';
-import Select from '../../components/Select';
-import SelectCompany from '../../components/SelectCompany';
 import { httpClient } from '../../lib/http.client';
 
 import { useLoading } from '~/app/components/LoadingProvider';
@@ -118,6 +108,7 @@ export default function AddUser() {
         <KeyboardAvoidingView>
           <CustomButton
             disabled={!data.email && !data.name}
+            style={{ marginHorizontal: 20, height: 40 }}
             type="primary"
             onPress={() => mutation.mutate()}>
             Adicionar

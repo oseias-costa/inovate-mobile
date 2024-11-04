@@ -44,7 +44,6 @@ export default function Detail() {
 
       const fileUri = FileSystem.documentDirectory + key;
 
-      // Check if response.data is a string or blob
       if (typeof response.data === 'string') {
         await FileSystem.writeAsStringAsync(fileUri, response.data, {
           encoding: FileSystem.EncodingType.UTF8, // Adjust encoding as needed
