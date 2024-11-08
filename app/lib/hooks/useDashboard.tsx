@@ -42,13 +42,13 @@ export default function useDashboard() {
         method: 'GET',
         path: '/notice',
         queryString: {
-          companyUuid: user?.uuid,
+          uuid: user?.uuid,
           limit: 3,
           page: 1,
         },
       }),
     enabled: false,
-  });
+  })
 
   const {
     data: reports,
@@ -105,6 +105,8 @@ export default function useDashboard() {
     refetchNotice();
     refetchNumbers();
   };
+
+  console.log(notice, 'noticeeee')
 
   useEffect(() => {
     if (!user) {

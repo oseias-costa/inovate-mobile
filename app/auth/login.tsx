@@ -84,8 +84,7 @@ export default function Login() {
               color: '#716F6F',
               marginBottom: 20,
             }}>
-            Faça o login informando abaixo o e-mail e a senha, caso não tenha uma senha ainda,
-            clique em primeiro acesso.
+            Faça o login informando abaixo o e-mail e a senha.
           </Text>
           <TextInput
             style={{

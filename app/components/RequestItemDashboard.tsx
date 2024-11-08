@@ -33,7 +33,7 @@ export default function RequestItemDashboard({
           <Text style={styles.description}>Prazo {formatDate(new Date(expiration))}</Text>
         </View>
       </View>
-      <MaterialIcons size={16} color="#C8BDBD" />
+      <MaterialIcons name="keyboard-arrow-right" size={26} color="#C8BDBD" />
     </TouchableOpacity>
   );
 }
@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomColor: '#E9E9E9',
     borderBottomWidth: 1,

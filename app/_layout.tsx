@@ -9,7 +9,7 @@ import { Stack } from 'expo-router';
 import React, { useEffect } from 'react';
 import { AppState } from 'react-native';
 import type { AppStateStatus } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+//import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { FilterProvider } from './components/FilterProvider';
 import { LoadingProvider } from './components/LoadingProvider';
@@ -44,21 +44,21 @@ export default function Layout() {
 
   return (
     <QueryClientProvider client={client}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <FilterProvider>
-          <UserProvider>
-            <LoadingProvider>
-              <ToastProvider>
-                <Stack
-                  screenOptions={{
-                    headerShown: false,
-                  }}
-                />
-              </ToastProvider>
-            </LoadingProvider>
-          </UserProvider>
-        </FilterProvider>
-      </GestureHandlerRootView>
+      {/* <GestureHandlerRootView style={{ flex: 1 }}> */}
+      <FilterProvider>
+        <UserProvider>
+          <LoadingProvider>
+            <ToastProvider>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                }}
+              />
+            </ToastProvider>
+          </LoadingProvider>
+        </UserProvider>
+      </FilterProvider>
+      {/* </GestureHandlerRootView> */}
     </QueryClientProvider>
   );
 }

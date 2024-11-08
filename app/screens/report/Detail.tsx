@@ -23,7 +23,6 @@ export default function NoticeDetail() {
       }),
   });
 
-  console.log('data.documents', data?.documents);
   return (
     <>
       <Stack.Screen

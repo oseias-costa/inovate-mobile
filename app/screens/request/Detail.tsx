@@ -17,10 +17,9 @@ import { httpClient } from '~/app/lib/http.client';
 
 export default function Detail() {
   const { uuid } = useLocalSearchParams();
-  const { pickDocument, error } = useUpload(String(uuid), 'REQUEST');
   const [key, setKey] = useState('');
 
-  const { data, isFetching } = useQuery({
+  const { data, isFetching, refetch: refetchRequest } = useQuery({
     queryKey: [`request-${uuid}`],
     queryFn: async () =>
       httpClient({
@@ -29,6 +28,7 @@ export default function Detail() {
       }),
   });
 
+  const { pickDocument, error } = useUpload(String(uuid), 'REQUEST', refetchRequest);
   const downloadFile = async () => {
     try {
       const response = await axios.get(
@@ -133,17 +133,17 @@ export default function Detail() {
                   Selecione um arquivo de no máximo 20mb.
                 </Text>
               </TouchableOpacity>
-              {data?.documents?.map((document: any) => (
-                <View>
-                  <Text
-                    style={{
-                      color: '#3B3D3E',
-                      fontSize: 16,
-                      fontFamily: 'Lato_400Regular',
-                      paddingBottom: 5,
-                    }}>
-                    Anexos:
-                  </Text>
+              <View>
+                <Text
+                  style={{
+                    color: '#3B3D3E',
+                    fontSize: 16,
+                    fontFamily: 'Lato_400Regular',
+                    paddingBottom: 5,
+                  }}>
+                  Anexos:
+                </Text>
+                {data?.documents?.map((document: any) => (
                   <DocumentDownloadButton
                     name={document.name}
                     onPress={async () => {
@@ -151,8 +151,8 @@ export default function Detail() {
                       await handleDownload();
                     }}
                   />
-                </View>
-              ))}
+                ))}
+              </View>
             </>
           )}
         </View>

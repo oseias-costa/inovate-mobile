@@ -105,7 +105,7 @@ export default function Create() {
         <SelectCompany companySelected={companySelected} setCompanySelected={setCompanySelected} />
       </Select>
       <SelectDate dateValue={expiration} setDate={setExpiration} placeholder="Selecione um prazo" />
-      <CustomButton type="primary" onPress={() => mutation.mutate()}>
+      <CustomButton type="primary" style={{ marginHorizontal: 20, height: 40 }} onPress={() => mutation.mutate()}>
         Abrir solicitação
       </CustomButton>
     </SafeAreaView>

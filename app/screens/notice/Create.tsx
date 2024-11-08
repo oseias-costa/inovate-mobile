@@ -24,9 +24,10 @@ import CustomTextInput from '../../components/CustomTextInput';
 import { httpClient } from '../../lib/http.client';
 
 import { useLoading } from '~/app/components/LoadingProvider';
-import { DestinationUsers, NoticeSelectUsers } from '~/app/components/NoticeSelectUsers';
 import { Severity, useToast } from '~/app/components/ToastProvider';
 import { CustomButton } from '~/app/lib/components/CustomButton';
+import Select from '~/app/components/Select';
+import SelectCompany from '~/app/components/SelectCompany';
 
 const handleHead = ({ tintColor }: { tintColor: ColorValue }) => (
   <Text style={{ color: tintColor }}>H1</Text>
@@ -35,8 +36,7 @@ const handleHead = ({ tintColor }: { tintColor: ColorValue }) => (
 export default function Create() {
   const [error, setError] = useState({ input: '', message: '' });
   const [data, setData] = useState({ title: '', text: '' });
-  const [destinationUsers, setDestinationUsers] = useState<DestinationUsers | undefined>();
-  const [companies, setCompanies] = useState<{ name: string; uuid: string }[]>();
+  const [companySelected, setCompanySelected] = useState({ uuid: '', name: '' });
   const isMutation = useIsMutating({ mutationKey: ['create-notice'], exact: true });
   const queryClient = useQueryClient();
   const { setLoading } = useLoading();
@@ -55,8 +55,7 @@ export default function Create() {
         data: {
           title: data.title,
           text: data.text,
-          users: companies,
-          type: destinationUsers?.type,
+          user: companySelected.uuid,
         },
       }),
     retry: false,
@@ -66,8 +65,7 @@ export default function Create() {
     },
     onSuccess: (data) => {
       setLoading(false);
-      showToasting();
-      router.navigate('/(drawer)/(tabs)/notice');
+      router.navigate(`/screens/notice/UploadDocument?uuid=${data}`);
       return queryClient.invalidateQueries({ queryKey: ['notice'] });
     },
   });
@@ -183,13 +181,15 @@ export default function Create() {
                 />
               </ScrollView>
             </View>
-            <NoticeSelectUsers
-              placeholder="Selecione o destinatário"
-              noticeDestination={destinationUsers}
-              setNoticeDestionation={setDestinationUsers}
-              setCompanies={setCompanies}
-              companies={companies}
-            />
+            <Select
+              checkValue={companySelected.name}
+              title="Selecione a empresa"
+              placeholder="Empresa">
+              <SelectCompany
+                companySelected={companySelected}
+                setCompanySelected={setCompanySelected}
+              />
+            </Select>
             {isKeyboardVisible ? (
               <View style={style.inner}>
                 <RichToolbar
@@ -208,10 +208,10 @@ export default function Create() {
               </View>
             ) : null}
             <CustomButton
-              style={{ marginHorizontal: 20, height: 40 }}
+              style={{ marginHorizontal: 20, height: 40, marginTop: 'auto' }}
               type="primary"
               onPress={() => mutation.mutate()}>
-              Criar aviso
+              Próximo
             </CustomButton>
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>

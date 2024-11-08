@@ -16,9 +16,8 @@ export const DocumentDownloadButton: React.FC<DocumentDownloadButtonProps> = ({
       onPress={onPress}
       style={{
         marginHorizontal: 0,
-        borderWidth: 2,
+        borderWidth: 1,
         borderColor: '#077EF0',
-        borderStyle: 'dotted',
         display: 'flex',
         borderRadius: 4,
         flexDirection: 'row',

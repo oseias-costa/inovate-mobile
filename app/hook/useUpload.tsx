@@ -7,7 +7,7 @@ import { useLoading } from '../components/LoadingProvider';
 import { Severity, useToast } from '../components/ToastProvider';
 import { DocumentPickerResult } from '../lib/types/document-picker-result.type';
 
-export function useUpload(uuid: string, type: 'REQUEST' | 'REPORT' | 'NOTICE') {
+export function useUpload(uuid: string, type: 'REQUEST' | 'REPORT' | 'NOTICE', refetch: () => void) {
   const [files, setFiles] = useState<DocumentPickerResult | any>(null);
   const [error, setError] = useState(false);
   const queryClient = useQueryClient();
@@ -47,6 +47,7 @@ export function useUpload(uuid: string, type: 'REQUEST' | 'REPORT' | 'NOTICE') {
       .then((res) => {
         setLoading(false);
         showToast('Arquivo enviado com sucesso', Severity.SUCCESS);
+        refetch()
       })
       .catch((err) => {
         console.log(err);

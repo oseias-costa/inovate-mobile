@@ -1,11 +1,15 @@
-import { Button } from '@ant-design/react-native';
+import Button from '@ant-design/react-native/lib/button';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import React, { useRef } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RichEditor } from 'react-native-pell-rich-editor';
+import { useLoading } from '~/app/components/LoadingProvider';
+import { Severity, useToast } from '~/app/components/ToastProvider';
+import { useUser } from '~/app/components/UserProvider';
 
+import { useUpload } from '~/app/hook/useUpload';
 import NoticeDetailSkeleton from '~/app/lib/Loader/NoticeDetailSkeleton';
 import { formatDate } from '~/app/lib/date';
 import { httpClient } from '~/app/lib/http.client';
@@ -13,8 +17,12 @@ import { httpClient } from '~/app/lib/http.client';
 export default function NoticeDetail() {
   const { uuid } = useLocalSearchParams();
   const richText = useRef<any>();
+  const { user } = useUser();
+  const { setLoading } = useLoading();
+  const { showToast } = useToast();
+  const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: [`notice-${uuid}`],
     queryFn: async () =>
       httpClient({
@@ -23,24 +31,43 @@ export default function NoticeDetail() {
       }),
   });
 
+  const { pickDocument, error } = useUpload(String(uuid), 'NOTICE', refetch);
+
+  const endNotice = useMutation({
+    mutationKey: [`notice-end-${uuid}`],
+    mutationFn: async () =>
+      httpClient({
+        path: '/notice/end',
+        method: 'POST',
+        data: {
+          user: user?.uuid,
+          notice: uuid,
+        },
+      }),
+    onSuccess: () => {
+      setLoading(false);
+      showToast('Aviso enviado com sucesso', Severity.SUCCESS);
+      router.navigate({ pathname: '/screens/notice/Detail', params: { uuid } });
+      return queryClient.invalidateQueries({ queryKey: ['notice-' + uuid] });
+    },
+    onError: (err) => {
+      setLoading(false);
+      showToast('Ocorreu um erro', Severity.ERROR);
+    },
+  });
+
   return (
     <>
       <Stack.Screen
-        name="notice/Detail"
         options={{
           headerTitleAlign: 'center',
-          headerTitle: 'Aviso',
+          headerTitle: 'Incluir documento',
           headerTintColor: '#fff',
-          headerRight: () => (
+          headerLeft: () => (
             <TouchableOpacity
               onPress={() =>
-                router.navigate({ pathname: '/screens/notice/Edit', params: { uuid } })
+                router.navigate({ pathname: '/screens/notice/Detail', params: { uuid } })
               }>
-              <Text style={styles.headerButton}>Editar</Text>
-            </TouchableOpacity>
-          ),
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
               <MaterialIcons name="arrow-back-ios" size={24} color="white" style={{ right: 8 }} />
             </TouchableOpacity>
           ),
@@ -50,15 +77,21 @@ export default function NoticeDetail() {
         {isLoading ? (
           <NoticeDetailSkeleton />
         ) : (
-          <View style={{ paddingBottom: 25, paddingTop: 20, marginHorizontal: 10 }}>
+          <View
+            style={{
+              paddingBottom: 25,
+              paddingTop: 20,
+              marginHorizontal: 20,
+            }}>
             <View style={notice.expirationContainer}>
               <Text style={notice.expiration}>Data {formatDate(new Date(data?.createdAt))}</Text>
             </View>
             <View
               style={{
                 borderRadius: 5,
+                marginVertical: 5,
                 marginBottom: 10,
-                bottom: 20,
+                backgroundColor: 'transparent',
               }}>
               <ScrollView
                 bounces={false}
@@ -66,7 +99,7 @@ export default function NoticeDetail() {
                 contentContainerStyle={{ borderRadius: 5 }}>
                 <RichEditor
                   ref={richText}
-                  initialContentHTML={`<h2>${data?.title} teste com um titulo maior </h2>${data?.text}`}
+                  initialContentHTML={`<h2>${data?.title}</h2>${data?.text}`}
                   disabled
                   editorStyle={{
                     color: '#363636',
@@ -74,6 +107,7 @@ export default function NoticeDetail() {
                   }}
                   style={{
                     borderRadius: 5,
+                    bottom: 10,
                   }}
                   containerStyle={{
                     borderRadius: 5,
@@ -84,6 +118,11 @@ export default function NoticeDetail() {
                 />
               </ScrollView>
             </View>
+            <TouchableOpacity style={styles.uploadContainer} onPress={pickDocument}>
+              <Ionicons name="cloud-upload-outline" size={24} color="#6D6D6D" />
+              <Text style={styles.uploadTitle}>Enviar arquivo</Text>
+              <Text style={styles.uploadDescription}>Selecione um arquivo de no máximo 20mb.</Text>
+            </TouchableOpacity>
             <View style={{ height: 0 }}>
               {data?.documents?.map((document: any) => (
                 <View style={notice.attachContainer}>
@@ -97,7 +136,10 @@ export default function NoticeDetail() {
         <Button
           type="primary"
           style={{ height: 40, marginHorizontal: 20, marginTop: 'auto' }}
-          onPress={() => router.navigate('/(drawer)/(tabs)/notice')}>
+          onPress={() => {
+            setLoading(true);
+            endNotice.mutate();
+          }}>
           Finalizar
         </Button>
       </SafeAreaView>
@@ -229,10 +271,7 @@ const notice = StyleSheet.create({
     fontSize: 14,
     color: '#6D6D6D',
     fontFamily: 'Lato_300Light',
-    paddingBottom: 10,
     paddingLeft: 14,
-    zIndex: 2,
-    top: 10,
   },
   description: {
     color: '#6D6D6D',
