@@ -12,6 +12,7 @@ export default function Layout() {
         },
       }}>
       <Stack.Screen name="notice/Detail" />
+      <Stack.Screen name="notice/UploadDocument" />
       <Stack.Screen name="notice/Create" />
       <Stack.Screen
         name="request/Create"

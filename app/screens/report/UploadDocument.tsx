@@ -1,23 +1,32 @@
 import ButtonAnt from '@ant-design/react-native/lib/button';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import React, { useRef } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RichEditor } from 'react-native-pell-rich-editor';
+import * as FileSystem from 'expo-file-system';
 
 import { useUpload } from '~/app/hook/useUpload';
 import NoticeDetailSkeleton from '~/app/lib/Loader/NoticeDetailSkeleton';
 import { CustomButton } from '~/app/lib/components/CustomButton';
+import { DocumentDownloadButton } from '~/app/lib/components/DocumentDownloadButton';
 import { formatDate } from '~/app/lib/date';
 import { httpClient } from '~/app/lib/http.client';
+import { Severity, useToast } from '~/app/components/ToastProvider';
+import { useLoading } from '~/app/components/LoadingProvider';
+import { useUser } from '~/app/components/UserProvider';
 
 export default function NoticeDetail() {
   const { uuid } = useLocalSearchParams();
   const richText = useRef<any>();
-  const { pickDocument, error } = useUpload(String(uuid), 'REPORT');
+  const { setLoading } = useLoading();
+  const { showToast } = useToast();
+  const { user } = useUser();
+  const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: [`report-${uuid}`],
     queryFn: async () =>
       httpClient({
@@ -25,7 +34,65 @@ export default function NoticeDetail() {
         method: 'GET',
       }),
   });
-  console.log(data);
+
+  const endReport = useMutation({
+    mutationKey: [`report-end-${uuid}`],
+    mutationFn: async () =>
+      httpClient({
+        path: '/notice/end',
+        method: 'POST',
+        data: {
+          user: user?.uuid,
+          report: uuid,
+        },
+      }),
+    onSuccess: () => {
+      setLoading(false);
+      showToast('Aviso criado com sucesso', Severity.SUCCESS);
+      router.push(`/(tabs)/reports`);
+      return queryClient.invalidateQueries({ queryKey: ['notice-' + uuid] });
+    },
+    onError: (err) => {
+      setLoading(false);
+      showToast('Ocorreu um erro', Severity.ERROR);
+    },
+  });
+
+  const { pickDocument, error } = useUpload(String(uuid), 'REPORT', refetch);
+
+  const downloadFile = async (key: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.EXPO_PUBLIC_API_URL}/document/download?key=${key}`,
+        {
+          responseType: 'blob',
+        }
+      );
+
+      if (!response.data) {
+        throw new Error('No data received from the API');
+      }
+
+      const fileUri = FileSystem.documentDirectory + key;
+
+      if (typeof response.data === 'string') {
+        await FileSystem.writeAsStringAsync(fileUri, response.data, {
+          encoding: FileSystem.EncodingType.UTF8, // Adjust encoding as needed
+        });
+      } else if (response.data instanceof Blob) {
+        // Handle blob data (e.g., using a library like react-native-fs)
+        // ...
+      } else {
+        throw new Error('Unexpected data type from API');
+      }
+
+      return fileUri;
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      throw error;
+    }
+  };
+
   return (
     <>
       <Stack.Screen
@@ -98,18 +165,22 @@ export default function NoticeDetail() {
               <Text style={styles.uploadTitle}>Enviar arquivo</Text>
               <Text style={styles.uploadDescription}>Selecione um arquivo de no máximo 20mb.</Text>
             </TouchableOpacity>
-            <View style={{ height: 0 }}>
+            <View style={{ marginHorizontal: 10 }}>
+              {!data?.documents ? <Text style={[styles.description]}>Anexos: </Text> : null}
               {data?.documents?.map((document: any) => (
-                <View style={notice.attachContainer}>
-                  <Ionicons name="attach" size={24} color="#005AB1" />
-                  <Text style={notice.attachTitle}>{document.name}</Text>
-                </View>
+                <DocumentDownloadButton
+                  onPress={() => downloadFile(document.path)}
+                  name={document.name}
+                />
               ))}
             </View>
           </View>
         )}
-        <CustomButton type="ghost" onPress={() => router.navigate('/(drawer)/(tabs)/notice')}>
-          voltar
+        <CustomButton
+          type="primary"
+          style={{ marginHorizontal: 20, height: 40, marginTop: 'auto' }}
+          onPress={() => endReport.mutate()}>
+          Finalizar
         </CustomButton>
       </SafeAreaView>
     </>
@@ -169,6 +240,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 15,
     marginVertical: 20,
+    marginHorizontal: 10,
   },
   uploadTitle: {
     fontSize: 16,

@@ -38,7 +38,6 @@ export default function Notifications() {
             type: filter,
           },
         }),
-      retry: false,
       initialPageParam: 1,
       getNextPageParam: (lastPage) => lastPage.meta.nextPage,
     });
@@ -108,6 +107,7 @@ export default function Notifications() {
       ) : (
         <FlashList
           renderItem={({ item }: { item: Notification }) => {
+            if (!item) return null;
             return (
               <NotificationItem
                 key={item.itemUuid}
@@ -120,11 +120,11 @@ export default function Notifications() {
               />
             );
           }}
-          estimatedItemSize={15}
+          estimatedItemSize={5}
           onEndReached={() => {
             if (hasNextPage) fetchNextPage();
           }}
-          keyExtractor={(item) => item.itemUuid}
+          keyExtractor={(item) => item.createAt}
           data={data?.pages.flatMap((page) => page.items) || []}
           refreshControl={
             <RefreshControl

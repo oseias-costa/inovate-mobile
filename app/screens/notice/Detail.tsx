@@ -1,14 +1,18 @@
 import { Button } from '@ant-design/react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import React, { useRef } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RichEditor } from 'react-native-pell-rich-editor';
 
 import NoticeDetailSkeleton from '~/app/lib/Loader/NoticeDetailSkeleton';
+import { DocumentDownloadButton } from '~/app/lib/components/DocumentDownloadButton';
 import { formatDate } from '~/app/lib/date';
 import { httpClient } from '~/app/lib/http.client';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 export default function NoticeDetail() {
   const { uuid } = useLocalSearchParams();
@@ -23,10 +27,45 @@ export default function NoticeDetail() {
       }),
   });
 
+  const downloadFile = async (key: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.EXPO_PUBLIC_API_URL}/document/download?key=${key}`,
+        {
+          responseType: 'blob',
+        }
+      );
+
+      if (!response.data) {
+        throw new Error('No data received from the API');
+      }
+
+      const fileUri = FileSystem.documentDirectory + key;
+
+      if (typeof response.data === 'string') {
+        await FileSystem.writeAsStringAsync(fileUri, response.data, {
+          encoding: FileSystem.EncodingType.UTF8, // Adjust encoding as needed
+        });
+
+        console.log('dataaaaa');
+      } else if (response.data instanceof Blob) {
+        // Handle blob data (e.g., using a library like react-native-fs)
+        // ...
+        console.log('é um blob');
+      } else {
+        throw new Error('Unexpected data type from API');
+      }
+
+      return fileUri;
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      throw error;
+    }
+  };
+
   return (
     <>
       <Stack.Screen
-        name="notice/Detail"
         options={{
           headerTitleAlign: 'center',
           headerTitle: 'Aviso',
@@ -84,21 +123,21 @@ export default function NoticeDetail() {
                 />
               </ScrollView>
             </View>
-            <View style={{ height: 0 }}>
+            <View style={{ marginHorizontal: 10 }}>
+              {data?.documents ? <Text style={[styles.description]}>Anexos: </Text> : null}
               {data?.documents?.map((document: any) => (
-                <View style={notice.attachContainer}>
-                  <Ionicons name="attach" size={24} color="#005AB1" />
-                  <Text style={notice.attachTitle}>{document.name}</Text>
-                </View>
+                <DocumentDownloadButton
+                  onPress={() => downloadFile(document.path)}
+                  name={document.name}
+                />
               ))}
             </View>
           </View>
         )}
         <Button
-          type="primary"
           style={{ height: 40, marginHorizontal: 20, marginTop: 'auto' }}
           onPress={() => router.navigate('/(drawer)/(tabs)/notice')}>
-          Finalizar
+          Voltar
         </Button>
       </SafeAreaView>
     </>
@@ -143,7 +182,7 @@ const styles = StyleSheet.create({
   },
   description: {
     color: '#6D6D6D',
-    marginTop: 10,
+    marginBottom: 10,
     fontSize: 16,
     fontFamily: 'Lato_400Regular',
   },
@@ -269,7 +308,7 @@ const notice = StyleSheet.create({
     alignItems: 'center',
   },
   attachTitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#005AB1',
     fontFamily: 'Lato_400Regular',
     paddingLeft: 5,

@@ -11,6 +11,7 @@ import { useUser } from '~/app/components/UserProvider';
 
 import { useUpload } from '~/app/hook/useUpload';
 import NoticeDetailSkeleton from '~/app/lib/Loader/NoticeDetailSkeleton';
+import { DocumentDownloadButton } from '~/app/lib/components/DocumentDownloadButton';
 import { formatDate } from '~/app/lib/date';
 import { httpClient } from '~/app/lib/http.client';
 
@@ -22,7 +23,7 @@ export default function NoticeDetail() {
   const { showToast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, refetch, isRefetching } = useQuery({
     queryKey: [`notice-${uuid}`],
     queryFn: async () =>
       httpClient({
@@ -46,8 +47,8 @@ export default function NoticeDetail() {
       }),
     onSuccess: () => {
       setLoading(false);
-      showToast('Aviso enviado com sucesso', Severity.SUCCESS);
-      router.navigate({ pathname: '/screens/notice/Detail', params: { uuid } });
+      showToast('Aviso criado com sucesso', Severity.SUCCESS);
+      router.push(`/screens/notice/Detail?uuid=${uuid}`);
       return queryClient.invalidateQueries({ queryKey: ['notice-' + uuid] });
     },
     onError: (err) => {
@@ -123,12 +124,9 @@ export default function NoticeDetail() {
               <Text style={styles.uploadTitle}>Enviar arquivo</Text>
               <Text style={styles.uploadDescription}>Selecione um arquivo de no máximo 20mb.</Text>
             </TouchableOpacity>
-            <View style={{ height: 0 }}>
+            <View>
               {data?.documents?.map((document: any) => (
-                <View style={notice.attachContainer}>
-                  <Ionicons name="attach" size={24} color="#005AB1" />
-                  <Text style={notice.attachTitle}>{document.name}</Text>
-                </View>
+                <DocumentDownloadButton name={document.name} />
               ))}
             </View>
           </View>

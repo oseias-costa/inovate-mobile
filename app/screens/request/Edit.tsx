@@ -163,7 +163,10 @@ export default function UpdateSolicitation() {
           setDate={setExpiration}
           placeholder="Selecione um prazo"
         />
-        <CustomButton type="primary" onPress={() => mutation.mutate()}>
+        <CustomButton
+          style={{ marginHorizontal: 20, height: 40 }}
+          type="primary"
+          onPress={() => mutation.mutate()}>
           Editar solicitação
         </CustomButton>
       </SafeAreaView>

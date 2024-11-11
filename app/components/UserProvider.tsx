@@ -48,7 +48,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   }, [data, error, user]);
 
   if (isError) {
-    console.log('aqui deveria entrarrrrr');
     const getError = error as AxiosError;
     if (getError.response?.status === 401) {
       setUser(null);

@@ -5,6 +5,7 @@ import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  Dimensions,
   Platform,
   RefreshControl,
   ScrollView,
@@ -48,6 +49,23 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
+  const destakeRef = useRef<View | null>(null);
+  const [height, setHeight] = useState(0);
+  const screenHeight = Dimensions.get('screen').height;
+
+  const handleLayout = () => {
+    if (destakeRef.current) {
+      destakeRef.current.measure(
+        (x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
+          setHeight(height);
+        }
+      );
+    }
+  };
+
+  useEffect(() => {
+    handleLayout();
+  }, [destakeRef]);
 
   const mutation = useMutation({
     mutationKey: ['device-token'],
@@ -122,7 +140,7 @@ export default function Dashboard() {
     <>
       <StatusBar barStyle="light-content" hidden={false} />
       <View style={{ backgroundColor: '#fff', position: 'relative', flex: 1 }}>
-        <View style={styles.destakBox}>
+        <View style={styles.destakBox} ref={destakeRef}>
           <View style={styles.welcomeBox}>
             <Text style={styles.welcomeText}>Bem vindo, </Text>
             <Text style={styles.welcomeNameUser}>{user?.name}.</Text>
@@ -141,8 +159,8 @@ export default function Dashboard() {
         </View>
         <ScrollView
           showsHorizontalScrollIndicator={false}
-          decelerationRate="normal"
-          contentContainerStyle={{ height: 700 }}
+          decelerationRate="fast"
+          contentContainerStyle={{ height: screenHeight - height + 140 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
           <View style={[styles.titleBox, { paddingBottom: 15 }]}>
             <Text style={[styles.title, { marginTop: 60 }]}>Solicitações</Text>

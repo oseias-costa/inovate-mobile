@@ -5,7 +5,16 @@ import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Animated,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { v4 as uuidv4 } from 'uuid';
 
 import { RequestStatus } from '~/app/components/RequestStatus';
 import { useUpload } from '~/app/hook/useUpload';
@@ -18,8 +27,14 @@ import { httpClient } from '~/app/lib/http.client';
 export default function Detail() {
   const { uuid } = useLocalSearchParams();
   const [key, setKey] = useState('');
+  const [downloadProgress, setDownloadProgress] = useState(0); // Progress state from 0 to 1
+  const progressAnimation = new Animated.Value(0);
 
-  const { data, isFetching, refetch: refetchRequest } = useQuery({
+  const {
+    data,
+    isFetching,
+    refetch: refetchRequest,
+  } = useQuery({
     queryKey: [`request-${uuid}`],
     queryFn: async () =>
       httpClient({
@@ -29,65 +44,84 @@ export default function Detail() {
   });
 
   const { pickDocument, error } = useUpload(String(uuid), 'REQUEST', refetchRequest);
-  const downloadFile = async () => {
+  const downloadFile = async (key: string, name: string) => {
+    const fileUri1 = FileSystem.documentDirectory + 'downloads/' + name;
+    const fileUri = `${FileSystem.documentDirectory}downloads/${uuidv4()}-${name}`;
+    const uri = `${process.env.EXPO_PUBLIC_API_URL}/document/download?key=${key}`;
+
+    const downloadResumable = FileSystem.createDownloadResumable(
+      uri,
+      fileUri1,
+      {},
+      progressCallback
+    );
+
     try {
-      const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API_URL}/document/download?key=${key}`,
-        {
-          responseType: 'blob',
-        }
-      );
+      console.log('entrou aqui');
+      // Start the download
+      await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}downloads`, {
+        intermediates: true,
+      });
 
-      if (!response.data) {
-        throw new Error('No data received from the API');
-      }
-
-      const fileUri = FileSystem.documentDirectory + key;
-
-      if (typeof response.data === 'string') {
-        await FileSystem.writeAsStringAsync(fileUri, response.data, {
-          encoding: FileSystem.EncodingType.UTF8, // Adjust encoding as needed
-        });
-      } else if (response.data instanceof Blob) {
-        // Handle blob data (e.g., using a library like react-native-fs)
-        // ...
-      } else {
-        throw new Error('Unexpected data type from API');
-      }
-
-      return fileUri;
+      const test = await downloadResumable.downloadAsync();
+      console.log('Finished downloading to ', test);
     } catch (error) {
-      console.error('Error downloading file:', error);
-      throw error;
+      console.error('Download failed', error);
     }
+    // try {
+    //   const response = await axios.get(
+    //     `${process.env.EXPO_PUBLIC_API_URL}/document/download?key=${key}`,
+    //     {
+    //       responseType: 'blob',
+    //     }
+    //   );
+    //
+    //   if (!response.data) {
+    //     throw new Error('No data received from the API');
+    //   }
+    //
+    //   const fileUri = FileSystem.documentDirectory + key;
+    //
+    //   if (typeof response.data === 'string') {
+    //     await FileSystem.writeAsStringAsync(fileUri, response.data, {
+    //       encoding: FileSystem.EncodingType.UTF8, // Adjust encoding as needed
+    //     });
+    //   } else if (response.data instanceof Blob) {
+    //     // Handle blob data (e.g., using a library like react-native-fs)
+    //     // ...
+    //   } else {
+    //     throw new Error('Unexpected data type from API');
+    //   }
+    //
+    //   return fileUri;
+    // } catch (error) {
+    //   console.error('Error downloading file:', error);
+    //   throw error;
+    // }
   };
 
-  const {
-    refetch,
-    isError,
-    error: errorDownload,
-  } = useQuery({
-    queryKey: [`download-${key}`],
-    queryFn: downloadFile,
-    enabled: false,
-    retry: false,
-  });
+  const progressCallback = (downloadProgress) => {
+    const progress =
+      downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
+    setDownloadProgress(progress);
 
-  useEffect(() => {
-    if (isError) {
-      console.log(errorDownload);
-    }
-  }, [isError]);
-
-  const handleDownload = async () => {
-    console.log('download');
-    try {
-      const uri = await refetch();
-      Alert.alert('Download completo!', `Arquivo salvo em: ${uri.data}`);
-    } catch (error) {
-      Alert.alert('Erro', 'Falha ao fazer o download do arquivo');
-    }
+    // Animate the progress bar
+    Animated.timing(progressAnimation, {
+      toValue: progress,
+      duration: 100,
+      useNativeDriver: false,
+    }).start();
   };
+
+  // const handleDownload = async () => {
+  //   console.log('download');
+  //   try {
+  //     const uri = await refetch();
+  //     Alert.alert('Download completo!', `Arquivo salvo em: ${uri.data}`);
+  //   } catch (error) {
+  //     Alert.alert('Erro', 'Falha ao fazer o download do arquivo');
+  //   }
+  // };
 
   return (
     <>
@@ -143,12 +177,27 @@ export default function Detail() {
                   }}>
                   Anexos:
                 </Text>
+                <View style={styles.progressBarContainer}>
+                  <Animated.View
+                    style={[
+                      styles.progressBar,
+                      {
+                        width: progressAnimation.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: ['0%', '100%'],
+                        }),
+                      },
+                    ]}
+                  />
+                </View>
+                <Text>{(downloadProgress * 100).toFixed(0)}%</Text>
                 {data?.documents?.map((document: any) => (
                   <DocumentDownloadButton
+                    key={document.uuid}
                     name={document.name}
                     onPress={async () => {
                       setKey(document.path);
-                      await handleDownload();
+                      await downloadFile(document.path, document.name);
                     }}
                   />
                 ))}
@@ -240,5 +289,17 @@ const styles = StyleSheet.create({
     color: '#005AB1',
     fontFamily: 'Lato_400Regular',
     paddingLeft: 5,
+  },
+  progressBarContainer: {
+    width: '80%',
+    height: 20,
+    backgroundColor: '#ddd',
+    borderRadius: 10,
+    overflow: 'hidden',
+    marginBottom: 10,
+  },
+  progressBar: {
+    height: '100%',
+    backgroundColor: '#4caf50',
   },
 });

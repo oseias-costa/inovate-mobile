@@ -7,6 +7,7 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { formatDate } from '../lib/date';
+import { CustomButton } from '../lib/components/CustomButton';
 
 type SelectDateProps = {
   dateValue: Date | undefined;
@@ -43,7 +44,7 @@ export function SelectDate({ dateValue, setDate, placeholder }: SelectDateProps)
           closable
           maskClosable
           onClose={() => setOpenModal(false)}>
-          <View style={{ height: 440 }}>
+          <View style={{ height: 350 }}>
             <View style={styles.boxTop}>
               <Text style={styles.boxTopText}>Ano</Text>
               <Text style={styles.boxTopText}>Mês</Text>
@@ -62,7 +63,7 @@ export function SelectDate({ dateValue, setDate, placeholder }: SelectDateProps)
                 console.log('onChange', val);
               }}
             />
-            <ButtonAnt
+            <CustomButton
               type="primary"
               style={styles.buttonClose}
               onPress={() => {
@@ -70,7 +71,7 @@ export function SelectDate({ dateValue, setDate, placeholder }: SelectDateProps)
                 setDate(localDate);
               }}>
               Selecionar
-            </ButtonAnt>
+            </CustomButton>
           </View>
         </Modal>
       </Provider>
@@ -108,7 +109,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#928787',
     fontFamily: 'Lato_400Regular',
-    fontSize: 18,
+    fontSize: 16,
   },
   dateValue: {
     fontFamily: 'Lato_400Regular',
@@ -117,7 +118,11 @@ const styles = StyleSheet.create({
   },
   buttonClose: {
     marginHorizontal: 20,
-    marginTop: 15,
+    marginTop: 'auto',
+    height: 40,
+    fontSize: 15,
+    fontFamily: 'Lato_400Regular',
+    marginBottom: 30,
   },
   label: {
     fontFamily: 'Lato_300Light',

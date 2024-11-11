@@ -209,7 +209,10 @@ export default function CreateReport() {
             />
           </View>
         ) : null}
-        <CustomButton type="primary" onPress={() => mutation.mutate()}>
+        <CustomButton
+          type="primary"
+          style={{ marginHorizontal: 20, height: 40 }}
+          onPress={() => mutation.mutate()}>
           Próximo
         </CustomButton>
       </SafeAreaView>

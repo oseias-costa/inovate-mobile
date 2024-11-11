@@ -4,7 +4,7 @@ import { GestureResponderEvent, Text, TouchableOpacity } from 'react-native';
 
 interface DocumentDownloadButtonProps {
   name: string;
-  onPress: ((event: GestureResponderEvent) => void) | undefined;
+  onPress?: ((event: GestureResponderEvent) => void) | undefined;
 }
 
 export const DocumentDownloadButton: React.FC<DocumentDownloadButtonProps> = ({
@@ -14,6 +14,7 @@ export const DocumentDownloadButton: React.FC<DocumentDownloadButtonProps> = ({
   return (
     <TouchableOpacity
       onPress={onPress}
+      disabled={!onPress}
       style={{
         marginHorizontal: 0,
         borderWidth: 1,
