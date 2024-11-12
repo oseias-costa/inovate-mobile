@@ -7,7 +7,11 @@ import { useLoading } from '../components/LoadingProvider';
 import { Severity, useToast } from '../components/ToastProvider';
 import { DocumentPickerResult } from '../lib/types/document-picker-result.type';
 
-export function useUpload(uuid: string, type: 'REQUEST' | 'REPORT' | 'NOTICE', refetch: () => void) {
+export function useUpload(
+  uuid: string,
+  type: 'REQUEST' | 'REPORT' | 'NOTICE',
+  refetch: () => void
+) {
   const [files, setFiles] = useState<DocumentPickerResult | any>(null);
   const [error, setError] = useState(false);
   const queryClient = useQueryClient();
@@ -33,9 +37,10 @@ export function useUpload(uuid: string, type: 'REQUEST' | 'REPORT' | 'NOTICE', r
     setLoading(true);
     const name = JSON.parse(files).assets[0].name;
     const mimeType = JSON.parse(files).assets[0].mimeType;
+    const size = JSON.parse(files).assets[0].size;
 
     FileSystem.uploadAsync(
-      `${process.env.EXPO_PUBLIC_API_URL}/document/upload/${uuid}?name=${name}&mimeType=${mimeType}&type=${type}`,
+      `${process.env.EXPO_PUBLIC_API_URL}/document/upload/${uuid}?name=${name}&mimeType=${mimeType}&type=${type}&size=${size}`,
       JSON.parse(files).assets[0].uri,
       {
         headers: {},
@@ -47,7 +52,7 @@ export function useUpload(uuid: string, type: 'REQUEST' | 'REPORT' | 'NOTICE', r
       .then((res) => {
         setLoading(false);
         showToast('Arquivo enviado com sucesso', Severity.SUCCESS);
-        refetch()
+        refetch();
       })
       .catch((err) => {
         console.log(err);

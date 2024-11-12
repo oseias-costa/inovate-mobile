@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Animated,
@@ -14,7 +14,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
 
 import { RequestStatus } from '~/app/components/RequestStatus';
 import { useUpload } from '~/app/hook/useUpload';
@@ -28,7 +27,9 @@ export default function Detail() {
   const { uuid } = useLocalSearchParams();
   const [key, setKey] = useState('');
   const [downloadProgress, setDownloadProgress] = useState(0); // Progress state from 0 to 1
-  const progressAnimation = new Animated.Value(0);
+  const [progressAnimation] = useState(new Animated.Value(0));
+  const [progress, setProgress] = React.useState(0);
+  const [total, setTotal] = useState(0);
 
   const {
     data,
@@ -43,85 +44,49 @@ export default function Detail() {
       }),
   });
 
-  const { pickDocument, error } = useUpload(String(uuid), 'REQUEST', refetchRequest);
-  const downloadFile = async (key: string, name: string) => {
-    const fileUri1 = FileSystem.documentDirectory + 'downloads/' + name;
-    const fileUri = `${FileSystem.documentDirectory}downloads/${uuidv4()}-${name}`;
-    const uri = `${process.env.EXPO_PUBLIC_API_URL}/document/download?key=${key}`;
-
-    const downloadResumable = FileSystem.createDownloadResumable(
-      uri,
-      fileUri1,
-      {},
-      progressCallback
-    );
-
-    try {
-      console.log('entrou aqui');
-      // Start the download
-      await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}downloads`, {
-        intermediates: true,
-      });
-
-      const test = await downloadResumable.downloadAsync();
-      console.log('Finished downloading to ', test);
-    } catch (error) {
-      console.error('Download failed', error);
-    }
-    // try {
-    //   const response = await axios.get(
-    //     `${process.env.EXPO_PUBLIC_API_URL}/document/download?key=${key}`,
-    //     {
-    //       responseType: 'blob',
-    //     }
-    //   );
-    //
-    //   if (!response.data) {
-    //     throw new Error('No data received from the API');
-    //   }
-    //
-    //   const fileUri = FileSystem.documentDirectory + key;
-    //
-    //   if (typeof response.data === 'string') {
-    //     await FileSystem.writeAsStringAsync(fileUri, response.data, {
-    //       encoding: FileSystem.EncodingType.UTF8, // Adjust encoding as needed
-    //     });
-    //   } else if (response.data instanceof Blob) {
-    //     // Handle blob data (e.g., using a library like react-native-fs)
-    //     // ...
-    //   } else {
-    //     throw new Error('Unexpected data type from API');
-    //   }
-    //
-    //   return fileUri;
-    // } catch (error) {
-    //   console.error('Error downloading file:', error);
-    //   throw error;
-    // }
-  };
-
-  const progressCallback = (downloadProgress) => {
-    const progress =
-      downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
-    setDownloadProgress(progress);
-
-    // Animate the progress bar
+  useEffect(() => {
     Animated.timing(progressAnimation, {
       toValue: progress,
-      duration: 100,
+      duration: 500,
       useNativeDriver: false,
     }).start();
-  };
+  }, [progress]);
 
-  // const handleDownload = async () => {
-  //   console.log('download');
-  //   try {
-  //     const uri = await refetch();
-  //     Alert.alert('Download completo!', `Arquivo salvo em: ${uri.data}`);
-  //   } catch (error) {
-  //     Alert.alert('Erro', 'Falha ao fazer o download do arquivo');
-  //   }
-  // };
+  const widthInterpolate = progressAnimation.interpolate({
+    inputRange: [0, 100],
+    outputRange: ['0%', '100%'],
+  });
+
+  async function downloadFile(key: string, name: string, size: number) {
+    const safeName = name.replace(/[^a-zA-Z0-9]/g, '_');
+    const fileUri1 = FileSystem.documentDirectory + safeName;
+
+    const uri2 = `${process.env.EXPO_PUBLIC_API_URL}/document/download?key=${key}`;
+    const downloadsDir = FileSystem.documentDirectory + 'downloads/';
+
+    try {
+      await FileSystem.makeDirectoryAsync(downloadsDir, { intermediates: true });
+
+      const callback = (downloadProgress: any) => {
+        const totalBytesWritten = downloadProgress.totalBytesWritten;
+        const totalBytesExpectedToWrite = downloadProgress.totalBytesExpectedToWrite;
+
+        const progress = (totalBytesWritten / size) * 100;
+        setProgress(Math.ceil(progress));
+
+        setTotal(size);
+      };
+
+      const downloadResumable = FileSystem.createDownloadResumable(uri2, fileUri1, {}, callback);
+
+      const resume = await downloadResumable.downloadAsync();
+      console.log('Download concluído:', resume?.uri);
+    } catch (error) {
+      console.error('Erro ao baixar o arquivo:', error);
+    }
+  }
+
+  const { pickDocument, error } = useUpload(String(uuid), 'REQUEST', refetchRequest);
 
   return (
     <>
@@ -177,19 +142,11 @@ export default function Detail() {
                   }}>
                   Anexos:
                 </Text>
-                <View style={styles.progressBarContainer}>
-                  <Animated.View
-                    style={[
-                      styles.progressBar,
-                      {
-                        width: progressAnimation.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: ['0%', '100%'],
-                        }),
-                      },
-                    ]}
-                  />
+                <Text style={styles.label}>{`${Math.round(progress)}%`}</Text>
+                <View style={styles.progressBar}>
+                  <Animated.View style={[styles.progress]} />
                 </View>
+                <AnimatedProgressBar progres={progress} />
                 <Text>{(downloadProgress * 100).toFixed(0)}%</Text>
                 {data?.documents?.map((document: any) => (
                   <DocumentDownloadButton
@@ -197,7 +154,7 @@ export default function Detail() {
                     name={document.name}
                     onPress={async () => {
                       setKey(document.path);
-                      await downloadFile(document.path, document.name);
+                      await downloadFile(document.path, document.name, document.size);
                     }}
                   />
                 ))}
@@ -290,16 +247,63 @@ const styles = StyleSheet.create({
     fontFamily: 'Lato_400Regular',
     paddingLeft: 5,
   },
-  progressBarContainer: {
-    width: '80%',
+  progressBar: {
+    width: '100%',
     height: 20,
-    backgroundColor: '#ddd',
+    backgroundColor: '#e0e0e0',
     borderRadius: 10,
     overflow: 'hidden',
+  },
+  progress: {
+    height: '100%',
+    backgroundColor: 'red',
+  },
+  label: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+});
+
+const AnimatedProgressBar = ({ progres }: { progres: number }) => {
+  const progress = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(progress, {
+      toValue: progres,
+      duration: 200, // 5 segundos
+      useNativeDriver: false,
+    }).start();
+  }, [progres]);
+  return (
+    <View style={styless.container}>
+      <Text style={styless.title}>Progress</Text>
+      <View style={styless.progressBar}>
+        <Animated.View
+          style={[
+            styless.progress,
+            { width: progress.interpolate({ inputRange: [0, 100], outputRange: ['0%', '100%'] }) },
+          ]}
+        />
+      </View>
+    </View>
+  );
+};
+const styless = StyleSheet.create({
+  container: {},
+  title: {
+    fontSize: 20,
     marginBottom: 10,
   },
   progressBar: {
+    height: 4,
+    width: '100%',
+    backgroundColor: '#e0e0de',
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  progress: {
     height: '100%',
-    backgroundColor: '#4caf50',
+    backgroundColor: '#76c7c0',
+    borderRadius: 5,
   },
 });
