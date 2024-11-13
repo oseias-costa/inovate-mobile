@@ -1,11 +1,9 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import React, { useRef } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RichEditor } from 'react-native-pell-rich-editor';
-import * as FileSystem from 'expo-file-system';
 
 import NoticeDetailSkeleton from '~/app/lib/Loader/NoticeDetailSkeleton';
 import { CustomButton } from '~/app/lib/components/CustomButton';
@@ -25,42 +23,6 @@ export default function NoticeDetail() {
         method: 'GET',
       }),
   });
-
-  const downloadFile = async (key: string) => {
-    try {
-      const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API_URL}/document/download?key=${key}`,
-        {
-          responseType: 'blob',
-        }
-      );
-
-      if (!response.data) {
-        throw new Error('No data received from the API');
-      }
-
-      const fileUri = FileSystem.documentDirectory + key;
-
-      if (typeof response.data === 'string') {
-        await FileSystem.writeAsStringAsync(fileUri, response.data, {
-          encoding: FileSystem.EncodingType.UTF8, // Adjust encoding as needed
-        });
-
-        console.log('dataaaaa');
-      } else if (response.data instanceof Blob) {
-        // Handle blob data (e.g., using a library like react-native-fs)
-        // ...
-        console.log('é um blob');
-      } else {
-        throw new Error('Unexpected data type from API');
-      }
-
-      return fileUri;
-    } catch (error) {
-      console.error('Error downloading file:', error);
-      throw error;
-    }
-  };
 
   return (
     <>
@@ -130,12 +92,22 @@ export default function NoticeDetail() {
               </ScrollView>
             </View>
             <View style={{ marginHorizontal: 10 }}>
-              {data?.documents ? <Text style={[styles.description]}>Anexos: </Text> : null}
+              {data?.documents.length > 0 ? (
+                <View style={{ display: 'flex', flexDirection: 'row' }}>
+                  <Ionicons name="attach" size={20} color="#3B3D3E" style={{ top: 1 }} />
+                  <Text
+                    style={{
+                      color: '#3B3D3E',
+                      fontSize: 18,
+                      fontFamily: 'Lato_400Regular',
+                      paddingBottom: 5,
+                    }}>
+                    Anexos
+                  </Text>
+                </View>
+              ) : null}
               {data?.documents?.map((document: any) => (
-                <DocumentDownloadButton
-                  onPress={() => downloadFile(document.path)}
-                  name={document.name}
-                />
+                <DocumentDownloadButton key={document.uuid} document={document} />
               ))}
             </View>
           </View>

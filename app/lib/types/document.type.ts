@@ -4,5 +4,6 @@ export type Document = {
   tag: string;
   type: string;
   path: string;
+  size: string;
   createdAt: Date;
 };

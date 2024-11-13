@@ -15,7 +15,7 @@ import Logo from '~/assets/svg/Logo';
 
 export default function Layout() {
   const { data } = useDashboard();
-
+  console.log(data.numbers);
   return (
     <>
       <Tabs>
@@ -33,7 +33,7 @@ export default function Layout() {
             headerRight: () => (
               <TouchableOpacity onPress={() => router.navigate('/(drawer)/(tabs)/notifications')}>
                 <Badge
-                  text={data?.numbers?.notifications}
+                  text={data?.numbers?.notification}
                   style={{ marginRight: 25 }}
                   styles={{
                     dot: { backgroundColor: '#000' },

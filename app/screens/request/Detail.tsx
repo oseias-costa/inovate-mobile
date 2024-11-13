@@ -1,7 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
@@ -25,11 +24,6 @@ import { httpClient } from '~/app/lib/http.client';
 
 export default function Detail() {
   const { uuid } = useLocalSearchParams();
-  const [key, setKey] = useState('');
-  const [downloadProgress, setDownloadProgress] = useState(0); // Progress state from 0 to 1
-  const [progressAnimation] = useState(new Animated.Value(0));
-  const [progress, setProgress] = React.useState(0);
-  const [total, setTotal] = useState(0);
 
   const {
     data,
@@ -43,48 +37,6 @@ export default function Detail() {
         method: 'GET',
       }),
   });
-
-  useEffect(() => {
-    Animated.timing(progressAnimation, {
-      toValue: progress,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-  }, [progress]);
-
-  const widthInterpolate = progressAnimation.interpolate({
-    inputRange: [0, 100],
-    outputRange: ['0%', '100%'],
-  });
-
-  async function downloadFile(key: string, name: string, size: number) {
-    const safeName = name.replace(/[^a-zA-Z0-9]/g, '_');
-    const fileUri1 = FileSystem.documentDirectory + safeName;
-
-    const uri2 = `${process.env.EXPO_PUBLIC_API_URL}/document/download?key=${key}`;
-    const downloadsDir = FileSystem.documentDirectory + 'downloads/';
-
-    try {
-      await FileSystem.makeDirectoryAsync(downloadsDir, { intermediates: true });
-
-      const callback = (downloadProgress: any) => {
-        const totalBytesWritten = downloadProgress.totalBytesWritten;
-        const totalBytesExpectedToWrite = downloadProgress.totalBytesExpectedToWrite;
-
-        const progress = (totalBytesWritten / size) * 100;
-        setProgress(Math.ceil(progress));
-
-        setTotal(size);
-      };
-
-      const downloadResumable = FileSystem.createDownloadResumable(uri2, fileUri1, {}, callback);
-
-      const resume = await downloadResumable.downloadAsync();
-      console.log('Download concluído:', resume?.uri);
-    } catch (error) {
-      console.error('Erro ao baixar o arquivo:', error);
-    }
-  }
 
   const { pickDocument, error } = useUpload(String(uuid), 'REQUEST', refetchRequest);
 
@@ -132,36 +84,27 @@ export default function Detail() {
                   Selecione um arquivo de no máximo 20mb.
                 </Text>
               </TouchableOpacity>
-              <View>
-                <Text
-                  style={{
-                    color: '#3B3D3E',
-                    fontSize: 16,
-                    fontFamily: 'Lato_400Regular',
-                    paddingBottom: 5,
-                  }}>
-                  Anexos:
-                </Text>
-                <Text style={styles.label}>{`${Math.round(progress)}%`}</Text>
-                <View style={styles.progressBar}>
-                  <Animated.View style={[styles.progress]} />
+              {data?.documents.length > 0 ? (
+                <View style={{ display: 'flex', flexDirection: 'row' }}>
+                  <Ionicons name="attach" size={20} color="#3B3D3E" style={{ top: 1 }} />
+                  <Text
+                    style={{
+                      color: '#3B3D3E',
+                      fontSize: 18,
+                      fontFamily: 'Lato_400Regular',
+                      paddingBottom: 5,
+                    }}>
+                    Anexos
+                  </Text>
                 </View>
-                <AnimatedProgressBar progres={progress} />
-                <Text>{(downloadProgress * 100).toFixed(0)}%</Text>
-                {data?.documents?.map((document: any) => (
-                  <DocumentDownloadButton
-                    key={document.uuid}
-                    name={document.name}
-                    onPress={async () => {
-                      setKey(document.path);
-                      await downloadFile(document.path, document.name, document.size);
-                    }}
-                  />
-                ))}
-              </View>
+              ) : null}
+              {data?.documents?.map((document: any) => (
+                <DocumentDownloadButton key={document.uuid} document={document} />
+              ))}
             </>
           )}
         </View>
+
         <CustomButton style={styles.button} onPress={() => router.navigate('/requests')}>
           voltar
         </CustomButton>
@@ -262,48 +205,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
-  },
-});
-
-const AnimatedProgressBar = ({ progres }: { progres: number }) => {
-  const progress = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    Animated.timing(progress, {
-      toValue: progres,
-      duration: 200, // 5 segundos
-      useNativeDriver: false,
-    }).start();
-  }, [progres]);
-  return (
-    <View style={styless.container}>
-      <Text style={styless.title}>Progress</Text>
-      <View style={styless.progressBar}>
-        <Animated.View
-          style={[
-            styless.progress,
-            { width: progress.interpolate({ inputRange: [0, 100], outputRange: ['0%', '100%'] }) },
-          ]}
-        />
-      </View>
-    </View>
-  );
-};
-const styless = StyleSheet.create({
-  container: {},
-  title: {
-    fontSize: 20,
-    marginBottom: 10,
-  },
-  progressBar: {
-    height: 4,
-    width: '100%',
-    backgroundColor: '#e0e0de',
-    borderRadius: 5,
-    overflow: 'hidden',
-  },
-  progress: {
-    height: '100%',
-    backgroundColor: '#76c7c0',
-    borderRadius: 5,
   },
 });

@@ -124,11 +124,23 @@ export default function NoticeDetail() {
               <Text style={styles.uploadTitle}>Enviar arquivo</Text>
               <Text style={styles.uploadDescription}>Selecione um arquivo de no máximo 20mb.</Text>
             </TouchableOpacity>
-            <View>
-              {data?.documents?.map((document: any) => (
-                <DocumentDownloadButton name={document.name} />
-              ))}
-            </View>
+            {data?.documents.length > 0 ? (
+              <View style={{ display: 'flex', flexDirection: 'row' }}>
+                <Ionicons name="attach" size={20} color="#3B3D3E" style={{ top: 1 }} />
+                <Text
+                  style={{
+                    color: '#3B3D3E',
+                    fontSize: 18,
+                    fontFamily: 'Lato_400Regular',
+                    paddingBottom: 5,
+                  }}>
+                  Anexos
+                </Text>
+              </View>
+            ) : null}
+            {data?.documents?.map((document: any) => (
+              <DocumentDownloadButton key={document.uuid} document={document} />
+            ))}
           </View>
         )}
         <Button

@@ -13,9 +13,7 @@ type RequestItemDashboardProps = {
 
 export default function NoticeItemDashboard({
   title,
-  description,
   createdAt,
-  uuid,
   onPress,
 }: RequestItemDashboardProps) {
   return (
@@ -24,11 +22,7 @@ export default function NoticeItemDashboard({
       <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
         {title}
       </Text>
-      <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={styles.description} numberOfLines={1} ellipsizeMode="tail">
-          {description}
-        </Text>
-      </View>
+      <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}></View>
     </TouchableOpacity>
   );
 }
@@ -38,17 +32,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     marginHorizontal: 20,
-    backgroundColor: '#E4E4E4',
+    borderWidth: 1,
+    borderColor: '#E4E4E4',
     paddingHorizontal: 16,
     marginVertical: 3,
-    shadowColor: '#00264B',
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.17,
-    shadowRadius: 3.05,
-    elevation: 2,
   },
   createAt: {
     fontSize: 9,
