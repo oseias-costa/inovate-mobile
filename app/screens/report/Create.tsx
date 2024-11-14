@@ -210,6 +210,7 @@ export default function CreateReport() {
           </View>
         ) : null}
         <CustomButton
+          disabled={data.text === '' || data.title === '' || companySelected.uuid === ''}
           type="primary"
           style={{ marginHorizontal: 20, height: 40 }}
           onPress={() => mutation.mutate()}>

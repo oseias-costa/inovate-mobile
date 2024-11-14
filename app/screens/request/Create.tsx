@@ -66,17 +66,6 @@ export default function Create() {
     ]);
   };
 
-  // useEffect(() => {
-  //   if (errorRequest?.response?.data?.message[0]) {
-  //     const error = newSolicitationError(errorRequest?.response?.data?.message);
-  //     console.log(error);
-  //     setError(error);
-  //   }
-  //   if (errorRequest?.response?.data?.message[0]) {
-  //     errModal(error.message);
-  //   }
-  // }, [errorRequest]);
-
   return (
     <SafeAreaView style={style.container}>
       <View style={{ paddingBottom: 15, paddingTop: 20 }}>
@@ -105,7 +94,13 @@ export default function Create() {
         <SelectCompany companySelected={companySelected} setCompanySelected={setCompanySelected} />
       </Select>
       <SelectDate dateValue={expiration} setDate={setExpiration} placeholder="Selecione um prazo" />
-      <CustomButton type="primary" style={{ marginHorizontal: 20, height: 40 }} onPress={() => mutation.mutate()}>
+      <CustomButton
+        disabled={
+          data.document == '' || data.description == '' || companySelected.uuid == '' || !expiration
+        }
+        type="primary"
+        style={{ marginHorizontal: 20, height: 40 }}
+        onPress={() => mutation.mutate()}>
         Abrir solicitação
       </CustomButton>
     </SafeAreaView>

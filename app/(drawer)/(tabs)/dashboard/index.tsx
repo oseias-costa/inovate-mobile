@@ -139,7 +139,7 @@ export default function Dashboard() {
   return (
     <>
       <StatusBar barStyle="light-content" hidden={false} />
-      <View style={{ backgroundColor: '#fff', position: 'relative', flex: 1 }}>
+      <View style={{ backgroundColor: '#fff', position: 'relative' }}>
         <View style={styles.destakBox} ref={destakeRef}>
           <View style={styles.welcomeBox}>
             <Text style={styles.welcomeText}>Bem vindo, </Text>
@@ -159,8 +159,10 @@ export default function Dashboard() {
         </View>
         <ScrollView
           showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
           decelerationRate="fast"
-          contentContainerStyle={{ height: screenHeight - height + 140 }}
+          style={{ margin: 0, backgroundColor: '#fff', padding: 0 }}
+          contentContainerStyle={{ paddingBottom: 0 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
           <View style={[styles.titleBox, { paddingBottom: 15 }]}>
             <Text style={[styles.title, { marginTop: 60 }]}>Solicitações</Text>

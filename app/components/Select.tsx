@@ -1,5 +1,5 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type SelectProps = {
@@ -8,9 +8,28 @@ type SelectProps = {
   children: React.JSX.Element;
   placeholder: string;
   disable?: boolean;
+  error?: {
+    input: string;
+    message: string;
+  };
+  setError?: Dispatch<
+    SetStateAction<{
+      input: string;
+      message: string;
+    }>
+  >;
+  item?: string;
 };
 
-export default function Select({ title, checkValue, children, placeholder, disable }: SelectProps) {
+export default function Select({
+  title,
+  checkValue,
+  children,
+  placeholder,
+  disable,
+  error,
+  item,
+}: SelectProps) {
   const [openModal, setOpenModal] = useState(false);
 
   return (
@@ -30,7 +49,9 @@ export default function Select({ title, checkValue, children, placeholder, disab
         </SafeAreaView>
       </Modal>
       <Text style={style.label}>{placeholder}</Text>
-      <TouchableOpacity style={style.button} onPress={() => !disable && setOpenModal(true)}>
+      <TouchableOpacity
+        style={[{ borderColor: error === item ? 'red' : '#75BCEE' }, style.button]}
+        onPress={() => !disable && setOpenModal(true)}>
         <Text
           numberOfLines={1}
           style={{
