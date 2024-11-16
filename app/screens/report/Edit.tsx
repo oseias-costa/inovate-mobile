@@ -23,7 +23,7 @@ import { actions, RichEditor, RichToolbar } from 'react-native-pell-rich-editor'
 
 import CustomTextInput from '../../components/CustomTextInput';
 import Select from '../../components/Select';
-import SelectCompany from '../../components/SelectCompany';
+import SelectCompany from '../../lib/components/SelectCompany';
 import { httpClient } from '../../lib/http.client';
 
 import { useLoading } from '~/app/components/LoadingProvider';

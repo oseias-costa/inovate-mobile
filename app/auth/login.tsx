@@ -32,9 +32,9 @@ export default function Login() {
     }
   }, []);
 
-  if (user?.name === '') {
-    return <Redirect href="/(drawer)/(tabs)/dashboard" />;
-  }
+  // if (user?.name === '') {
+  //   return <Redirect href="/(drawer)/(tabs)/dashboard" />;
+  // }
 
   return (
     <KeyboardAwareScrollView

@@ -8,7 +8,7 @@ import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-na
 import CustomTextInput from '../../components/CustomTextInput';
 import Loading from '../../components/Loading';
 import Select from '../../components/Select';
-import SelectCompany from '../../components/SelectCompany';
+import SelectCompany from '../../lib/components/SelectCompany';
 import { SelectDate } from '../../components/SelectDate';
 import Subtitle from '../../components/Subtitle';
 import useGetCompanys from '../../hook/useGetCompanys';

@@ -27,7 +27,10 @@ import { useLoading } from '~/app/components/LoadingProvider';
 import { Severity, useToast } from '~/app/components/ToastProvider';
 import { CustomButton } from '~/app/lib/components/CustomButton';
 import Select from '~/app/components/Select';
-import SelectCompany from '~/app/components/SelectCompany';
+import SelectCompany from '~/app/lib/components/SelectCompany';
+import SelectTag from '~/app/lib/components/SelectTag';
+import SelectTagButton from '~/app/lib/components/SelectTagButton';
+import AddTag from '~/app/lib/components/AddTag';
 
 const handleHead = ({ tintColor }: { tintColor: ColorValue }) => (
   <Text style={{ color: tintColor }}>H1</Text>
@@ -37,6 +40,7 @@ export default function Create() {
   const [error, setError] = useState({ input: '', message: '' });
   const [data, setData] = useState({ title: '', text: '' });
   const [companySelected, setCompanySelected] = useState({ uuid: '', name: '' });
+  const [tagSelected, setTagSelected] = useState({ id: 0, name: '' });
   const isMutation = useIsMutating({ mutationKey: ['create-notice'], exact: true });
   const queryClient = useQueryClient();
   const { setLoading } = useLoading();
@@ -190,6 +194,12 @@ export default function Create() {
                 setCompanySelected={setCompanySelected}
               />
             </Select>
+            <SelectTagButton
+              checkValue={tagSelected.name}
+              title="Selecione a etiqueta"
+              placeholder="Etiqueta">
+              <SelectTag tagSelected={tagSelected} setTagSelected={setTagSelected} type="NOTICE" />
+            </SelectTagButton>
             {isKeyboardVisible ? (
               <View style={style.inner}>
                 <RichToolbar
@@ -279,7 +289,7 @@ const style = StyleSheet.create({
   },
   inner: {
     flex: 1,
-    bottom: 40,
+    bottom: 80,
   },
   label: {
     fontFamily: 'Lato_300Light',

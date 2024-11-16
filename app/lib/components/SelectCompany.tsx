@@ -2,7 +2,7 @@ import RadioItem from '@ant-design/react-native/lib/radio/RadioItem';
 import React, { Dispatch, SetStateAction } from 'react';
 import { Text, View } from 'react-native';
 
-import useGetCompanys from '../hook/useGetCompanys';
+import useGetCompanys from '../../hook/useGetCompanys';
 
 type SelectCompanyProps = {
   companySelected: {
@@ -24,6 +24,7 @@ export default function SelectCompany({ companySelected, setCompanySelected }: S
               key={company.id}
               checked={companySelected.uuid === company.uuid}
               onChange={() => {
+                console.log('teste', company.id);
                 setCompanySelected({ uuid: company.uuid, name: company.name });
               }}
               value={company.uuid}

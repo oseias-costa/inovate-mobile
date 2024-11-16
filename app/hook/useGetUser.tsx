@@ -38,17 +38,15 @@ export default function useGetUser() {
     enabled: false,
   });
 
-  const redirectUser = async () => {
-    const getError = error as AxiosError;
-    if (getError.response?.status === 401) {
-      await AsyncStorage.removeItem('token');
-      return router.navigate('/auth/login');
-    }
-  };
+  //   if (getError.response?.status === 401) {
+  //     await AsyncStorage.removeItem('token');
+  //     return router.navigate('/auth/login');
+  //   }
+  // };
 
   useEffect(() => {
     if (error) {
-      redirectUser();
+      // redirectUser();
     }
   }, []);
 

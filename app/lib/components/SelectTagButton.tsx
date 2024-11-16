@@ -1,6 +1,17 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Modal as ModalRN,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import AddTag from './AddTag';
+import ModalAnt from '@ant-design/react-native/lib/modal';
+import { useMutation } from '@tanstack/react-query';
+import { httpClient } from '../http.client';
 
 type SelectProps = {
   title: string;
@@ -21,7 +32,7 @@ type SelectProps = {
   item?: string;
 };
 
-export default function Select({
+export default function SelectTagButton({
   title,
   checkValue,
   children,
@@ -31,10 +42,40 @@ export default function Select({
   item,
 }: SelectProps) {
   const [openModal, setOpenModal] = useState(false);
+  const [add, setAdd] = useState(false);
+  const [name, setName] = useState();
+
+  const createTag = useMutation({
+    mutationKey: ['create-tag'],
+    mutationFn: async (data) =>
+      httpClient({
+        path: '/tags',
+        method: 'POST',
+        data,
+      }),
+  });
+
+  const addTag = () => {
+    ModalAnt.prompt(
+      <Text style={{ color: 'blue' }}>Criar Etiqueta</Text>,
+      <View />,
+      [
+        { text: 'Cancel', onPress: () => console.log('cancel'), style: 'cancel' },
+        {
+          text: 'Adicionar',
+          onPress: () => console.log('test'),
+          style: { textAlign: 'center' },
+        },
+      ],
+      'default',
+      '',
+      ['Nome da etiqueta']
+    );
+  };
 
   return (
     <>
-      <Modal animationType="slide" visible={openModal} onRequestClose={() => setOpenModal(false)}>
+      <ModalRN animationType="slide" visible={openModal} onRequestClose={() => setOpenModal(false)}>
         <SafeAreaView style={{ backgroundColor: '#00264B' }}>
           <View style={style.header}>
             <TouchableOpacity onPress={() => setOpenModal(false)}>
@@ -47,8 +88,13 @@ export default function Select({
           </View>
           <View style={style.body}>{children}</View>
         </SafeAreaView>
-      </Modal>
-      <Text style={style.label}>{placeholder}</Text>
+      </ModalRN>
+      <View style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row' }}>
+        <Text style={style.label}>{placeholder}</Text>
+        <TouchableOpacity onPress={() => addTag()}>
+          <Text style={style.add}>Adicionar</Text>
+        </TouchableOpacity>
+      </View>
       <TouchableOpacity
         style={[{ borderColor: error === item ? 'red' : '#75BCEE' }, style.button]}
         onPress={() => !disable && setOpenModal(true)}>
@@ -90,6 +136,12 @@ const style = StyleSheet.create({
     fontFamily: 'Lato_300Light',
     marginHorizontal: 20,
     marginTop: 10,
+  },
+  add: {
+    fontFamily: 'Lato_400Regular',
+    marginHorizontal: 20,
+    marginTop: 10,
+    color: '#005AB1',
   },
   button: {
     borderColor: '#DADADA',

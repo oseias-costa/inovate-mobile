@@ -6,7 +6,7 @@ import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import CustomTextInput from '../../components/CustomTextInput';
 import Select from '../../components/Select';
-import SelectCompany from '../../components/SelectCompany';
+import SelectCompany from '../../lib/components/SelectCompany';
 import { SelectDate } from '../../components/SelectDate';
 import Subtitle from '../../components/Subtitle';
 import { httpClient } from '../../lib/http.client';

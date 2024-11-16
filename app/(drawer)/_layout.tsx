@@ -10,9 +10,11 @@ import { router, usePathname } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import React from 'react';
 import { Image, View } from 'react-native';
+import { useUser } from '../components/UserProvider';
 
 const CustomDrawerContent = (props: any) => {
   const pathname = usePathname();
+  const { setUser } = useUser();
 
   return (
     <DrawerContentScrollView {...props} style={{ backgroundColor: '#00264B' }}>
@@ -141,6 +143,29 @@ const CustomDrawerContent = (props: any) => {
         )}
         label="Usuários"
         onPress={() => router.push('/screens/managment/AddUser')}
+      />
+      <DrawerItem
+        style={{
+          height: 50,
+          backgroundColor: pathname === '/reports' ? '#fff' : 'transparent',
+        }}
+        labelStyle={{
+          color: pathname === '/reports' ? '#00264B' : '#fff',
+          fontSize: 14,
+          fontFamily: 'Lato_400Regular',
+        }}
+        icon={({ color, size }) => (
+          <FontAwesome5
+            name="users"
+            size={22}
+            color={pathname === '/reports' ? '#00264B' : '#fff'}
+          />
+        )}
+        label="Logout"
+        onPress={() => {
+          setUser(null);
+          router.push('/auth/login');
+        }}
       />
     </DrawerContentScrollView>
   );

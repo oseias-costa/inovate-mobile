@@ -5,10 +5,10 @@ import { useUser } from './components/UserProvider';
 
 export default function Home() {
   const { user } = useUser();
-
-  if (user?.name === '') {
-    return <Redirect href="/auth/login" />;
-  }
+  // console.log('teste', user);
+  // if (user?.name === '') {
+  //   return <Redirect href="/auth/login" />;
+  // }
 
   return <Redirect href="/(drawer)/(tabs)/dashboard" />;
 }

@@ -19,7 +19,7 @@ export const UserContext = createContext<UserContextType>({
   refetch: () => null,
 });
 
-export const UserProvider = ({ children }: { children: ReactNode }) => {
+export const UserProvider = ({ children }: { children: JSX.Element }) => {
   const [user, setUser] = useState<User | null>(null);
 
   const { data, isError, error, isSuccess, refetch } = useQuery<User>({
@@ -42,7 +42,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     if (user?.name === '') {
       refetch();
     }
-    if (data === undefined) {
+
+    if (isError) {
       return router.push('/auth/login');
     }
   }, [data, error, user]);

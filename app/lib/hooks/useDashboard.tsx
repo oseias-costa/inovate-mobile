@@ -48,7 +48,7 @@ export default function useDashboard() {
         },
       }),
     enabled: false,
-  })
+  });
 
   const {
     data: reports,
@@ -105,8 +105,6 @@ export default function useDashboard() {
     refetchNotice();
     refetchNumbers();
   };
-
-  console.log(notice, 'noticeeee')
 
   useEffect(() => {
     if (!user) {
