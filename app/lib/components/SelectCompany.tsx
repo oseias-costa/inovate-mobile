@@ -21,11 +21,13 @@ export default function SelectCompany({ companySelected, setCompanySelected }: S
         companys?.map((company: any) => {
           return (
             <RadioItem
-              key={company.id}
+              key={company.uuid}
               checked={companySelected.uuid === company.uuid}
-              onChange={() => {
-                console.log('teste', company.id);
+              onPress={() => {
+                console.log('test de algooo', company.uuid === companySelected.uuid);
                 setCompanySelected({ uuid: company.uuid, name: company.name });
+                console.log('comparar', company.uuid, companySelected.uuid);
+                console.log('test de algooo', company.uuid === companySelected.uuid);
               }}
               value={company.uuid}
               children={

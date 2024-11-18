@@ -15,11 +15,14 @@ import { useLoading } from '~/app/components/LoadingProvider';
 import { Severity, useToast } from '~/app/components/ToastProvider';
 import { useUser } from '~/app/components/UserProvider';
 import { CustomButton } from '~/app/lib/components/CustomButton';
+import SelectTagButton from '~/app/lib/components/SelectTagButton';
+import SelectTag from '~/app/lib/components/SelectTag';
 
 export default function Create() {
   const [error, setError] = useState({ input: '', message: '' });
   const [data, setData] = useState({ document: '', description: '' });
   const [companySelected, setCompanySelected] = useState({ uuid: '', name: '' });
+  const [tagSelected, setTagSelected] = useState({ id: 0, name: '' });
   const [expiration, setExpiration] = useState<Date | undefined>(undefined);
   const { user } = useUser();
   const isMutation = useIsMutating({ mutationKey: ['create-request'], exact: true });
@@ -94,6 +97,13 @@ export default function Create() {
         <SelectCompany companySelected={companySelected} setCompanySelected={setCompanySelected} />
       </Select>
       <SelectDate dateValue={expiration} setDate={setExpiration} placeholder="Selecione um prazo" />
+      <SelectTagButton
+        checkValue={tagSelected.name}
+        title="Selecione a etiqueta"
+        placeholder="Etiqueta"
+        type="REQUEST">
+        <SelectTag tagSelected={tagSelected} setTagSelected={setTagSelected} type="REQUEST" />
+      </SelectTagButton>
       <CustomButton
         disabled={
           data.document == '' || data.description == '' || companySelected.uuid == '' || !expiration

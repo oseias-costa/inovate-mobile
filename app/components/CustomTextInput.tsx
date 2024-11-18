@@ -1,3 +1,4 @@
+import { InputProps } from '@ant-design/react-native';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
@@ -15,7 +16,7 @@ type CustomTextInputProps = {
       message: string;
     }>
   >;
-  placeholder: string;
+  placeholder?: string;
 };
 
 export default function CustomTextInput({

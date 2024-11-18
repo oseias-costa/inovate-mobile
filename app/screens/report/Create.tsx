@@ -29,6 +29,8 @@ import { useLoading } from '~/app/components/LoadingProvider';
 import { Severity, useToast } from '~/app/components/ToastProvider';
 import { useUser } from '~/app/components/UserProvider';
 import { CustomButton } from '~/app/lib/components/CustomButton';
+import SelectTagButton from '~/app/lib/components/SelectTagButton';
+import SelectTag from '~/app/lib/components/SelectTag';
 
 const handleHead = ({ tintColor }: { tintColor: ColorValue }) => (
   <Text style={{ color: tintColor }}>H1</Text>
@@ -38,6 +40,7 @@ export default function CreateReport() {
   const [error, setError] = useState({ input: '', message: '' });
   const [data, setData] = useState({ title: '', text: '' });
   const [companySelected, setCompanySelected] = useState({ uuid: '', name: '' });
+  const [tagSelected, setTagSelected] = useState({ id: 0, name: '' });
   const isMutation = useIsMutating({ mutationKey: ['create-report'], exact: true });
   const queryClient = useQueryClient();
   const richText = useRef<any>();
@@ -192,6 +195,13 @@ export default function CreateReport() {
             </View>
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
+        <SelectTagButton
+          checkValue={tagSelected.name}
+          title="Selecione a etiqueta"
+          placeholder="Etiqueta"
+          type="REPORT">
+          <SelectTag tagSelected={tagSelected} setTagSelected={setTagSelected} type="REPORT" />
+        </SelectTagButton>
         {isKeyboardVisible ? (
           <View style={style.inner}>
             <RichToolbar

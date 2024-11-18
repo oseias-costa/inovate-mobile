@@ -22,7 +22,7 @@ export const UserContext = createContext<UserContextType>({
 export const UserProvider = ({ children }: { children: JSX.Element }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  const { data, isError, error, isSuccess, refetch } = useQuery<User>({
+  const { data, isError, error, isSuccess, refetch, isRefetchError } = useQuery<User>({
     queryKey: ['user'],
     queryFn: async () => {
       const token = await AsyncStorage.getItem('token');
@@ -35,18 +35,26 @@ export const UserProvider = ({ children }: { children: JSX.Element }) => {
   });
 
   useEffect(() => {
-    if (isSuccess) {
-      setUser(data);
-    }
+    const checkIfLoggedUser = async () => {
+      const token = await AsyncStorage.getItem('token');
 
-    if (user?.name === '') {
-      refetch();
-    }
+      if (user) return;
 
-    if (isError) {
-      return router.push('/auth/login');
-    }
-  }, [data, error, user]);
+      if (isSuccess) {
+        setUser(data);
+      }
+
+      if (!data && !user) {
+        return router.push('/auth/login');
+      }
+
+      if (!user && !data) {
+        await refetch();
+      }
+    };
+
+    checkIfLoggedUser();
+  }, [data, error, user, isRefetchError]);
 
   if (isError) {
     const getError = error as AxiosError;

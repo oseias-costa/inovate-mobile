@@ -30,7 +30,6 @@ import Select from '~/app/components/Select';
 import SelectCompany from '~/app/lib/components/SelectCompany';
 import SelectTag from '~/app/lib/components/SelectTag';
 import SelectTagButton from '~/app/lib/components/SelectTagButton';
-import AddTag from '~/app/lib/components/AddTag';
 
 const handleHead = ({ tintColor }: { tintColor: ColorValue }) => (
   <Text style={{ color: tintColor }}>H1</Text>
@@ -47,7 +46,6 @@ export default function Create() {
   const { showToast } = useToast();
   const richText = useRef<any>();
 
-  const showToasting = () => showToast('Aviso enviado com sucesso', Severity.SUCCESS);
   const showLoading = () => setLoading(true);
 
   const mutation = useMutation({
@@ -60,6 +58,7 @@ export default function Create() {
           title: data.title,
           text: data.text,
           user: companySelected.uuid,
+          tag: tagSelected.id,
         },
       }),
     retry: false,
@@ -197,7 +196,8 @@ export default function Create() {
             <SelectTagButton
               checkValue={tagSelected.name}
               title="Selecione a etiqueta"
-              placeholder="Etiqueta">
+              placeholder="Etiqueta"
+              type="NOTICE">
               <SelectTag tagSelected={tagSelected} setTagSelected={setTagSelected} type="NOTICE" />
             </SelectTagButton>
             {isKeyboardVisible ? (

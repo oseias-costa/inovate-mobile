@@ -4,11 +4,12 @@ import React, { useEffect, useState } from 'react';
 import { useUser } from './components/UserProvider';
 
 export default function Home() {
-  const { user } = useUser();
-  // console.log('teste', user);
-  // if (user?.name === '') {
-  //   return <Redirect href="/auth/login" />;
-  // }
+  const { user, refetch } = useUser();
+
+  if (user?.name === '') {
+    console.log('refetch aaaaaaa');
+    refetch();
+  }
 
   return <Redirect href="/(drawer)/(tabs)/dashboard" />;
 }
