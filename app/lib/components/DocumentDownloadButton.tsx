@@ -51,7 +51,6 @@ export const DocumentDownloadButton: React.FC<DocumentDownloadButtonProps> = ({ 
       const downloadResumable = FileSystem.createDownloadResumable(uri, fileUri, {}, callback);
 
       const resume = await downloadResumable.downloadAsync();
-      console.log('Download concluído:', resume?.uri);
 
       if (!(await Sharing.isAvailableAsync())) {
         alert('Sharing is not available on this device');

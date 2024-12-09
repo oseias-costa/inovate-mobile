@@ -2,20 +2,17 @@ import Badge from '@ant-design/react-native/lib/badge';
 import { Ionicons, FontAwesome, MaterialIcons, Feather } from '@expo/vector-icons';
 import Foundation from '@expo/vector-icons/Foundation';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import { DrawerToggleButton } from '@react-navigation/drawer';
 import { Tabs, router } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
-import { useFilter } from '~/app/components/FilterProvider';
-import SelectStatus from '~/app/components/SelectStatus';
 import useDashboard from '~/app/lib/hooks/useDashboard';
 import Logo from '~/assets/svg/Logo';
 
 export default function Layout() {
   const { data } = useDashboard();
-  console.log(data.numbers);
+
   return (
     <>
       <Tabs>
@@ -68,7 +65,7 @@ export default function Layout() {
                 </Text>
               </TouchableOpacity>
             ),
-            headerLeftLabelVisible: true,
+            // headerLeftLabelVisible: true,
             headerTitleAlign: 'center',
             headerTitleStyle: { color: '#fff' },
             headerShadowVisible: false,

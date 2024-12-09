@@ -15,13 +15,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import NoticeItem from '~/app/components/NoticeItem';
 
-import NoticeItemDashboard from '~/app/components/NoticeItemDashboard';
 import ReportItem from '~/app/components/ReportItem';
 import RequestItemDashboard from '~/app/components/RequestItemDashboard';
 import { useUser } from '~/app/components/UserProvider';
 import useFontLato from '~/app/hook/useFontLato';
 import NoticeItemSkeleton from '~/app/lib/Loader/NoticeItemSkeleton';
+import NoticeSquareSkeleton from '~/app/lib/Loader/NoticeSquareSkeleton';
 import NumbersSkeleton from '~/app/lib/Loader/NumbersSkeleton';
 import ReporItemSkeleton from '~/app/lib/Loader/ReporItemSkeleton';
 import RequestItemSkeleton from '~/app/lib/Loader/RequestItemSkeleton';
@@ -203,35 +204,40 @@ export default function Dashboard() {
             </TouchableOpacity>
           </View>
           {isFetching ? (
-            <>
-              <NoticeItemSkeleton key={1} />
-              <NoticeItemSkeleton key={2} />
-              <NoticeItemSkeleton key={3} />
-            </>
+            <View style={{ display: 'flex', flexDirection: 'row', paddingBottom: 15 }}>
+              <NoticeSquareSkeleton key={1} />
+              <NoticeSquareSkeleton key={2} />
+              <NoticeSquareSkeleton key={3} />
+            </View>
           ) : (
-            data?.notice?.items?.map((item: any) => (
-              <NoticeItemDashboard
-                uuid={item.uuid}
-                title={item.title}
-                description={item.text}
-                createdAt={item.createdAt}
-                onPress={() =>
-                  router.navigate({
-                    pathname: '/screens/notice/Detail',
-                    params: { uuid: item.uuid },
-                  })
-                }
-                key={item.uuid}
-              />
-            ))
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              decelerationRate="normal"
+              style={{ paddingHorizontal: 15 }}>
+              {data?.notice?.items?.map((item: any) => (
+                <NoticeItem
+                  uuid={item.uuid}
+                  title={item.title}
+                  description={item.text}
+                  createdAt={item.createdAt}
+                  onPress={() =>
+                    router.navigate({
+                      pathname: '/screens/notice/Detail',
+                      params: { uuid: item.uuid },
+                    })
+                  }
+                  key={item.uuid}
+                />
+              ))}
+            </ScrollView>
           )}
           {!isFetching && data?.notice?.items.length === 0 ? (
             <EmptyData text="Você ainda não tem avisos" size="small" />
           ) : null}
-
           <View style={{ paddingBottom: 120 }}>
             <View style={[styles.titleBox, { paddingBottom: 15 }]}>
-              <Text style={[styles.title, { marginTop: 25 }]}>Relatórios</Text>
+              <Text style={[styles.title, { marginTop: 5 }]}>Relatórios</Text>
               <TouchableOpacity onPress={() => router.navigate('/reports')}>
                 <Text style={styles.seeAll}>Ver todos</Text>
               </TouchableOpacity>

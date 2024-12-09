@@ -14,21 +14,15 @@ type SelectCompanyProps = {
 
 export default function SelectCompany({ companySelected, setCompanySelected }: SelectCompanyProps) {
   const { data: companys } = useGetCompanys();
-
   return (
     <View style={{ paddingTop: 10 }}>
       {companys &&
-        companys?.map((company: any) => {
+        companys?.items.map((company: any) => {
           return (
             <RadioItem
               key={company.uuid}
               checked={companySelected.uuid === company.uuid}
-              onPress={() => {
-                console.log('test de algooo', company.uuid === companySelected.uuid);
-                setCompanySelected({ uuid: company.uuid, name: company.name });
-                console.log('comparar', company.uuid, companySelected.uuid);
-                console.log('test de algooo', company.uuid === companySelected.uuid);
-              }}
+              onPress={() => setCompanySelected({ uuid: company.uuid, name: company.name })}
               value={company.uuid}
               children={
                 <View style={{ marginTop: 4 }}>

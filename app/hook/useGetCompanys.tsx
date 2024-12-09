@@ -1,19 +1,20 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { httpClient } from '../lib/http.client';
 
 export default function useGetCompanys() {
   return useQuery({
     queryKey: ['companys'],
-    queryFn: async () => {
-      const token = await AsyncStorage.getItem('token');
-      const companys = await axios({
+    queryFn: async () =>
+      httpClient({
+        path: '/users',
         method: 'GET',
-        baseURL: `${process.env.EXPO_PUBLIC_API_URL}/users/companys`,
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      return companys.data;
-    },
+        queryString: {
+          type: 'COMPANY',
+          limit: 12,
+          page: 1,
+        },
+      }),
   });
 }

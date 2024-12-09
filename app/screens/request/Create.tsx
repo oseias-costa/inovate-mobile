@@ -71,48 +71,65 @@ export default function Create() {
 
   return (
     <SafeAreaView style={style.container}>
-      <View style={{ paddingBottom: 15, paddingTop: 20 }}>
+      {/* <View */}
+      {/*   style={{ */}
+      {/*     marginBottom: 'auto', */}
+      {/*     height: '100%', */}
+      {/*     display: 'flex', */}
+      {/*     justifyContent: 'flex-end', */}
+      {/*   }}> */}
+      <View style={{ paddingBottom: 15, paddingTop: 20, flex: 1 }}>
         <Subtitle text="Nova solicitação" />
         <Text style={style.description}>
           Preencha os campos abaixo para abrir uma nova solicitação.
         </Text>
+        <CustomTextInput
+          item="document"
+          placeholder="Nome do documento"
+          state={data}
+          setState={setData}
+          error={error}
+          setError={setError}
+        />
+        <CustomTextInput
+          item="description"
+          placeholder="Descrição do documento"
+          state={data}
+          setState={setData}
+          error={error}
+          setError={setError}
+        />
+        <Select checkValue={companySelected.name} title="Selecione a empresa" placeholder="Empresa">
+          <SelectCompany
+            companySelected={companySelected}
+            setCompanySelected={setCompanySelected}
+          />
+        </Select>
+        <SelectDate
+          dateValue={expiration}
+          setDate={setExpiration}
+          placeholder="Selecione um prazo"
+        />
+        <SelectTagButton
+          checkValue={tagSelected.name}
+          title="Selecione a etiqueta"
+          placeholder="Etiqueta"
+          type="REQUEST">
+          <SelectTag tagSelected={tagSelected} setTagSelected={setTagSelected} type="REQUEST" />
+        </SelectTagButton>
+        <CustomButton
+          disabled={
+            data.document == '' ||
+            data.description == '' ||
+            companySelected.uuid == '' ||
+            !expiration
+          }
+          type="primary"
+          style={{ marginHorizontal: 20, height: 40, marginTop: 'auto' }}
+          onPress={() => mutation.mutate()}>
+          Abrir solicitação
+        </CustomButton>
       </View>
-      <CustomTextInput
-        item="document"
-        placeholder="Nome do documento"
-        state={data}
-        setState={setData}
-        error={error}
-        setError={setError}
-      />
-      <CustomTextInput
-        item="description"
-        placeholder="Descrição do documento"
-        state={data}
-        setState={setData}
-        error={error}
-        setError={setError}
-      />
-      <Select checkValue={companySelected.name} title="Selecione a empresa" placeholder="Empresa">
-        <SelectCompany companySelected={companySelected} setCompanySelected={setCompanySelected} />
-      </Select>
-      <SelectDate dateValue={expiration} setDate={setExpiration} placeholder="Selecione um prazo" />
-      <SelectTagButton
-        checkValue={tagSelected.name}
-        title="Selecione a etiqueta"
-        placeholder="Etiqueta"
-        type="REQUEST">
-        <SelectTag tagSelected={tagSelected} setTagSelected={setTagSelected} type="REQUEST" />
-      </SelectTagButton>
-      <CustomButton
-        disabled={
-          data.document == '' || data.description == '' || companySelected.uuid == '' || !expiration
-        }
-        type="primary"
-        style={{ marginHorizontal: 20, height: 40 }}
-        onPress={() => mutation.mutate()}>
-        Abrir solicitação
-      </CustomButton>
     </SafeAreaView>
   );
 }
@@ -146,7 +163,7 @@ const style = StyleSheet.create({
     fontSize: 14,
     color: '#A49D9D',
     marginHorizontal: 20,
-    paddingBottom: 0,
+    paddingBottom: 20,
     paddingTop: 6,
   },
   input: {

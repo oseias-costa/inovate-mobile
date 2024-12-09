@@ -114,7 +114,7 @@ export default function NoticeDetail() {
         )}
         <CustomButton
           style={{ marginHorizontal: 20, height: 40, marginTop: 'auto' }}
-          onPress={() => router.navigate('/(drawer)/(tabs)/reports')}>
+          onPress={() => router.back()}>
           voltar
         </CustomButton>
       </SafeAreaView>

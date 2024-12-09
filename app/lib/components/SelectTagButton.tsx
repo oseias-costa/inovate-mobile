@@ -122,27 +122,34 @@ export default function SelectTagButton({
             <View style={style.body}>{children}</View>
           </SafeAreaView>
         </ModalRN>
-        <View style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row' }}>
-          <Text style={style.label}>{placeholder}</Text>
-          <TouchableOpacity onPress={() => addTag()}>
-            <Text style={style.add}>Adicionar</Text>
-          </TouchableOpacity>
-        </View>
-        <TouchableOpacity
-          style={[{ borderColor: error === item ? 'red' : '#75BCEE' }, style.button]}
-          onPress={() => !disable && setOpenModal(true)}>
-          <Text
-            numberOfLines={1}
-            style={{
-              color: '#363636',
-              fontFamily: 'Lato_400Regular',
-              fontSize: 16,
-            }}>
-            {checkValue || title}
-          </Text>
-          <Ionicons name="chevron-down" size={20} color="#7B8A92" />
-        </TouchableOpacity>
       </Provider>
+      <View
+        style={{
+          position: 'relative',
+          display: 'flex',
+          justifyContent: 'space-between',
+          flexDirection: 'row',
+          marginBottom: 'auto',
+        }}>
+        <Text style={style.label}>{placeholder}</Text>
+        <TouchableOpacity onPress={() => addTag()}>
+          <Text style={style.add}>Adicionar</Text>
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity
+        style={[{ borderColor: error === item ? 'red' : '#75BCEE' }, style.button]}
+        onPress={() => !disable && setOpenModal(true)}>
+        <Text
+          numberOfLines={1}
+          style={{
+            color: '#363636',
+            fontFamily: 'Lato_400Regular',
+            fontSize: 16,
+          }}>
+          {checkValue || title}
+        </Text>
+        <Ionicons name="chevron-down" size={20} color="#7B8A92" />
+      </TouchableOpacity>
     </>
   );
 }
@@ -187,6 +194,5 @@ const style = StyleSheet.create({
     marginHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
   },
 });

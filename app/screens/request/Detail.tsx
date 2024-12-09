@@ -104,8 +104,7 @@ export default function Detail() {
             </>
           )}
         </View>
-
-        <CustomButton style={styles.button} onPress={() => router.navigate('/requests')}>
+        <CustomButton style={styles.button} onPress={() => router.back()}>
           voltar
         </CustomButton>
       </SafeAreaView>

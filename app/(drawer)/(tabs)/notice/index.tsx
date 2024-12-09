@@ -1,6 +1,6 @@
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { router } from 'expo-router';
+import { router, usePathname, useSegments } from 'expo-router';
 import React, { useState } from 'react';
 import { RefreshControl, ScrollView, StatusBar, View, StyleSheet } from 'react-native';
 
@@ -18,6 +18,10 @@ export default function Notice() {
   const { user } = useUser();
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
+
+  const segments = useSegments();
+  const fullPath = `/${segments.join('/')}`;
+  console.log(fullPath);
 
   const { data, refetch, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery<PaginateReponse<NoticeType>>({

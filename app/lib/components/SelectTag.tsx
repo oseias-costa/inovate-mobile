@@ -27,7 +27,7 @@ export default function SelectTag({ tagSelected, setTagSelected, type }: SelectT
   });
 
   return (
-    <View style={{ paddingTop: 10 }}>
+    <View style={{ paddingTop: 10, marginBottom: 'auto' }}>
       {data?.map((tag: any) => {
         return (
           <RadioItem

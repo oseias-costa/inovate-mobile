@@ -7,7 +7,6 @@ export default function Home() {
   const { user, refetch } = useUser();
 
   if (user?.name === '') {
-    console.log('refetch aaaaaaa');
     refetch();
   }
 

@@ -6,15 +6,22 @@ import {
   MaterialIcons,
 } from '@expo/vector-icons';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-import { router, usePathname } from 'expo-router';
+import { router, useNavigation, usePathname } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import React from 'react';
 import { Image, View } from 'react-native';
 import { useUser } from '../components/UserProvider';
+import { CommonActions } from '@react-navigation/core';
 
 const CustomDrawerContent = (props: any) => {
   const pathname = usePathname();
   const { setUser } = useUser();
+  const routera = useNavigation();
+
+  const handleBack = () => {
+    ``;
+    return routera.dispatch(CommonActions.navigateDeprecated('/(drawer)/(tabs)/notice'));
+  };
 
   return (
     <DrawerContentScrollView {...props} style={{ backgroundColor: '#00264B' }}>
@@ -26,7 +33,8 @@ const CustomDrawerContent = (props: any) => {
         style={{
           backgroundColor: pathname === '/dashboard' ? '#fff' : 'transparent',
           padding: 0,
-          height: 40,
+          height: 50,
+          borderRadius: 5,
         }}
         icon={({ color, size }) => (
           <MaterialIcons
@@ -46,7 +54,8 @@ const CustomDrawerContent = (props: any) => {
       <DrawerItem
         style={{
           backgroundColor: pathname === '/requests' ? '#fff' : 'transparent',
-          height: 40,
+          height: 50,
+          borderRadius: 5,
         }}
         labelStyle={{
           color: pathname === '/requests' ? '#00264B' : '#fff',
@@ -61,11 +70,12 @@ const CustomDrawerContent = (props: any) => {
           />
         )}
         label="Solicitações"
-        onPress={() => router.push('/(drawer)/(tabs)/requests')}
+        onPress={() => router.push('/requests/index')}
       />
       <DrawerItem
         style={{
-          height: 40,
+          height: 50,
+          borderRadius: 5,
           backgroundColor: pathname === '/notice' ? '#fff' : 'transparent',
         }}
         labelStyle={{
@@ -81,11 +91,15 @@ const CustomDrawerContent = (props: any) => {
           />
         )}
         label="Avisos"
-        onPress={() => router.push('/(drawer)/(tabs)/notice')}
+        onPress={() => {
+          router.push('/(drawer)/(tabs)/notice/index');
+          // handleBack();
+        }}
       />
       <DrawerItem
         style={{
-          height: 40,
+          height: 50,
+          borderRadius: 5,
           backgroundColor: pathname === '/reports' ? '#fff' : 'transparent',
         }}
         labelStyle={{
@@ -101,12 +115,13 @@ const CustomDrawerContent = (props: any) => {
           />
         )}
         label="Relatórios"
-        onPress={() => router.push('/screens/managment/AddUser')}
+        onPress={() => router.push('/reports')}
       />
       <View style={{ height: 20 }} />
       <DrawerItem
         style={{
-          height: 40,
+          height: 50,
+          borderRadius: 5,
           backgroundColor: pathname === '/screens/managment/AddUser' ? '#fff' : 'transparent',
         }}
         labelStyle={{
@@ -126,47 +141,66 @@ const CustomDrawerContent = (props: any) => {
       />
       <DrawerItem
         style={{
-          height: 40,
-          backgroundColor: pathname === '/reports' ? '#fff' : 'transparent',
+          height: 50,
+          borderRadius: 5,
+          backgroundColor: pathname === '/Users' ? '#fff' : 'transparent',
         }}
         labelStyle={{
-          color: pathname === '/reports' ? '#00264B' : '#fff',
+          color: pathname === '/Users' ? '#00264B' : '#fff',
           fontSize: 14,
           fontFamily: 'Lato_400Regular',
         }}
         icon={({ color, size }) => (
-          <FontAwesome5
-            name="users"
-            size={22}
-            color={pathname === '/reports' ? '#00264B' : '#fff'}
-          />
+          <FontAwesome5 name="users" size={22} color={pathname === '/Users' ? '#00264B' : '#fff'} />
         )}
         label="Usuários"
-        onPress={() => router.push('/screens/managment/AddUser')}
+        onPress={() => router.push('/screens/managment/Users')}
       />
-      <DrawerItem
-        style={{
-          height: 50,
-          backgroundColor: pathname === '/reports' ? '#fff' : 'transparent',
-        }}
-        labelStyle={{
-          color: pathname === '/reports' ? '#00264B' : '#fff',
-          fontSize: 14,
-          fontFamily: 'Lato_400Regular',
-        }}
-        icon={({ color, size }) => (
-          <FontAwesome5
-            name="users"
-            size={22}
-            color={pathname === '/reports' ? '#00264B' : '#fff'}
-          />
-        )}
-        label="Logout"
-        onPress={() => {
-          setUser(null);
-          router.push('/auth/login');
-        }}
-      />
+      <View style={{ marginTop: 'auto' }}>
+        <DrawerItem
+          style={{
+            height: 50,
+            backgroundColor: pathname === '/Account' ? '#fff' : 'transparent',
+          }}
+          labelStyle={{
+            color: pathname === '/Account' ? '#00264B' : '#fff',
+            fontSize: 14,
+            fontFamily: 'Lato_400Regular',
+          }}
+          icon={({ color, size }) => (
+            <FontAwesome5
+              name="users"
+              size={22}
+              color={pathname === '/Account' ? '#00264B' : '#fff'}
+            />
+          )}
+          label="Conta"
+          onPress={() => router.push('/screens/managment/Account')}
+        />
+        <DrawerItem
+          style={{
+            height: 50,
+            backgroundColor: pathname === '/reports' ? '#fff' : 'transparent',
+          }}
+          labelStyle={{
+            color: pathname === '/reports' ? '#00264B' : '#fff',
+            fontSize: 14,
+            fontFamily: 'Lato_400Regular',
+          }}
+          icon={({ color, size }) => (
+            <FontAwesome5
+              name="users"
+              size={22}
+              color={pathname === '/reports' ? '#00264B' : '#fff'}
+            />
+          )}
+          label="Logout"
+          onPress={() => {
+            setUser(null);
+            router.push('/auth/login');
+          }}
+        />
+      </View>
     </DrawerContentScrollView>
   );
 };
