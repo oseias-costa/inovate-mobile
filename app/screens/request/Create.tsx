@@ -3,6 +3,7 @@ import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-quer
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Provider } from '@ant-design/react-native';
 
 import CustomTextInput from '../../components/CustomTextInput';
 import Select from '../../components/Select';
@@ -70,67 +71,65 @@ export default function Create() {
   };
 
   return (
-    <SafeAreaView style={style.container}>
-      {/* <View */}
-      {/*   style={{ */}
-      {/*     marginBottom: 'auto', */}
-      {/*     height: '100%', */}
-      {/*     display: 'flex', */}
-      {/*     justifyContent: 'flex-end', */}
-      {/*   }}> */}
-      <View style={{ paddingBottom: 15, paddingTop: 20, flex: 1 }}>
-        <Subtitle text="Nova solicitação" />
-        <Text style={style.description}>
-          Preencha os campos abaixo para abrir uma nova solicitação.
-        </Text>
-        <CustomTextInput
-          item="document"
-          placeholder="Nome do documento"
-          state={data}
-          setState={setData}
-          error={error}
-          setError={setError}
-        />
-        <CustomTextInput
-          item="description"
-          placeholder="Descrição do documento"
-          state={data}
-          setState={setData}
-          error={error}
-          setError={setError}
-        />
-        <Select checkValue={companySelected.name} title="Selecione a empresa" placeholder="Empresa">
-          <SelectCompany
-            companySelected={companySelected}
-            setCompanySelected={setCompanySelected}
+    <Provider>
+      <SafeAreaView style={style.container}>
+        <View style={{ paddingBottom: 15, paddingTop: 20, flex: 1 }}>
+          <Subtitle text="Nova solicitação" />
+          <Text style={style.description}>
+            Preencha os campos abaixo para abrir uma nova solicitação.
+          </Text>
+          <CustomTextInput
+            item="document"
+            placeholder="Nome do documento"
+            state={data}
+            setState={setData}
+            error={error}
+            setError={setError}
           />
-        </Select>
-        <SelectDate
-          dateValue={expiration}
-          setDate={setExpiration}
-          placeholder="Selecione um prazo"
-        />
-        <SelectTagButton
-          checkValue={tagSelected.name}
-          title="Selecione a etiqueta"
-          placeholder="Etiqueta"
-          type="REQUEST">
-          <SelectTag tagSelected={tagSelected} setTagSelected={setTagSelected} type="REQUEST" />
-        </SelectTagButton>
-        <CustomButton
-          disabled={
-            data.document == '' ||
-            data.description == '' ||
-            companySelected.uuid == '' ||
-            !expiration
-          }
-          type="primary"
-          style={{ marginHorizontal: 20, height: 40, marginTop: 'auto' }}
-          onPress={() => mutation.mutate()}>
-          Abrir solicitação
-        </CustomButton>
-      </View>
-    </SafeAreaView>
+          <CustomTextInput
+            item="description"
+            placeholder="Descrição do documento"
+            state={data}
+            setState={setData}
+            error={error}
+            setError={setError}
+          />
+          <Select
+            checkValue={companySelected.name}
+            title="Selecione a empresa"
+            placeholder="Empresa">
+            <SelectCompany
+              companySelected={companySelected}
+              setCompanySelected={setCompanySelected}
+            />
+          </Select>
+          <SelectDate
+            dateValue={expiration}
+            setDate={setExpiration}
+            placeholder="Selecione um prazo"
+          />
+          <SelectTagButton
+            checkValue={tagSelected.name}
+            title="Selecione a etiqueta"
+            placeholder="Etiqueta"
+            type="REQUEST">
+            <SelectTag tagSelected={tagSelected} setTagSelected={setTagSelected} type="REQUEST" />
+          </SelectTagButton>
+          <CustomButton
+            disabled={
+              data.document == '' ||
+              data.description == '' ||
+              companySelected.uuid == '' ||
+              !expiration
+            }
+            type="primary"
+            style={{ marginHorizontal: 20, height: 40, marginTop: 'auto' }}
+            onPress={() => mutation.mutate()}>
+            Abrir solicitação
+          </CustomButton>
+        </View>
+      </SafeAreaView>
+    </Provider>
   );
 }
 

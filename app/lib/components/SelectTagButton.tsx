@@ -104,32 +104,11 @@ export default function SelectTagButton({
 
   return (
     <>
-      <Provider>
-        <ModalRN
-          animationType="slide"
-          visible={openModal}
-          onRequestClose={() => setOpenModal(false)}>
-          <SafeAreaView style={{ backgroundColor: '#00264B' }}>
-            <View style={style.header}>
-              <TouchableOpacity onPress={() => setOpenModal(false)}>
-                <MaterialIcons name="arrow-back-ios" size={24} color="white" />
-              </TouchableOpacity>
-              <Text style={style.title}>{title}</Text>
-              <TouchableOpacity onPress={() => setOpenModal(false)}>
-                <Text style={{ color: '#fff' }}>Cancelar</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={style.body}>{children}</View>
-          </SafeAreaView>
-        </ModalRN>
-      </Provider>
       <View
         style={{
-          position: 'relative',
           display: 'flex',
           justifyContent: 'space-between',
           flexDirection: 'row',
-          marginBottom: 'auto',
         }}>
         <Text style={style.label}>{placeholder}</Text>
         <TouchableOpacity onPress={() => addTag()}>
@@ -150,6 +129,20 @@ export default function SelectTagButton({
         </Text>
         <Ionicons name="chevron-down" size={20} color="#7B8A92" />
       </TouchableOpacity>
+      <ModalRN animationType="slide" visible={openModal} onRequestClose={() => setOpenModal(false)}>
+        <SafeAreaView style={{ backgroundColor: '#00264B' }}>
+          <View style={style.header}>
+            <TouchableOpacity onPress={() => setOpenModal(false)}>
+              <MaterialIcons name="arrow-back-ios" size={24} color="white" />
+            </TouchableOpacity>
+            <Text style={style.title}>{title}</Text>
+            <TouchableOpacity onPress={() => setOpenModal(false)}>
+              <Text style={{ color: '#fff' }}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={style.body}>{children}</View>
+        </SafeAreaView>
+      </ModalRN>
     </>
   );
 }

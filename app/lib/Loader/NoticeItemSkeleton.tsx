@@ -7,17 +7,17 @@ const NoticeItemSkeleton = () => {
   return (
     <View
       style={{
-        height: 80,
+        height: 65,
         marginHorizontal: 20,
       }}>
       <ContentLoader
         speed={4}
         width={400}
-        height={160}
-        viewBox="0 0 400 160"
+        height={80}
+        viewBox="0 0 400 80"
         backgroundColor="#f3f3f3"
         foregroundColor="#ecebeb">
-        <Rect x="0" y="0" rx="5" ry="8" width={width - 40} height="70" />
+        <Rect x="0" y="0" rx="10" ry="8" width={width - 40} height="55" />
       </ContentLoader>
     </View>
   );

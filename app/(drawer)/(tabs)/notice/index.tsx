@@ -61,14 +61,14 @@ export default function Notice() {
             <NoticeFilterItem item="DEADLINES" setFilter={setFilter} filter={filter} />
           </ScrollView>
         </View>
-        <View style={{ flex: 1, width: '100%', height: 400, paddingTop: 10 }}>
-          <View style={{ paddingTop: 10 }}>
-            {!isFetching && !isFetchingNextPage && data?.pages[0].items.length === 0 ? (
+        <View style={{ flex: 1, width: '100%', height: 400 }}>
+          {!isFetching && !isFetchingNextPage && data?.pages[0].items.length === 0 ? (
+            <View style={{ paddingTop: 10 }}>
               <EmptyData text="Você ainda não tem avisos" size="medium" />
-            ) : null}
-          </View>
+            </View>
+          ) : null}
           {isFetching && !isFetchingNextPage ? (
-            <View>
+            <View style={{ marginTop: 12 }}>
               <NoticeItemSkeleton key={1} />
               <NoticeItemSkeleton key={2} />
               <NoticeItemSkeleton key={3} />
@@ -80,6 +80,7 @@ export default function Notice() {
             </View>
           ) : (
             <FlashList
+              contentContainerStyle={{ paddingTop: 10 }}
               renderItem={({ item }: { item: NoticeType }) => (
                 <NoticeItemDashboard
                   uuid={item.uuid}

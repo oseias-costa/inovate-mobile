@@ -21,7 +21,6 @@ import ReportItem from '~/app/components/ReportItem';
 import RequestItemDashboard from '~/app/components/RequestItemDashboard';
 import { useUser } from '~/app/components/UserProvider';
 import useFontLato from '~/app/hook/useFontLato';
-import NoticeItemSkeleton from '~/app/lib/Loader/NoticeItemSkeleton';
 import NoticeSquareSkeleton from '~/app/lib/Loader/NoticeSquareSkeleton';
 import NumbersSkeleton from '~/app/lib/Loader/NumbersSkeleton';
 import ReporItemSkeleton from '~/app/lib/Loader/ReporItemSkeleton';
