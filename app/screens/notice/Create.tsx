@@ -30,6 +30,7 @@ import Select from '~/app/components/Select';
 import SelectCompany from '~/app/lib/components/SelectCompany';
 import SelectTag from '~/app/lib/components/SelectTag';
 import SelectTagButton from '~/app/lib/components/SelectTagButton';
+import { Provider } from '@ant-design/react-native';
 
 const handleHead = ({ tintColor }: { tintColor: ColorValue }) => (
   <Text style={{ color: tintColor }}>H1</Text>
@@ -134,99 +135,105 @@ export default function Create() {
           ),
         }}
       />
-      <SafeAreaView style={style.container}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={{ flex: 1 }}>
-            <View style={{ height: 25 }} />
-            <CustomTextInput
-              item="title"
-              placeholder="Título"
-              error={error}
-              setError={setError}
-              state={data}
-              setState={setData}
-            />
-            <Text style={style.label}>Texto</Text>
-            <View
-              style={{
-                height: 240,
-                borderColor: '#DADADA',
-                borderWidth: 1,
-                marginHorizontal: 20,
-                borderRadius: 5,
-                marginVertical: 5,
-                marginBottom: 10,
-              }}>
-              <ScrollView
-                bounces={false}
-                showsVerticalScrollIndicator
-                contentContainerStyle={{ borderRadius: 5 }}>
-                <RichEditor
-                  ref={richText}
-                  onChange={(descriptionText) => {
-                    console.log('descriptionText:', descriptionText);
-                    setData({ title: data.title, text: descriptionText });
-                  }}
-                  editorStyle={{
-                    color: '#363636',
-                  }}
-                  style={{
-                    borderRadius: 5,
-                  }}
-                  containerStyle={{
-                    borderRadius: 5,
-                  }}
-                  showsVerticalScrollIndicator
-                  initialHeight={100}
-                  scrollEnabled
-                />
-              </ScrollView>
-            </View>
-            <Select
-              checkValue={companySelected.name}
-              title="Selecione a empresa"
-              placeholder="Empresa">
-              <SelectCompany
-                companySelected={companySelected}
-                setCompanySelected={setCompanySelected}
+      <Provider>
+        <SafeAreaView style={style.container}>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              style={{ flex: 1 }}>
+              <View style={{ height: 25 }} />
+              <CustomTextInput
+                item="title"
+                placeholder="Título"
+                error={error}
+                setError={setError}
+                state={data}
+                setState={setData}
               />
-            </Select>
-            <SelectTagButton
-              checkValue={tagSelected.name}
-              title="Selecione a etiqueta"
-              placeholder="Etiqueta"
-              type="NOTICE">
-              <SelectTag tagSelected={tagSelected} setTagSelected={setTagSelected} type="NOTICE" />
-            </SelectTagButton>
-            {isKeyboardVisible ? (
-              <View style={style.inner}>
-                <RichToolbar
-                  editor={richText}
-                  actions={[
-                    actions.setBold,
-                    actions.setItalic,
-                    actions.setUnderline,
-                    actions.insertImage,
-                    actions.keyboard,
-                  ]}
-                  selectedIconTint="#00264B"
-                  iconMap={{ [actions.heading1]: handleHead }}
-                  onPressAddImage={pickImage}
-                />
+              <Text style={style.label}>Texto</Text>
+              <View
+                style={{
+                  height: 240,
+                  borderColor: '#DADADA',
+                  borderWidth: 1,
+                  marginHorizontal: 20,
+                  borderRadius: 5,
+                  marginVertical: 5,
+                  marginBottom: 10,
+                }}>
+                <ScrollView
+                  bounces={false}
+                  showsVerticalScrollIndicator
+                  contentContainerStyle={{ borderRadius: 5 }}>
+                  <RichEditor
+                    ref={richText}
+                    onChange={(descriptionText) => {
+                      console.log('descriptionText:', descriptionText);
+                      setData({ title: data.title, text: descriptionText });
+                    }}
+                    editorStyle={{
+                      color: '#363636',
+                    }}
+                    style={{
+                      borderRadius: 5,
+                    }}
+                    containerStyle={{
+                      borderRadius: 5,
+                    }}
+                    showsVerticalScrollIndicator
+                    initialHeight={100}
+                    scrollEnabled
+                  />
+                </ScrollView>
               </View>
-            ) : null}
-            <CustomButton
-              disabled={data.text === '' || data.title === '' || companySelected.uuid === ''}
-              style={{ marginHorizontal: 20, height: 40, marginTop: 'auto' }}
-              type="primary"
-              onPress={() => mutation.mutate()}>
-              Próximo
-            </CustomButton>
-          </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
-      </SafeAreaView>
+              <Select
+                checkValue={companySelected.name}
+                title="Selecione a empresa"
+                placeholder="Empresa">
+                <SelectCompany
+                  companySelected={companySelected}
+                  setCompanySelected={setCompanySelected}
+                />
+              </Select>
+              <SelectTagButton
+                checkValue={tagSelected.name}
+                title="Selecione a etiqueta"
+                placeholder="Etiqueta"
+                type="NOTICE">
+                <SelectTag
+                  tagSelected={tagSelected}
+                  setTagSelected={setTagSelected}
+                  type="NOTICE"
+                />
+              </SelectTagButton>
+              {isKeyboardVisible ? (
+                <View style={style.inner}>
+                  <RichToolbar
+                    editor={richText}
+                    actions={[
+                      actions.setBold,
+                      actions.setItalic,
+                      actions.setUnderline,
+                      actions.insertImage,
+                      actions.keyboard,
+                    ]}
+                    selectedIconTint="#00264B"
+                    iconMap={{ [actions.heading1]: handleHead }}
+                    onPressAddImage={pickImage}
+                  />
+                </View>
+              ) : null}
+              <CustomButton
+                disabled={data.text === '' || data.title === '' || companySelected.uuid === ''}
+                style={{ marginHorizontal: 20, height: 40, marginTop: 'auto' }}
+                type="primary"
+                onPress={() => mutation.mutate()}>
+                Próximo
+              </CustomButton>
+            </KeyboardAvoidingView>
+          </TouchableWithoutFeedback>
+        </SafeAreaView>
+      </Provider>
     </>
   );
 }
