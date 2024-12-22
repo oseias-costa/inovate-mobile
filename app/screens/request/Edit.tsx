@@ -1,4 +1,3 @@
-import ButtonAnt from '@ant-design/react-native/lib/button';
 import Modal from '@ant-design/react-native/lib/modal';
 import { useIsMutating, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
@@ -6,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import CustomTextInput from '../../components/CustomTextInput';
-import Loading from '../../components/Loading';
 import Select from '../../components/Select';
 import SelectCompany from '../../lib/components/SelectCompany';
 import { SelectDate } from '../../components/SelectDate';
@@ -18,6 +16,9 @@ import { httpClient } from '../../lib/http.client';
 import { useLoading } from '~/app/components/LoadingProvider';
 import { Severity, useToast } from '~/app/components/ToastProvider';
 import { CustomButton } from '~/app/lib/components/CustomButton';
+import SelectTagButton from '~/app/lib/components/SelectTagButton';
+import SelectTag from '~/app/lib/components/SelectTag';
+import { Provider } from '@ant-design/react-native';
 
 export default function UpdateSolicitation() {
   const { uuid } = useLocalSearchParams();
@@ -34,7 +35,7 @@ export default function UpdateSolicitation() {
   });
 
   const { data: companys } = useGetCompanys();
-  const company = companys?.find((item: any) => item.name === request.company);
+  const company = companys?.items?.find((item: any) => item.name === request.company);
   const [error, setError] = useState({ input: '', message: '' });
   const [data, setData] = useState({
     document: request.documentName,
@@ -45,6 +46,10 @@ export default function UpdateSolicitation() {
     name: company?.name,
   });
   const [expiration, setExpiration] = useState<Date | undefined>(request?.expiration);
+  const [tagSelected, setTagSelected] = useState({
+    id: request?.tag?.id,
+    name: request?.tag?.name,
+  });
 
   const isMutation = useIsMutating({ mutationKey: [`request-${uuid}`], exact: true });
   const showToasting = () => showToast('Solicitação editada com sucesso', Severity.SUCCESS);
@@ -60,6 +65,7 @@ export default function UpdateSolicitation() {
           description: data.description,
           companyUuid: companySelected.uuid,
           expiration,
+          tag: tagSelected.id,
         },
       }),
     onError: (err) => {
@@ -111,7 +117,7 @@ export default function UpdateSolicitation() {
   }, [deleteDocument]);
 
   return (
-    <>
+    <Provider>
       <Stack.Screen
         options={{
           headerTitleAlign: 'center',
@@ -163,14 +169,21 @@ export default function UpdateSolicitation() {
           setDate={setExpiration}
           placeholder="Selecione um prazo"
         />
+        <SelectTagButton
+          checkValue={tagSelected.name}
+          title="Selecione a etiqueta"
+          placeholder="Etiqueta"
+          type="REQUEST">
+          <SelectTag tagSelected={tagSelected} setTagSelected={setTagSelected} type="REQUEST" />
+        </SelectTagButton>
         <CustomButton
-          style={{ marginHorizontal: 20, height: 40 }}
+          style={{ marginHorizontal: 20, height: 40, marginTop: 'auto' }}
           type="primary"
           onPress={() => mutation.mutate()}>
           Editar solicitação
         </CustomButton>
       </SafeAreaView>
-    </>
+    </Provider>
   );
 }
 

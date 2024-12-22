@@ -46,6 +46,7 @@ export default function Create() {
           companyUuid: companySelected.uuid,
           requesterUuid: user?.uuid,
           expiration,
+          tagId: tagSelected.id,
         },
       }),
     onError: () => setLoading(false),

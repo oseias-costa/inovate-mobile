@@ -1,7 +1,7 @@
 import RadioItem from '@ant-design/react-native/lib/radio/RadioItem';
 import { useQuery } from '@tanstack/react-query';
 import React, { Dispatch, SetStateAction } from 'react';
-import { Text, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { httpClient } from '../http.client';
 
 type SelectTagProps = {
@@ -30,13 +30,13 @@ export default function SelectTag({ tagSelected, setTagSelected, type }: SelectT
     <View style={{ paddingTop: 10, marginBottom: 'auto' }}>
       {data?.map((tag: any) => {
         return (
-          <RadioItem
+          <TouchableOpacity
             key={tag.id}
-            checked={tagSelected.id === tag.id}
-            onChange={() => {
+            // checked={tagSelected.id === tag.id}
+            onPress={() => {
               setTagSelected({ id: tag.id, name: tag.name });
             }}
-            value={tag.id}
+            // value={tag.id}
             children={
               <View style={{ marginTop: 4 }}>
                 <Text
@@ -49,7 +49,6 @@ export default function SelectTag({ tagSelected, setTagSelected, type }: SelectT
                 </Text>
               </View>
             }
-            left
           />
         );
       })}

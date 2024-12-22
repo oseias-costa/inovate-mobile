@@ -50,7 +50,7 @@ export default function SelectTagButton({
   const [err, setErr] = useState({ input: '', message: '' });
   const { setLoading } = useLoading();
   const queryClient = useQueryClient();
-  console.log(name);
+
   const createTag = useMutation({
     mutationKey: ['create-tag'],
     mutationFn: async () =>
