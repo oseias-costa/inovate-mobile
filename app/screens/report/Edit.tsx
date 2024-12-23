@@ -29,6 +29,8 @@ import { httpClient } from '../../lib/http.client';
 import { useLoading } from '~/app/components/LoadingProvider';
 import { Severity, useToast } from '~/app/components/ToastProvider';
 import { CustomButton } from '~/app/lib/components/CustomButton';
+import SelectTagButton from '~/app/lib/components/SelectTagButton';
+import SelectTag from '~/app/lib/components/SelectTag';
 
 const handleHead = ({ tintColor }: { tintColor: ColorValue }) => (
   <Text style={{ color: tintColor }}>H1</Text>
@@ -56,6 +58,8 @@ export default function Edit() {
         path: `/reports/${uuid}`,
       }),
   });
+
+  const [tagSelected, setTagSelected] = useState({ id: notice?.tag?.id, name: notice?.tag?.name });
 
   useEffect(() => {
     if (isMutation) {
@@ -163,6 +167,13 @@ export default function Edit() {
             setCompanySelected={setCompanySelected}
           />
         </Select>
+        <SelectTagButton
+          checkValue={tagSelected.name}
+          title="Selecione a etiqueta"
+          placeholder="Etiqueta"
+          type="REPORT">
+          <SelectTag tagSelected={tagSelected} setTagSelected={setTagSelected} type="REPORT" />
+        </SelectTagButton>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

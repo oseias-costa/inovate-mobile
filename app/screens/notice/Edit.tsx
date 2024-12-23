@@ -172,6 +172,13 @@ export default function Edit() {
               setCompanySelected={setCompanySelected}
             />
           </Select>
+          <SelectTagButton
+            checkValue={tagSelected.name}
+            title="Selecione a etiqueta"
+            placeholder="Etiqueta"
+            type="NOTICE">
+            <SelectTag tagSelected={tagSelected} setTagSelected={setTagSelected} type="NOTICE" />
+          </SelectTagButton>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -215,13 +222,6 @@ export default function Edit() {
               </View>
             </KeyboardAvoidingView>
           </TouchableWithoutFeedback>
-          <SelectTagButton
-            checkValue={tagSelected.name}
-            title="Selecione a etiqueta"
-            placeholder="Etiqueta"
-            type="NOTICE">
-            <SelectTag tagSelected={tagSelected} setTagSelected={setTagSelected} type="NOTICE" />
-          </SelectTagButton>
           {isKeyboardVisible ? (
             <View style={style.inner}>
               <RichToolbar
@@ -239,7 +239,10 @@ export default function Edit() {
               />
             </View>
           ) : null}
-          <CustomButton type="primary" onPress={() => mutation.mutate()}>
+          <CustomButton
+            style={{ height: 40, marginHorizontal: 20 }}
+            type="primary"
+            onPress={() => mutation.mutate()}>
             Atualizar aviso
           </CustomButton>
         </SafeAreaView>
@@ -312,6 +315,7 @@ const style = StyleSheet.create({
   label: {
     fontFamily: 'Lato_300Light',
     marginHorizontal: 20,
+    marginTop: 15,
   },
   headerButton: {
     color: '#fff',
