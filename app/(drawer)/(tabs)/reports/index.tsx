@@ -30,7 +30,7 @@ export default function Reports() {
         queryString: {
           page: pageParam,
           limit: 8,
-          companyUuid: user.uuid,
+          companyUuid: user?.uuid,
         },
       }),
     initialPageParam: 1,
@@ -42,11 +42,11 @@ export default function Reports() {
       <View style={{ backgroundColor: '#fff', position: 'relative', flex: 1 }}>
         <StatusBar barStyle="light-content" hidden={false} />
         <View style={{ flex: 1, width: '100%', height: 400, paddingTop: 10 }}>
-          <View style={{ paddingTop: 10 }}>
-            {!isFetching && !isFetchingNextPage && data?.pages[0].items.length === 0 ? (
+          {!isFetching && !isFetchingNextPage && data?.pages[0].items.length === 0 ? (
+            <View style={{ paddingTop: 10 }}>
               <EmptyData text="Você ainda não tem relatórios" size="medium" />
-            ) : null}
-          </View>
+            </View>
+          ) : null}
           {isFetching && !isFetchingNextPage ? (
             <View>
               <ReporItemSkeleton key={1} />
@@ -62,6 +62,7 @@ export default function Reports() {
             </View>
           ) : (
             <FlashList
+              contentContainerStyle={{ paddingTop: 10 }}
               renderItem={({ item }: { item: ReportType }) => (
                 <ReportItem
                   uuid={item.uuid}
