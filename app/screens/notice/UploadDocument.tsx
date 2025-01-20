@@ -66,10 +66,11 @@ export default function NoticeDetail() {
           headerTintColor: '#fff',
           headerLeft: () => (
             <TouchableOpacity
+              style={{ padding: 8, right: 14 }}
               onPress={() =>
                 router.navigate({ pathname: '/screens/notice/Detail', params: { uuid } })
               }>
-              <MaterialIcons name="arrow-back-ios" size={24} color="white" style={{ right: 8 }} />
+              <MaterialIcons name="arrow-back-ios" size={24} color="white" />
             </TouchableOpacity>
           ),
         }}

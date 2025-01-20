@@ -56,8 +56,8 @@ export default function Detail() {
             </TouchableOpacity>
           ),
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <MaterialIcons name="arrow-back-ios" size={24} color="white" style={{ right: 8 }} />
+            <TouchableOpacity onPress={() => router.back()} style={{ padding: 8, right: 14 }}>
+              <MaterialIcons name="arrow-back-ios" size={24} color="white" />
             </TouchableOpacity>
           ),
         }}

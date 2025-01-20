@@ -22,7 +22,7 @@ export default function Layout() {
           headerTintColor: '#fff',
           headerBackVisible: true,
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity onPress={() => router.back()} style={{ padding: 8, right: 14 }}>
               <MaterialIcons name="arrow-back-ios" size={24} color="white" />
             </TouchableOpacity>
           ),

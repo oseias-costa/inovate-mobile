@@ -132,8 +132,8 @@ export default function CreateReport() {
           headerTitle: 'Novo relatório',
           headerTintColor: '#fff',
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <MaterialIcons name="arrow-back-ios" size={24} color="white" style={{ right: 8 }} />
+            <TouchableOpacity onPress={() => router.back()} style={{ padding: 8, right: 14 }}>
+              <MaterialIcons name="arrow-back-ios" size={24} color="white" />
             </TouchableOpacity>
           ),
         }}
