@@ -1,5 +1,5 @@
 import React, { useState, useImperativeHandle, forwardRef, useRef, useEffect } from 'react';
-import { Text, StyleSheet, Animated, Platform, UIManager, View } from 'react-native';
+import { Text, StyleSheet, Animated, Platform, UIManager, View, PanResponder } from 'react-native';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -10,6 +10,32 @@ const Toast = (props: any, ref: React.Ref<any>) => {
   const translateYAnim = useRef(new Animated.Value(-100)).current;
   const [viewWidth, setViewWidth] = useState(0);
 
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true, // Permite que o toast responda aos gestos
+      onPanResponderMove: (_, gestureState) => {
+        // Movimenta o toast com base no gesto do usuário
+        if (gestureState.dy < 0) {
+          // Só permite deslizar para cima (valores negativos de dy)
+          translateYAnim.setValue(gestureState.dy);
+        }
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        // Verifica se o usuário deslizou o suficiente para fechar o toast
+        if (gestureState.dy < -50) {
+          // Limite de 50 pixels para fechar
+          hideToast();
+        } else {
+          // Retorna o toast à posição original
+          Animated.spring(translateYAnim, {
+            toValue: 0,
+            useNativeDriver: true,
+          }).start();
+        }
+      },
+    })
+  ).current;
+
   const toast = () => {
     if (!showToast) {
       setShowToast(true);
@@ -18,6 +44,7 @@ const Toast = (props: any, ref: React.Ref<any>) => {
         duration: 300,
         useNativeDriver: true,
       }).start();
+
       setTimeout(() => {
         Animated.timing(translateYAnim, {
           toValue: -100,
@@ -28,6 +55,16 @@ const Toast = (props: any, ref: React.Ref<any>) => {
         });
       }, 3000);
     }
+  };
+
+  const hideToast = () => {
+    Animated.timing(translateYAnim, {
+      toValue: -100,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setShowToast(false);
+    });
   };
 
   const refContainer = useRef<View>(null);
@@ -44,9 +81,18 @@ const Toast = (props: any, ref: React.Ref<any>) => {
     return (
       <Animated.View
         ref={refContainer}
-        style={[styles.toastContainer, { transform: [{ translateY: translateYAnim }] }]}>
+        style={[styles.toastContainer, { transform: [{ translateY: translateYAnim }] }]}
+        {...panResponder.panHandlers}>
         <View
-          style={{ width: 8, height: viewWidth, backgroundColor: '#3B3D3E', position: 'absolute' }}
+          style={{
+            width: 8,
+            height: viewWidth,
+            backgroundColor: '#3B3D3E',
+            position: 'absolute',
+            flexDirection: 'row',
+            left: -19,
+            bottom: 3,
+          }}
         />
         <Text style={styles.toastText}>{props.message}</Text>
         <Text style={styles.description}>{props.message}</Text>
