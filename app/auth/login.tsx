@@ -2,11 +2,10 @@ import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsMutating } from '@tanstack/react-query';
 import { Link, Redirect, Tabs, router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Image, Text, TextInput, TextInputComponent, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import { useUser } from '../components/UserProvider';
 import { useLogin } from '../hook/useLogin';
 import { CustomButton } from '../lib/components/CustomButton';
 
@@ -19,7 +18,7 @@ export default function Login() {
     input: '',
     color: '#DADADA',
   });
-  const { user } = useUser();
+  const emailRef = useRef<TextInput>(null) as unknown as any;
 
   const isMutating = useIsMutating({ mutationKey: ['login'], exact: true });
   const getEmail = async () => {
@@ -31,10 +30,6 @@ export default function Login() {
       getEmail();
     }
   }, []);
-
-  // if (user?.name === '') {
-  //   return <Redirect href="/(drawer)/(tabs)/dashboard" />;
-  // }
 
   return (
     <KeyboardAwareScrollView
@@ -82,9 +77,18 @@ export default function Login() {
               fontFamily: 'Lato_300Light',
               fontSize: 14,
               color: '#716F6F',
-              marginBottom: 20,
+              marginBottom: 10,
             }}>
             Faça o login informando abaixo o e-mail e a senha.
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'Lato_400Regular',
+              fontSize: 14,
+              color: 'red',
+              marginBottom: 4,
+            }}>
+            {error}
           </Text>
           <TextInput
             style={{
@@ -99,12 +103,18 @@ export default function Login() {
               fontFamily: 'Lato_400Regular',
               fontSize: 15,
             }}
+            onChangeText={(text) => {
+              console.log(text);
+              setData({ ...data, email: text });
+            }}
+            onEndEditing={(e) => {
+              setData({ ...data, email: e.nativeEvent.text });
+            }}
             defaultValue={data.email}
             onFocus={() => setOther({ color: '#2E77FF', input: 'email' })}
             onBlur={() => setOther({ color: '#2E77FF', input: 'email' })}
             placeholder="E-mail"
             onChange={(e) => {
-              setError('');
               setData({ ...data, email: e.nativeEvent.text });
             }}
           />
@@ -129,11 +139,16 @@ export default function Login() {
                 fontFamily: 'Lato_400Regular',
                 fontSize: 15,
               }}
+              onChangeText={(text) => {
+                setData({ ...data, password: text });
+              }}
+              onEndEditing={(e) => {
+                setData({ ...data, password: e.nativeEvent.text });
+              }}
               secureTextEntry={!showPassword}
               onFocus={() => setOther({ color: '#2E77FF', input: 'password' })}
               placeholder="Senha"
               onChange={(e) => {
-                setError('');
                 setData({ ...data, password: e.nativeEvent.text });
               }}
             />

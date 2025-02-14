@@ -1,4 +1,5 @@
 import { Feather } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { useFonts, Lato_400Regular, Lato_300Light } from '@expo-google-fonts/lato';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsMutating, useMutation } from '@tanstack/react-query';
@@ -12,7 +13,7 @@ import PageLayout from './PageLayout';
 import { Severity, useToast } from '../components/ToastProvider';
 import { CustomButton } from '../lib/components/CustomButton';
 
-export default function VerifyCode() {
+export default function updatePassword() {
   const [other, setOther] = useState({
     input: '',
     color: '#DADADA',
@@ -54,10 +55,15 @@ export default function VerifyCode() {
     mutationKey: ['update-password'],
     onSuccess: async () => {
       showToast('Senha criada com sucesso', Severity.SUCCESS);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       await AsyncStorage.removeItem('token');
+
       return router.replace('/auth/login');
     },
-    onError: (err) => setError('Ocorreu um erro'),
+    onError: (err) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      setError('Ocorreu um erro');
+    },
   });
 
   return (
@@ -90,6 +96,15 @@ export default function VerifyCode() {
               marginBottom: 20,
             }}>
             Escolha uma senha segura e lembre de nunca compartilhar com ninguém.
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'Lato_400Regular',
+              fontSize: 14,
+              color: 'red',
+              marginBottom: 4,
+            }}>
+            {error}
           </Text>
           <View
             style={{
@@ -191,7 +206,13 @@ export default function VerifyCode() {
             type="primary"
             loading={!!isMutation}
             style={{ height: 40 }}
-            onPress={() => !isMutation && mutation.mutate()}>
+            onPress={() => {
+              if (data.password !== data.passwordConfirmation) {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                return setError('As senhas não conferem.');
+              }
+              !isMutation && mutation.mutate();
+            }}>
             {!isMutation && 'Criar senha'}
           </CustomButton>
         </View>

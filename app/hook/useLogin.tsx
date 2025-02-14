@@ -1,11 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Haptics from 'expo-haptics';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { router } from 'expo-router';
 import { Dispatch, SetStateAction, useState } from 'react';
 
 import { useUser } from '../components/UserProvider';
-import { User } from '../lib/types/user.type';
 
 type LoginData = {
   email: string;
@@ -32,11 +32,13 @@ export const useLogin = (setError: Dispatch<SetStateAction<string>>) => {
       AsyncStorage.setItem('token', data['token']);
       setUser(data.user);
 
+      setError('');
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.replace('/(drawer)/(tabs)/dashboard');
     },
     onError: (error) => {
-      console.log('E-mail ou senha incorretos', error);
-      setError('E-mail ou senha incorretos');
+      setError('E-mail ou senha incorreta');
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     },
   });
 

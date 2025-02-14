@@ -14,19 +14,14 @@ const Toast = (props: any, ref: React.Ref<any>) => {
     PanResponder.create({
       onStartShouldSetPanResponder: () => true, // Permite que o toast responda aos gestos
       onPanResponderMove: (_, gestureState) => {
-        // Movimenta o toast com base no gesto do usuário
         if (gestureState.dy < 0) {
-          // Só permite deslizar para cima (valores negativos de dy)
           translateYAnim.setValue(gestureState.dy);
         }
       },
       onPanResponderRelease: (_, gestureState) => {
-        // Verifica se o usuário deslizou o suficiente para fechar o toast
         if (gestureState.dy < -50) {
-          // Limite de 50 pixels para fechar
           hideToast();
         } else {
-          // Retorna o toast à posição original
           Animated.spring(translateYAnim, {
             toValue: 0,
             useNativeDriver: true,

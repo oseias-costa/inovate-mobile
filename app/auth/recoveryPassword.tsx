@@ -1,4 +1,4 @@
-import Button from '@ant-design/react-native/lib/button';
+import * as Haptics from 'expo-haptics';
 import { useIsMutating, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { router } from 'expo-router';
@@ -43,7 +43,7 @@ export default function RecoveryPassword() {
       });
     },
     onError: () => {
-      setError('O e-mail é inválido');
+      setError('O e-mail é inválido ou não está cadastrado');
     },
   });
 
@@ -85,13 +85,22 @@ export default function RecoveryPassword() {
               fontFamily: 'Lato_300Light',
               fontSize: 14,
               color: '#716F6F',
+              marginBottom: 10,
             }}>
             Você receberá um e-mail com um código de verificação no seu e-mail.
           </Text>
-
+          <Text
+            style={{
+              fontFamily: 'Lato_400Regular',
+              fontSize: 14,
+              color: 'red',
+              marginBottom: 0,
+            }}>
+            {error}
+          </Text>
           <TextInput
             style={{
-              marginTop: 20,
+              marginTop: 10,
               borderColor: other.input === 'email' ? '#75BCEE' : '#DADADA',
               borderWidth: 1,
               height: 40,

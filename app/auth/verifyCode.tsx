@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import * as Haptics from 'expo-haptics';
 import { Image, Keyboard, Text, TextInput, View } from 'react-native';
 import PageLayout from './PageLayout';
 import { useFonts, Lato_400Regular, Lato_300Light } from '@expo-google-fonts/lato';
@@ -88,9 +89,18 @@ export default function VerifyCode() {
               fontFamily: 'Lato_300Light',
               fontSize: 14,
               color: '#716F6F',
-              marginBottom: 20,
+              marginBottom: 10,
             }}>
             Insira o código enviado para o e-mail {local.email}.
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'Lato_400Regular',
+              fontSize: 14,
+              color: 'red',
+              marginBottom: 4,
+            }}>
+            {error}
           </Text>
           <View style={{ flexDirection: 'row' }}>
             <TextInput
