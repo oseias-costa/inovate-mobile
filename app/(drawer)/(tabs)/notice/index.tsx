@@ -14,14 +14,13 @@ import { NoticeType } from '~/app/lib/types/notice.type';
 import { PaginateReponse } from '~/app/lib/types/paginate-response.type';
 
 export default function Notice() {
-  const [filter, setFilter] = useState<'' | 'GENERAL' | 'FINANTIAL' | 'DEADLINES'>('');
+  const [filter, setFilter] = useState<string>('');
   const { user } = useUser();
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
 
   const segments = useSegments();
   const fullPath = `/${segments.join('/')}`;
-  console.log(fullPath);
 
   const { data, refetch, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery<PaginateReponse<NoticeType>>({
@@ -55,10 +54,10 @@ export default function Notice() {
               flexDirection: 'row',
               paddingRight: 20,
             }}>
-            <NoticeFilterItem item="" setFilter={setFilter} filter={filter} />
-            <NoticeFilterItem item="GENERAL" setFilter={setFilter} filter={filter} />
-            <NoticeFilterItem item="FINANTIAL" setFilter={setFilter} filter={filter} />
-            <NoticeFilterItem item="DEADLINES" setFilter={setFilter} filter={filter} />
+            <NoticeFilterItem item="Todos" setFilter={setFilter} filter={filter} />
+            <NoticeFilterItem item="Gerais" setFilter={setFilter} filter={filter} />
+            <NoticeFilterItem item="Financeiro" setFilter={setFilter} filter={filter} />
+            <NoticeFilterItem item="Prazos" setFilter={setFilter} filter={filter} />
           </ScrollView>
         </View>
         <View style={{ flex: 1, width: '100%', height: 400 }}>

@@ -3,6 +3,7 @@ import Provider from '@ant-design/react-native/lib/provider';
 import { Ionicons } from '@expo/vector-icons';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Keyboard } from 'react-native';
 
 import { CustomButton } from './CustomButton';
 
@@ -26,7 +27,12 @@ export function ModalSelectTypeUser({ addUser, setAddUsers }: TypeUsersProps) {
   return (
     <>
       <Text style={styles.label}>Selecione o tipo do usuário</Text>
-      <TouchableOpacity style={styles.button} onPress={() => setOpenModal(true)}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          setOpenModal(true);
+          Keyboard.dismiss();
+        }}>
         <Text numberOfLines={1} style={styles.textButton}>
           {addUser?.type ? description[addUser?.type] : 'Selecione o tipo de usuário'}
         </Text>
@@ -58,7 +64,10 @@ export function ModalSelectTypeUser({ addUser, setAddUsers }: TypeUsersProps) {
               placeholder="Empresa"
               value="COMPANY"
               itemSelected={addUser?.type}
-              onChange={() => setAddUsers({ ...addUser, type: 'COMPANY' })}
+              onChange={() => {
+                setAddUsers({ ...addUser, type: 'COMPANY' });
+                console.log('addUser', addUser);
+              }}
             />
             <Radio
               placeholder="Colaborador Inovate"
@@ -68,12 +77,13 @@ export function ModalSelectTypeUser({ addUser, setAddUsers }: TypeUsersProps) {
             />
             <Radio
               placeholder="Administrador"
-              value="ALL_USERS"
+              value="ADMIN"
               itemSelected={addUser?.type}
               onChange={() => setAddUsers({ ...addUser, type: 'ADMIN' })}
             />
             <CustomButton
               type="primary"
+              style={{ marginHorizontal: 20, height: 40, marginTop: 'auto' }}
               onPress={() => {
                 setOpenModal(false);
               }}>

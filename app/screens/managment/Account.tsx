@@ -2,7 +2,7 @@ import { Switch } from '@ant-design/react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQueryClient } from '@tanstack/react-query';
-import { Stack, router } from 'expo-router';
+import { Stack, router, useRootNavigationState } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Notifications from 'expo-notifications';
@@ -21,7 +21,9 @@ export default function Account() {
   const queryClient = useQueryClient();
   const { user, setUser } = useUser();
   const [isEnabled, setIsEnabled] = useState(false);
+  const navigationState = useRootNavigationState();
 
+  console.log('navigationState', navigationState);
   const checkNotificationPermission = async () => {
     const { status } = await Notifications.getPermissionsAsync();
     setIsEnabled(status === 'granted');
@@ -31,10 +33,8 @@ export default function Account() {
     checkNotificationPermission();
   }, []);
 
-  // Função para lidar com a troca do switch
   const toggleSwitch = async (value: boolean) => {
     if (value) {
-      // Solicitar permissão para notificações
       const { status } = await Notifications.requestPermissionsAsync();
       if (status === 'granted') {
         Alert.alert('Permissão Concedida', 'Você receberá notificações.');
@@ -44,7 +44,6 @@ export default function Account() {
         setIsEnabled(false);
       }
     } else {
-      // Desativar notificações
       Alert.alert('Notificações Desativadas', 'Você não receberá notificações.');
       setIsEnabled(false);
     }
@@ -70,6 +69,12 @@ export default function Account() {
         <View style={styles.itemAccount}>
           <Text style={styles.itemAccountText}>Notificações</Text>
           <Switch checked={isEnabled} onChange={toggleSwitch} />
+        </View>
+        <View>
+          <Text>Rotas Registradas:</Text>
+          {navigationState?.routes?.map((route, index) => (
+            <Text key={index}>{route.pathname}</Text>
+          ))}
         </View>
         <View style={{ marginTop: 'auto' }}>
           <CustomButton

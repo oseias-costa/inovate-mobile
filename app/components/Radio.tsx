@@ -1,6 +1,5 @@
-import RadioItem from '@ant-design/react-native/lib/radio/RadioItem';
-import React from 'react';
-import { Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 type RadioProps = {
   itemSelected: string | undefined;
@@ -11,25 +10,26 @@ type RadioProps = {
 
 export const Radio = ({ itemSelected, value, placeholder, onChange }: RadioProps) => {
   return (
-    <RadioItem
-      key={1}
-      checked={itemSelected === value}
-      onChange={onChange}
-      value={value}
-      style={{ height: 38 }}
-      children={
-        <View style={{ marginTop: 4 }}>
-          <Text
-            style={{
-              fontFamily: 'Lato_400Regular',
-              fontSize: 16,
-              color: itemSelected === value ? '#1677ff' : '#5D5B5B',
-            }}>
-            {placeholder}
-          </Text>
-        </View>
-      }
-      left
-    />
+    <TouchableOpacity
+      onPress={onChange}
+      style={{
+        marginTop: 4,
+        height: 40,
+        marginHorizontal: 20,
+        borderColor: itemSelected === value ? '#1677ff' : 'transparent',
+        borderWidth: 1,
+        borderRadius: 5,
+        justifyContent: 'center',
+        paddingLeft: 20,
+      }}>
+      <Text
+        style={{
+          fontFamily: 'Lato_400Regular',
+          fontSize: 16,
+          color: itemSelected === value ? '#1677ff' : '#5D5B5B',
+        }}>
+        {placeholder}
+      </Text>
+    </TouchableOpacity>
   );
 };

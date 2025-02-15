@@ -22,7 +22,7 @@ export default function UserItem({ name, email, type, onPress, status }: Props) 
           {name}
         </Text>
         <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-          <MaterialIcons name="access-alarm" size={14} color="#AEA4A4" />
+          <Text style={styles.description}>{email}</Text>
         </View>
       </View>
       <MaterialIcons name="keyboard-arrow-right" size={26} color="#C8BDBD" />

@@ -6,22 +6,19 @@ import {
   MaterialIcons,
 } from '@expo/vector-icons';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-import { router, useNavigation, usePathname } from 'expo-router';
+import { Link, useNavigation, usePathname, useRouter } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import React from 'react';
-import { Image, View } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useUser } from '../components/UserProvider';
-import { CommonActions } from '@react-navigation/core';
+import { DrawerActions } from '@react-navigation/native';
+import Requests from './(tabs)/requests';
 
 const CustomDrawerContent = (props: any) => {
   const pathname = usePathname();
   const { setUser } = useUser();
-  const routera = useNavigation();
-
-  const handleBack = () => {
-    ``;
-    return routera.dispatch(CommonActions.navigateDeprecated('/(drawer)/(tabs)/notice'));
-  };
+  const router = useRouter();
+  const navigation = useNavigation();
 
   return (
     <DrawerContentScrollView {...props} style={{ backgroundColor: '#00264B' }}>
@@ -70,7 +67,9 @@ const CustomDrawerContent = (props: any) => {
           />
         )}
         label="Solicitações"
-        onPress={() => router.push('/requests/index')}
+        onPress={() => {
+          router.push('/(drawer)/(tabs)/requests');
+        }}
       />
       <DrawerItem
         style={{
@@ -92,8 +91,7 @@ const CustomDrawerContent = (props: any) => {
         )}
         label="Avisos"
         onPress={() => {
-          router.push('/(drawer)/(tabs)/notice/index');
-          // handleBack();
+          router.push('/(drawer)/(tabs)/notice');
         }}
       />
       <DrawerItem
@@ -115,7 +113,7 @@ const CustomDrawerContent = (props: any) => {
           />
         )}
         label="Relatórios"
-        onPress={() => router.push('/reports')}
+        onPress={() => router.push('/(drawer)/(tabs)/reports')}
       />
       <View style={{ height: 20 }} />
       <DrawerItem
@@ -208,8 +206,10 @@ const CustomDrawerContent = (props: any) => {
 export default function Layout() {
   return (
     <Drawer
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={{ headerShown: false, headerTintColor: '#fff' }}
-    />
+      drawerContent={(props: any) => <CustomDrawerContent {...props} />}
+      screenOptions={{ headerShown: false, headerTintColor: '#fff' }}>
+      <Drawer.Screen name="(tabs)" />
+      <Drawer.Screen name="/(tabs)/requests" />
+    </Drawer>
   );
 }

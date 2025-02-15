@@ -2,9 +2,9 @@ import React, { Dispatch, SetStateAction } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 type SelectFilterProps = {
-  filter: '' | 'GENERAL' | 'FINANTIAL' | 'DEADLINES';
-  item: '' | 'GENERAL' | 'FINANTIAL' | 'DEADLINES';
-  setFilter: Dispatch<SetStateAction<'' | 'GENERAL' | 'FINANTIAL' | 'DEADLINES'>>;
+  filter: string;
+  item: string;
+  setFilter: Dispatch<SetStateAction<string>>;
 };
 
 const NoticeFilterItem = ({ filter, item, setFilter }: SelectFilterProps) => {
@@ -32,7 +32,7 @@ const NoticeFilterItem = ({ filter, item, setFilter }: SelectFilterProps) => {
             fontFamily: 'Lato_400Regular',
             color: filter === item ? '#00264B' : '#fff',
           }}>
-          {title[item]}
+          {item}
         </Text>
       </View>
     </TouchableOpacity>
