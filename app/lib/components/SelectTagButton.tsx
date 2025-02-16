@@ -14,6 +14,7 @@ import { httpClient } from '../http.client';
 import { Provider } from '@ant-design/react-native';
 import CustomTextInput from '~/app/components/CustomTextInput';
 import { useLoading } from '~/app/components/LoadingProvider';
+import { CustomButton } from './CustomButton';
 
 type SelectProps = {
   title: string;
@@ -130,7 +131,7 @@ export default function SelectTagButton({
         <Ionicons name="chevron-down" size={20} color="#7B8A92" />
       </TouchableOpacity>
       <ModalRN animationType="slide" visible={openModal} onRequestClose={() => setOpenModal(false)}>
-        <SafeAreaView style={{ backgroundColor: '#00264B' }}>
+        <SafeAreaView style={{ flex: 1 }}>
           <View style={style.header}>
             <TouchableOpacity onPress={() => setOpenModal(false)}>
               <MaterialIcons name="arrow-back-ios" size={24} color="white" />
@@ -140,7 +141,16 @@ export default function SelectTagButton({
               <Text style={{ color: '#fff' }}>Cancelar</Text>
             </TouchableOpacity>
           </View>
-          <View style={style.body}>{children}</View>
+          <View style={style.body}>
+            {children}
+            <CustomButton
+              disabled={!checkValue}
+              type="primary"
+              style={{ marginHorizontal: 20, height: 40, marginTop: 'auto' }}
+              onPress={() => setOpenModal(false)}>
+              Confirmar
+            </CustomButton>
+          </View>
         </SafeAreaView>
       </ModalRN>
     </>
@@ -150,16 +160,22 @@ export default function SelectTagButton({
 const style = StyleSheet.create({
   header: {
     paddingHorizontal: 12,
-    height: 40,
+    height: 150,
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
     borderBottomColor: '#d3d3d3',
     shadowColor: '#000',
+    backgroundColor: '#00264B',
+    position: 'absolute',
   },
   body: {
     backgroundColor: '#fff',
+    alignContent: 'space-around',
+    flex: 1,
+    marginTop: 48,
   },
   title: {
     color: '#fff',

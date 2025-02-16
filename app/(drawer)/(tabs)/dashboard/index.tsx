@@ -39,7 +39,6 @@ Notifications.setNotificationHandler({
 
 export default function Dashboard() {
   const fontsLoades = useFontLato();
-  const [expoPushToken, setExpoPushToken] = useState('');
   const { data, isFetching, refetch } = useDashboard();
   const { user, refetch: refetchUser } = useUser();
   const [refreshing, setRefreshing] = useState(false);
@@ -69,13 +68,13 @@ export default function Dashboard() {
 
   const mutation = useMutation({
     mutationKey: ['device-token'],
-    mutationFn: async () =>
+    mutationFn: async ({ deviceToken }: { deviceToken: string }) =>
       httpClient({
         method: 'POST',
         path: '/notifications/token',
         data: {
           userUuid: user?.uuid,
-          deviceToken: expoPushToken,
+          deviceToken,
           type: Platform.OS === 'android' ? 'ANDROID' : 'IOS',
           active: true,
         },
@@ -89,8 +88,7 @@ export default function Dashboard() {
   useEffect(() => {
     registerForPushNotificationsAsync()
       .then((token) => {
-        token && setExpoPushToken(token);
-        mutation.mutate();
+        mutation.mutate({ deviceToken: String(token) });
       })
       .catch(console.log);
   }, []);
@@ -296,6 +294,7 @@ async function registerForPushNotificationsAsync() {
 
   if (Device.isDevice) {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    console.log('existingStatus', existingStatus);
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync();
@@ -312,6 +311,7 @@ async function registerForPushNotificationsAsync() {
       const projectId =
         Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
       if (!projectId) {
+        console.log('not found projectId');
         throw new Error('Project ID not found');
       }
       token = (
@@ -319,6 +319,7 @@ async function registerForPushNotificationsAsync() {
           projectId,
         })
       ).data;
+      console.log('tokeeen', token);
     } catch (e) {
       token = `${e}`;
     }

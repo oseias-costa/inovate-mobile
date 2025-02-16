@@ -1,34 +1,40 @@
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsMutating } from '@tanstack/react-query';
-import { Link, Redirect, Tabs, router } from 'expo-router';
+import { Link, Tabs, router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, Text, TextInput, TextInputComponent, TouchableOpacity, View } from 'react-native';
+import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import { useLogin } from '../hook/useLogin';
 import { CustomButton } from '../lib/components/CustomButton';
+import { useUser } from '../components/UserProvider';
 
 export default function Login() {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [data, setData] = useState({ email: '', password: '' });
-  const { mutate, fetchToken } = useLogin(setError);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const { mutate } = useLogin(setError);
   const [other, setOther] = useState({
     input: '',
     color: '#DADADA',
   });
   const emailRef = useRef<TextInput>(null) as unknown as any;
+  const { setUser } = useUser();
 
   const isMutating = useIsMutating({ mutationKey: ['login'], exact: true });
-  const getEmail = async () => {
-    const email = await AsyncStorage.getItem('email');
-    if (email) setData({ ...data, email });
-  };
+  // const getEmail = async () => {
+  // const email = await AsyncStorage.getItem('email');
+  //   if (email) setData({ ...data, email });
+  // };
   useEffect(() => {
-    if (!data.email) {
-      getEmail();
-    }
+    // if (!data.email) {
+    //   getEmail();
+    // }
+
+    setUser(null);
+    AsyncStorage.removeItem('token');
   }, []);
 
   return (
@@ -104,18 +110,17 @@ export default function Login() {
               fontSize: 15,
             }}
             onChangeText={(text) => {
-              console.log(text);
-              setData({ ...data, email: text });
+              setEmail(text);
             }}
             onEndEditing={(e) => {
-              setData({ ...data, email: e.nativeEvent.text });
+              setEmail(e.nativeEvent.text);
             }}
-            defaultValue={data.email}
+            defaultValue={email}
             onFocus={() => setOther({ color: '#2E77FF', input: 'email' })}
             onBlur={() => setOther({ color: '#2E77FF', input: 'email' })}
             placeholder="E-mail"
             onChange={(e) => {
-              setData({ ...data, email: e.nativeEvent.text });
+              setEmail(e.nativeEvent.text);
             }}
           />
           <View
@@ -140,16 +145,16 @@ export default function Login() {
                 fontSize: 15,
               }}
               onChangeText={(text) => {
-                setData({ ...data, password: text });
+                setPassword(text);
               }}
               onEndEditing={(e) => {
-                setData({ ...data, password: e.nativeEvent.text });
+                setPassword(e.nativeEvent.text);
               }}
               secureTextEntry={!showPassword}
               onFocus={() => setOther({ color: '#2E77FF', input: 'password' })}
               placeholder="Senha"
               onChange={(e) => {
-                setData({ ...data, password: e.nativeEvent.text });
+                setPassword(e.nativeEvent.text);
               }}
             />
             <TouchableOpacity
@@ -188,13 +193,14 @@ export default function Login() {
         </View>
         <View style={{ marginTop: 10, marginBottom: 10, width: '100%' }}>
           <CustomButton
-            onPress={() => mutate.mutate(data)}
+            onPress={() => {
+              mutate.mutate({ email, password });
+            }}
             type="primary"
             style={{ marginBottom: 10, height: 40 }}
             loading={!!isMutating}>
             {!isMutating && 'Entrar'}
           </CustomButton>
-
           <CustomButton style={{ height: 40 }} onPress={() => router.navigate('/auth/firstAcess')}>
             Primeiro Acesso
           </CustomButton>

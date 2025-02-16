@@ -21,9 +21,7 @@ export default function Account() {
   const queryClient = useQueryClient();
   const { user, setUser } = useUser();
   const [isEnabled, setIsEnabled] = useState(false);
-  const navigationState = useRootNavigationState();
 
-  console.log('navigationState', navigationState);
   const checkNotificationPermission = async () => {
     const { status } = await Notifications.getPermissionsAsync();
     setIsEnabled(status === 'granted');
@@ -69,12 +67,6 @@ export default function Account() {
         <View style={styles.itemAccount}>
           <Text style={styles.itemAccountText}>Notificações</Text>
           <Switch checked={isEnabled} onChange={toggleSwitch} />
-        </View>
-        <View>
-          <Text>Rotas Registradas:</Text>
-          {navigationState?.routes?.map((route, index) => (
-            <Text key={index}>{route.pathname}</Text>
-          ))}
         </View>
         <View style={{ marginTop: 'auto' }}>
           <CustomButton

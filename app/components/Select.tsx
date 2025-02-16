@@ -1,6 +1,17 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Dimensions,
+  Modal,
+  Platform,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { CustomButton } from '../lib/components/CustomButton';
 
 type SelectProps = {
   title: string;
@@ -34,8 +45,9 @@ export default function Select({
 
   return (
     <>
+      <StatusBar backgroundColor="#00263B" barStyle="light-content" />
       <Modal animationType="slide" visible={openModal} onRequestClose={() => setOpenModal(false)}>
-        <SafeAreaView style={{ backgroundColor: '#00264B' }}>
+        <SafeAreaView style={{ height: Dimensions.get('screen').height }}>
           <View style={style.header}>
             <TouchableOpacity onPress={() => setOpenModal(false)}>
               <MaterialIcons name="arrow-back-ios" size={24} color="white" />
@@ -45,7 +57,16 @@ export default function Select({
               <Text style={{ color: '#fff' }}>Cancelar</Text>
             </TouchableOpacity>
           </View>
-          <View style={style.body}>{children}</View>
+          <View style={style.body}>
+            {children}
+            <CustomButton
+              disabled={!checkValue}
+              type="primary"
+              style={{ marginHorizontal: 20, height: 40, marginTop: 'auto' }}
+              onPress={() => setOpenModal(false)}>
+              Confirmar
+            </CustomButton>
+          </View>
         </SafeAreaView>
       </Modal>
       <Text style={style.label}>{placeholder}</Text>
@@ -70,16 +91,22 @@ export default function Select({
 const style = StyleSheet.create({
   header: {
     paddingHorizontal: 12,
-    height: 40,
+    height: 150,
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
     borderBottomColor: '#d3d3d3',
     shadowColor: '#000',
+    backgroundColor: '#00264B',
+    position: 'absolute',
   },
   body: {
     backgroundColor: '#fff',
+    alignContent: 'space-around',
+    flex: 1,
+    marginTop: 48,
   },
   title: {
     color: '#fff',

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import React, { Dispatch, SetStateAction } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { httpClient } from '../http.client';
+import { SelectItem } from './SelectItem';
 
 type SelectTagProps = {
   type: 'REPORT' | 'REQUEST' | 'NOTICE';
@@ -30,25 +31,12 @@ export default function SelectTag({ tagSelected, setTagSelected, type }: SelectT
     <View style={{ paddingTop: 10, marginBottom: 'auto' }}>
       {data?.map((tag: any) => {
         return (
-          <TouchableOpacity
+          <SelectItem
             key={tag.id}
-            // checked={tagSelected.id === tag.id}
-            onPress={() => {
-              setTagSelected({ id: tag.id, name: tag.name });
-            }}
-            // value={tag.id}
-            children={
-              <View style={{ marginTop: 4 }}>
-                <Text
-                  style={{
-                    fontFamily: 'Lato_400Regular',
-                    fontSize: 18,
-                    color: tagSelected.name === tag.name ? '#1677ff' : '#5D5B5B',
-                  }}>
-                  {tag.name}
-                </Text>
-              </View>
-            }
+            itemSelected={tagSelected.name}
+            value={tag.name}
+            placeholder={tag.name}
+            onChange={() => setTagSelected({ id: tag.id, name: tag.name })}
           />
         );
       })}
