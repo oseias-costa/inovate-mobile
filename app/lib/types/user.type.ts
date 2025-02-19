@@ -6,7 +6,7 @@ export type User = {
   name: string;
   password: string;
   reamlID: string;
-  status: string;
-  type: string;
+  status: 'ACTIVE' | 'INACTIVE' | 'FIRST_ACESS' | 'PASSWORD_RESET';
+  type: 'COMPANY' | 'USER' | 'ADMIN';
   updateAt: string;
 };

@@ -2,8 +2,8 @@ import Modal from '@ant-design/react-native/lib/modal';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
-import { router, Stack } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import { Stack, useFocusEffect, useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   ColorValue,
@@ -48,9 +48,19 @@ export default function CreateReport() {
   const { user } = useUser();
   const { setLoading } = useLoading();
   const { showToast } = useToast();
+  const router = useRouter();
 
   const showToasting = () => showToast('Relatório criado com sucesso', Severity.SUCCESS);
   const showLoading = () => setLoading(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      setData({ title: '', text: '' });
+      setCompanySelected({ uuid: '', name: '' });
+      setTagSelected({ id: 0, name: '' });
+      richText.current?.setContentHTML('');
+    }, [])
+  );
 
   const mutation = useMutation({
     mutationKey: ['create-report'],

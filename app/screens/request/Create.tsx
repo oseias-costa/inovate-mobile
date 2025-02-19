@@ -1,7 +1,7 @@
 import Modal from '@ant-design/react-native/lib/modal';
 import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-query';
-import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { Provider } from '@ant-design/react-native';
 
@@ -30,9 +30,7 @@ export default function Create() {
   const queryClient = useQueryClient();
   const { setLoading } = useLoading();
   const { showToast } = useToast();
-
-  const showToasting = () => showToast('Solicitação criada com sucesso', Severity.SUCCESS);
-  const showLoading = () => setLoading(true);
+  const router = useRouter();
 
   const mutation = useMutation({
     mutationKey: ['create-request'],
@@ -49,18 +47,26 @@ export default function Create() {
           tagId: tagSelected.id,
         },
       }),
-    onError: () => setLoading(false),
+    onError: (err) => {
+      setLoading(false);
+      console.log(err);
+    },
     onSuccess: (data) => {
       setLoading(false);
-      showToasting();
-      router.navigate('/(tabs)/requests');
+      showToast('Solicitação criada com sucesso', Severity.SUCCESS);
+      router.push('/requests');
+      setData({ document: '', description: '' });
+      setCompanySelected({ uuid: '', name: '' });
+      setTagSelected({ id: 0, name: '' });
+      setExpiration(new Date());
+
       return queryClient.invalidateQueries({ queryKey: ['requests'] });
     },
   });
 
   useEffect(() => {
     if (isMutation) {
-      showLoading();
+      setLoading(true);
     }
   }, [isMutation]);
 

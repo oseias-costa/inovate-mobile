@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
@@ -51,6 +51,7 @@ export default function Dashboard() {
   const destakeRef = useRef<View | null>(null);
   const [height, setHeight] = useState(0);
   const screenHeight = Dimensions.get('screen').height;
+  const router = useRouter();
 
   const handleLayout = () => {
     if (destakeRef.current) {

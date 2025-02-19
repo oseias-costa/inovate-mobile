@@ -17,6 +17,8 @@ type CustomTextInputProps = {
     }>
   >;
   placeholder?: string;
+  notEditable?: boolean;
+  itemMapper?: string;
 };
 
 export default function CustomTextInput({
@@ -26,6 +28,8 @@ export default function CustomTextInput({
   placeholder,
   error,
   setError,
+  notEditable,
+  itemMapper,
 }: CustomTextInputProps) {
   const [isFocus, setIsFocus] = useState(false);
 
@@ -33,11 +37,16 @@ export default function CustomTextInput({
     <View style={styles.container}>
       <Text style={styles.label}>{placeholder}</Text>
       <TextInput
+        editable={!notEditable}
         style={[
-          { borderColor: isFocus ? (error.input === item ? 'red' : '#75BCEE') : '#DADADA' },
+          {
+            borderColor: isFocus ? (error.input === item ? 'red' : '#75BCEE') : '#DADADA',
+            backgroundColor: notEditable ? '#F4FAFC' : '#FFF',
+            color: notEditable ? '#808080' : '#363636',
+          },
           styles.input,
         ]}
-        defaultValue={state[item]}
+        defaultValue={itemMapper ?? state[item]}
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
         placeholder={placeholder}
@@ -63,7 +72,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginHorizontal: 20,
     marginVertical: 5,
-    color: '#363636',
     fontFamily: 'Lato_400Regular',
     fontSize: 16,
   },

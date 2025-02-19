@@ -1,24 +1,12 @@
-import { Switch } from '@ant-design/react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlashList } from '@shopify/flash-list';
-import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Stack, router } from 'expo-router';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import {
-  Alert,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import SelectUserType from '~/app/components/SelectUserType';
 
-import { useUser } from '~/app/components/UserProvider';
 import RequestItemSkeleton from '~/app/lib/Loader/RequestItemSkeleton';
-import { CustomButton } from '~/app/lib/components/CustomButton';
 import UserItem from '~/app/lib/components/UserItem';
 import { httpClient } from '~/app/lib/http.client';
 import { PaginateReponse } from '~/app/lib/types/paginate-response.type';
@@ -28,6 +16,7 @@ export default function Users() {
   const [type, setType] = useState<'USER' | 'COMPANY'>('COMPANY');
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter();
 
   const { data, refetch, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery<PaginateReponse<User>>({
@@ -50,7 +39,6 @@ export default function Users() {
     refetch();
   }, [type]);
 
-  console.log('ussser', data);
   return (
     <>
       <Stack.Screen
@@ -102,7 +90,7 @@ export default function Users() {
                 email={item.email}
                 type={item.type}
                 status={item.status}
-                onPress={() => {}}
+                onPress={() => router.push(`/screens/managment/UserDetail?uuid=${item?.uuid}`)}
               />
             )}
             onEndReached={() => {

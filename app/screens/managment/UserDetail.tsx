@@ -1,17 +1,9 @@
 import Modal from '@ant-design/react-native/lib/modal';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-query';
-import * as ImagePicker from 'expo-image-picker';
-import { Stack, useRouter } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  SafeAreaView,
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Platform,
-} from 'react-native';
+import { useIsMutating, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 
 import CustomTextInput from '../../components/CustomTextInput';
 import { httpClient } from '../../lib/http.client';
@@ -19,25 +11,61 @@ import { httpClient } from '../../lib/http.client';
 import { useLoading } from '~/app/components/LoadingProvider';
 import { Severity, useToast } from '~/app/components/ToastProvider';
 import { CustomButton } from '~/app/lib/components/CustomButton';
-import { ModalSelectTypeUser } from '~/app/lib/components/ModalSelectTypeUser';
+import { User } from '~/app/lib/types/user.type';
+import { Switch } from '@ant-design/react-native';
 
-export type AddUserState = {
-  name: string;
-  email: string;
-  type: 'COMPANY' | 'USER' | 'ADMIN';
+export type UserDetail = {
+  name?: string;
+  email?: string;
+  type?: 'COMPANY' | 'USER' | 'ADMIN';
+  status?: boolean;
 };
 
-export default function AddUser() {
+const userType: Record<'COMPANY' | 'USER' | 'ADMIN', string> = {
+  COMPANY: 'Empresa',
+  USER: 'Usuário',
+  ADMIN: 'Admin',
+};
+
+export default function UserDetails() {
+  const [user, setUser] = useState<UserDetail>({
+    name: '',
+    email: '',
+    type: 'USER',
+    status: false,
+  });
   const [error, setError] = useState({ input: '', message: '' });
-  const [data, setData] = useState<AddUserState>({ name: '', email: '', type: 'USER' });
   const isMutation = useIsMutating({ mutationKey: ['add-user'], exact: true });
   const queryClient = useQueryClient();
   const { setLoading } = useLoading();
   const { showToast } = useToast();
   const router = useRouter();
+  const { uuid } = useLocalSearchParams();
 
   const showToasting = () => showToast('Usuário adicionado com sucesso', Severity.SUCCESS);
   const showLoading = () => setLoading(true);
+
+  const { data } = useQuery<User>({
+    queryKey: ['user' + uuid],
+    queryFn: () =>
+      httpClient({
+        method: 'GET',
+        path: '/users/' + uuid,
+      }),
+  });
+
+  useEffect(() => {
+    if (data) {
+      setUser({
+        name: data?.name,
+        email: data?.email,
+        type: data?.type,
+        status: data?.status === 'ACTIVE' ? true : false,
+      });
+    }
+  }, [data]);
+
+  console.log('user by i', data);
 
   const mutation = useMutation({
     mutationKey: ['add-user'],
@@ -71,13 +99,24 @@ export default function AddUser() {
       { text: 'OK', onPress: () => console.log('ok') },
     ]);
   };
+  console.log({
+    1: user.name === data?.name,
+    2: data?.status === 'ACTIVE' && user?.status === true,
+    3: data?.status === 'INACTIVE' && user?.status === false,
+  });
+
+  const disableButton =
+    user.name === data?.name ||
+    (data?.status === 'ACTIVE' && user?.status === true) ||
+    (data?.status === 'INACTIVE' && user?.status === false);
+  console.log(disableButton);
 
   return (
     <>
       <Stack.Screen
         options={{
           headerTitleAlign: 'center',
-          headerTitle: 'Adicionar usuário',
+          headerTitle: 'Detalhes do usuário',
           headerTintColor: '#fff',
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()} style={{ padding: 8, right: 14 }}>
@@ -93,27 +132,42 @@ export default function AddUser() {
           placeholder="Nome"
           error={error}
           setError={setError}
-          state={data}
-          setState={setData}
+          state={user}
+          setState={setUser}
         />
         <CustomTextInput
           item="email"
           placeholder="Email"
           error={error}
           setError={setError}
-          state={data}
-          setState={setData}
+          state={user}
+          setState={setUser}
+          notEditable={true}
         />
-        <ModalSelectTypeUser addUser={data} setAddUsers={setData} key={2} />
-        <KeyboardAvoidingView>
-          <CustomButton
-            disabled={!data.email && !data.name}
-            style={{ marginHorizontal: 20, height: 40 }}
-            type="primary"
-            onPress={() => mutation.mutate()}>
-            Adicionar
-          </CustomButton>
-        </KeyboardAvoidingView>
+        <CustomTextInput
+          item="type"
+          itemMapper={userType[user?.type ?? 'USER']}
+          placeholder="Tipo do usuário"
+          error={error}
+          setError={setError}
+          state={user}
+          setState={setUser}
+          notEditable={true}
+        />
+        <View style={style.typeContainer}>
+          <Text style={style.typeDescription}>Status</Text>
+          <Switch
+            checked={user.status}
+            onChange={() => setUser({ ...user, status: !user.status })}
+          />
+        </View>
+        <CustomButton
+          disabled={!disableButton}
+          style={{ marginHorizontal: 20, height: 40, marginTop: 'auto' }}
+          type="primary"
+          onPress={() => mutation.mutate()}>
+          Editar
+        </CustomButton>
       </SafeAreaView>
     </>
   );
@@ -193,5 +247,19 @@ const style = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontFamily: 'Lato_400Regular',
+  },
+  typeDescription: {
+    color: '#716F6F',
+    fontFamily: 'Lato_400Regular',
+    marginBottom: 20,
+    fontSize: 19,
+  },
+  typeContainer: {
+    display: 'flex',
+    marginHorizontal: 20,
+    marginVertical: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderColor: '#C5C4C0',
   },
 });

@@ -1,6 +1,6 @@
 import { FlashList } from '@shopify/flash-list';
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { router, usePathname, useSegments } from 'expo-router';
+import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { RefreshControl, ScrollView, StatusBar, View, StyleSheet } from 'react-native';
 
@@ -14,30 +14,39 @@ import { NoticeType } from '~/app/lib/types/notice.type';
 import { PaginateReponse } from '~/app/lib/types/paginate-response.type';
 
 export default function Notice() {
-  const [filter, setFilter] = useState<string>('');
+  const [filter, setFilter] = useState<string>('Todos');
   const { user } = useUser();
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter();
 
-  const segments = useSegments();
-  const fullPath = `/${segments.join('/')}`;
+  const { data: tags, refetch: refetchTag } = useQuery({
+    queryKey: [`notice-tags`],
+    queryFn: async () =>
+      httpClient({
+        path: `/notice/tags`,
+        method: 'GET',
+      }),
+  });
 
-  const { data, refetch, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery<PaginateReponse<NoticeType>>({
-      queryKey: [`notice-list`],
-      queryFn: async ({ pageParam }) =>
-        httpClient({
-          path: `/notice`,
-          method: 'GET',
-          queryString: {
-            page: pageParam,
-            limit: 8,
-            uuid: user?.uuid,
-          },
-        }),
-      initialPageParam: 1,
-      getNextPageParam: (lastPage) => lastPage.meta.nextPage,
-    });
+  const { data, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery<
+    PaginateReponse<NoticeType>
+  >({
+    queryKey: [`notice-list-${filter}`],
+    queryFn: async ({ pageParam }): Promise<PaginateReponse<NoticeType>> =>
+      httpClient({
+        path: `/notice`,
+        method: 'GET',
+        queryString: {
+          page: pageParam,
+          limit: 8,
+          uuid: user?.uuid,
+          filter,
+        },
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.meta.nextPage,
+  });
 
   return (
     <>
@@ -55,9 +64,14 @@ export default function Notice() {
               paddingRight: 20,
             }}>
             <NoticeFilterItem item="Todos" setFilter={setFilter} filter={filter} />
-            <NoticeFilterItem item="Gerais" setFilter={setFilter} filter={filter} />
-            <NoticeFilterItem item="Financeiro" setFilter={setFilter} filter={filter} />
-            <NoticeFilterItem item="Prazos" setFilter={setFilter} filter={filter} />
+            {tags?.items?.map((tag: { id: number; name: string }) => (
+              <NoticeFilterItem
+                key={tag.id}
+                item={tag.name}
+                setFilter={setFilter}
+                filter={filter}
+              />
+            ))}
           </ScrollView>
         </View>
         <View style={{ flex: 1, width: '100%', height: 400 }}>
@@ -99,7 +113,12 @@ export default function Notice() {
               refreshControl={
                 <RefreshControl
                   refreshing={refreshing}
-                  onRefresh={() => queryClient.invalidateQueries({ queryKey: ['notice-list'] })}
+                  onRefresh={() => {
+                    refetchTag();
+                    return queryClient.invalidateQueries({
+                      queryKey: [`notice-list-${filter}`],
+                    });
+                  }}
                   colors={['#9Bd35A', '#689F38']}
                   progressBackgroundColor="#fff"
                 />

@@ -1,7 +1,7 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { router, Href } from 'expo-router';
+import { Href, useRouter } from 'expo-router';
 import React from 'react';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -9,6 +9,7 @@ import { Notification } from '../lib/types/notification.type';
 
 export default function NotificationItem(notification: Notification) {
   const width = Dimensions.get('screen').width;
+  const router = useRouter();
 
   const typeDescription = {
     REPORT: 'Relatório Inovate',
@@ -18,7 +19,7 @@ export default function NotificationItem(notification: Notification) {
 
   const result = formatDistanceToNow(notification?.createAt, { addSuffix: true, locale: ptBR });
   const url =
-    `/screens/${notification.type.toLowerCase()}/Detail?uuid=${notification.itemUuid}` as Href<string>;
+    `/screens/${notification.type.toLowerCase()}/Detail?uuid=${notification.itemUuid}` as unknown as Href;
 
   return (
     <TouchableOpacity

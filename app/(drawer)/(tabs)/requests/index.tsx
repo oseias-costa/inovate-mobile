@@ -1,6 +1,6 @@
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { router, usePathname, useSegments } from 'expo-router';
+import { useRouter, useSegments } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StatusBar, View, StyleSheet } from 'react-native';
 
@@ -19,6 +19,7 @@ export default function Requests() {
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
   const pathname = useSegments();
+  const router = useRouter();
 
   console.log('paaaaaaaaaaaa', pathname);
   const { data, refetch, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -91,7 +92,7 @@ export default function Requests() {
                   expiration={item?.expiration}
                   key={item?.uuid}
                   status={item?.status}
-                  onPress={() => router.navigate(`/screens/request/Detail?uuid=${item?.uuid}`)}
+                  onPress={() => router.push(`/screens/request/Detail?uuid=${item?.uuid}`)}
                 />
               )}
               onEndReached={() => {
