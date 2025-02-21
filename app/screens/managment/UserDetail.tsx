@@ -18,7 +18,8 @@ export type UserDetail = {
   name?: string;
   email?: string;
   type?: 'COMPANY' | 'USER' | 'ADMIN';
-  status?: boolean;
+  status?: 'ACTIVE' | 'INACTIVE' | 'FIRST_ACESS' | 'PASSWORD_RESET';
+  uuid: string;
 };
 
 const userType: Record<'COMPANY' | 'USER' | 'ADMIN', string> = {
@@ -32,17 +33,19 @@ export default function UserDetails() {
     name: '',
     email: '',
     type: 'USER',
-    status: false,
+    status: 'INACTIVE',
+    uuid: '',
   });
+  const [status, setStatus] = useState(user.status === 'ACTIVE' ? true : false);
   const [error, setError] = useState({ input: '', message: '' });
-  const isMutation = useIsMutating({ mutationKey: ['add-user'], exact: true });
+  const isMutation = useIsMutating({ mutationKey: ['update-user'], exact: true });
   const queryClient = useQueryClient();
   const { setLoading } = useLoading();
   const { showToast } = useToast();
   const router = useRouter();
   const { uuid } = useLocalSearchParams();
 
-  const showToasting = () => showToast('Usuário adicionado com sucesso', Severity.SUCCESS);
+  const showToasting = () => showToast('Usuário editado com sucesso', Severity.SUCCESS);
   const showLoading = () => setLoading(true);
 
   const { data } = useQuery<User>({
@@ -60,29 +63,33 @@ export default function UserDetails() {
         name: data?.name,
         email: data?.email,
         type: data?.type,
-        status: data?.status === 'ACTIVE' ? true : false,
+        status: data?.status,
+        uuid: data?.uuid,
       });
+      setStatus(data.status === 'ACTIVE' ? true : false);
     }
   }, [data]);
 
-  console.log('user by i', data);
-
   const mutation = useMutation({
-    mutationKey: ['add-user'],
+    mutationKey: ['update-user'],
     mutationFn: async () =>
       httpClient({
-        method: 'POST',
-        path: '/users/create',
-        data,
+        method: 'PATCH',
+        path: '/users/update-user',
+        data: {
+          name: user.name,
+          status: user.status,
+          uuid: user.uuid,
+        },
       }),
     onError: (err) => {
       setLoading(false);
       console.log('e)rror', err);
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       setLoading(false);
       showToasting();
-      router.push(`/(drawer)/dashboard`);
+      router.push(`/screens/managment/Users`);
       return queryClient.invalidateQueries({ queryKey: ['users-list'] });
     },
   });
@@ -99,17 +106,11 @@ export default function UserDetails() {
       { text: 'OK', onPress: () => console.log('ok') },
     ]);
   };
-  console.log({
-    1: user.name === data?.name,
-    2: data?.status === 'ACTIVE' && user?.status === true,
-    3: data?.status === 'INACTIVE' && user?.status === false,
-  });
 
   const disableButton =
-    user.name === data?.name ||
-    (data?.status === 'ACTIVE' && user?.status === true) ||
-    (data?.status === 'INACTIVE' && user?.status === false);
-  console.log(disableButton);
+    user.name !== data?.name ||
+    (data?.status === 'ACTIVE' && status !== true) ||
+    (data?.status === 'INACTIVE' && status !== false);
 
   return (
     <>
@@ -157,8 +158,12 @@ export default function UserDetails() {
         <View style={style.typeContainer}>
           <Text style={style.typeDescription}>Status</Text>
           <Switch
-            checked={user.status}
-            onChange={() => setUser({ ...user, status: !user.status })}
+            checked={status}
+            onChange={(data) => {
+              console.log('data', data);
+              setStatus(!status);
+              setUser({ ...user, status: data ? 'ACTIVE' : 'INACTIVE' });
+            }}
           />
         </View>
         <CustomButton

@@ -10,7 +10,7 @@ type SelectProps = {
 const SelectUserType = ({ status, item, setStatus }: SelectProps) => {
   const borderColor = status === item ? '#fff' : '#D9D9D9';
   const title = {
-    USER: 'Usuårio',
+    USER: 'Usuário',
     COMPANY: 'Empresa',
   };
 
