@@ -42,7 +42,7 @@ export default function Reports() {
     <>
       <View style={{ backgroundColor: '#fff', position: 'relative', flex: 1 }}>
         <StatusBar barStyle="light-content" hidden={false} />
-        <View style={{ flex: 1, width: '100%', height: 400, paddingTop: 10 }}>
+        <View style={{ flex: 1, width: '100%', height: 400 }}>
           {!isFetching && !isFetchingNextPage && data?.pages[0].items.length === 0 ? (
             <View style={{ paddingTop: 10 }}>
               <EmptyData text="Você ainda não tem relatórios" size="medium" />

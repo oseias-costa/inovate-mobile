@@ -45,6 +45,7 @@ export default function useDashboard() {
           uuid: user?.uuid,
           limit: 3,
           page: 1,
+          filter: 'Todos',
         },
       }),
     enabled: false,

@@ -14,16 +14,16 @@ import { httpClient } from '~/app/lib/http.client';
 import { Severity, useToast } from '~/app/components/ToastProvider';
 import { useLoading } from '~/app/components/LoadingProvider';
 import { useUser } from '~/app/components/UserProvider';
+import { ReportType } from '~/app/lib/types/report.type';
 
 export default function NoticeDetail() {
   const { uuid } = useLocalSearchParams();
   const richText = useRef<any>();
   const { setLoading } = useLoading();
   const { showToast } = useToast();
-  const { user } = useUser();
   const queryClient = useQueryClient();
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, refetch } = useQuery<ReportType>({
     queryKey: [`report-${uuid}`],
     queryFn: async () =>
       httpClient({
@@ -31,15 +31,16 @@ export default function NoticeDetail() {
         method: 'GET',
       }),
   });
+  console.log('dataaa deviria estar aqui ', data);
 
   const endReport = useMutation({
     mutationKey: [`report-end-${uuid}`],
     mutationFn: async () =>
       httpClient({
-        path: '/notice/end',
+        path: '/reports/complete',
         method: 'POST',
-        data: {
-          user: user?.uuid,
+        queryString: {
+          user: data?.companyUuid,
           report: uuid,
         },
       }),
@@ -88,7 +89,7 @@ export default function NoticeDetail() {
               marginHorizontal: 10,
             }}>
             <View style={notice.expirationContainer}>
-              <Text style={notice.expiration}>Data {formatDate(new Date(data?.createdAt))}</Text>
+              <Text style={notice.expiration}>Data {formatDate(data!!.createdAt)}</Text>
             </View>
             <View
               style={{
@@ -127,7 +128,7 @@ export default function NoticeDetail() {
               <Text style={styles.uploadTitle}>Enviar arquivo</Text>
               <Text style={styles.uploadDescription}>Selecione um arquivo de no máximo 20mb.</Text>
             </TouchableOpacity>
-            {data?.documents.length > 0 ? (
+            {data?.documents && data?.documents?.length > 0 ? (
               <View style={{ display: 'flex', flexDirection: 'row' }}>
                 <Ionicons name="attach" size={20} color="#3B3D3E" style={{ top: 1 }} />
                 <Text
