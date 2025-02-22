@@ -47,7 +47,7 @@ export default function useMutationUpdateDocument(document: UpdateSolicitationPr
       return updateRequest.data;
     },
     onSuccess: () => {
-      router.navigate('/docsDetails/updateSucess');
+      router.push('/docsDetails/updateSucess');
       return queryClient.invalidateQueries({
         queryKey: [`document-${document.id}`, 'documents', document.id],
       });

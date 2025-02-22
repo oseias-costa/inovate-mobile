@@ -7,6 +7,7 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } fr
 import { RichEditor } from 'react-native-pell-rich-editor';
 
 import NoticeDetailSkeleton from '~/app/lib/Loader/NoticeDetailSkeleton';
+import { CustomButton } from '~/app/lib/components/CustomButton';
 import { DocumentDownloadButton } from '~/app/lib/components/DocumentDownloadButton';
 import { formatDate } from '~/app/lib/date';
 import { httpClient } from '~/app/lib/http.client';
@@ -33,9 +34,7 @@ export default function NoticeDetail() {
           headerTintColor: '#fff',
           headerRight: () => (
             <TouchableOpacity
-              onPress={() =>
-                router.navigate({ pathname: '/screens/notice/Edit', params: { uuid } })
-              }>
+              onPress={() => router.push({ pathname: '/screens/notice/Edit', params: { uuid } })}>
               <Text style={styles.headerButton}>Editar</Text>
             </TouchableOpacity>
           ),
@@ -103,11 +102,11 @@ export default function NoticeDetail() {
             ))}
           </View>
         )}
-        <Button
+        <CustomButton
           style={{ height: 40, marginHorizontal: 20, marginTop: 'auto' }}
           onPress={() => router.back()}>
           Voltar
-        </Button>
+        </CustomButton>
       </SafeAreaView>
     </>
   );

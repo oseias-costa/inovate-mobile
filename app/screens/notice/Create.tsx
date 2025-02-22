@@ -69,7 +69,7 @@ export default function Create() {
     },
     onSuccess: (data) => {
       setLoading(false);
-      router.navigate(`/screens/notice/UploadDocument?uuid=${data}`);
+      router.push(`/screens/notice/UploadDocument?uuid=${data}`);
       return queryClient.invalidateQueries({ queryKey: ['notice'] });
     },
   });

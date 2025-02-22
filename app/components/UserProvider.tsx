@@ -61,7 +61,7 @@ export const UserProvider = ({ children }: { children: JSX.Element }) => {
     if (getError.response?.status === 401) {
       setUser(null);
       AsyncStorage.removeItem('token');
-      return router.navigate('/auth/login');
+      return router.push('/auth/login');
     }
   }
 

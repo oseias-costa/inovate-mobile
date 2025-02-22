@@ -82,7 +82,7 @@ export default function CreateReport() {
     onSuccess: (data) => {
       setLoading(false);
       showToasting();
-      router.navigate(`/screens/report/UploadDocument?uuid=${data}`);
+      router.push(`/screens/report/UploadDocument?uuid=${data}`);
       return queryClient.invalidateQueries({ queryKey: ['reports'] });
     },
   });

@@ -1,11 +1,11 @@
 import Badge from '@ant-design/react-native/lib/badge';
-import { Ionicons, FontAwesome, MaterialIcons, Feather } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Foundation from '@expo/vector-icons/Foundation';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { DrawerToggleButton } from '@react-navigation/drawer';
 import { Tabs, router } from 'expo-router';
-import React, { useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { Text, TouchableOpacity } from 'react-native';
 
 import useDashboard from '~/app/lib/hooks/useDashboard';
 import Logo from '~/assets/svg/Logo';
@@ -27,7 +27,7 @@ export default function Layout() {
           headerTitle: () => <Logo />,
           headerLeft: () => <DrawerToggleButton tintColor="#fff" />,
           headerRight: () => (
-            <TouchableOpacity onPress={() => router.navigate('/(drawer)/(tabs)/notifications')}>
+            <TouchableOpacity onPress={() => router.push('/(drawer)/(tabs)/notifications')}>
               <Badge
                 text={data?.numbers?.notification}
                 style={{ marginRight: 25 }}
@@ -54,7 +54,7 @@ export default function Layout() {
           title: 'Solicitações',
           headerLeft: () => <DrawerToggleButton tintColor="#fff" />,
           headerRight: () => (
-            <TouchableOpacity onPress={() => router.navigate('/screens/request/Create')}>
+            <TouchableOpacity onPress={() => router.push('/screens/request/Create')}>
               <Text
                 style={{
                   marginRight: 20,
@@ -90,7 +90,7 @@ export default function Layout() {
           headerTitleAlign: 'center',
           headerLeft: () => <DrawerToggleButton tintColor="#fff" />,
           headerRight: () => (
-            <TouchableOpacity onPress={() => router.navigate('/screens/notice/Create')}>
+            <TouchableOpacity onPress={() => router.push('/screens/notice/Create')}>
               <Text
                 style={{
                   marginRight: 20,
@@ -118,7 +118,7 @@ export default function Layout() {
           headerTitleAlign: 'center',
           headerLeft: () => <DrawerToggleButton tintColor="#fff" />,
           headerRight: () => (
-            <TouchableOpacity onPress={() => router.navigate('/screens/report/Create')}>
+            <TouchableOpacity onPress={() => router.push('/screens/report/Create')}>
               <Text
                 style={{
                   marginRight: 20,
@@ -154,35 +154,6 @@ export default function Layout() {
           ),
         }}
       />
-      {/* <Tabs.Screen
-          name="account/index"
-          options={{
-            headerStyle: {
-              backgroundColor: '#00264B',
-            },
-            title: 'Conta',
-            headerTintColor: '#fff',
-            headerShadowVisible: false,
-            headerTitleAlign: 'center',
-            headerLeft: () => (
-              <TouchableOpacity onPress={() => router.back()}>
-                <MaterialIcons
-                  name="arrow-back-ios-new"
-                  color="#fff"
-                  size={22}
-                  style={{ marginLeft: 20 }}
-                />
-              </TouchableOpacity>
-            ),
-            tabBarActiveTintColor: '#00264B',
-            tabBarIcon: ({ focused, color, size }) => {
-              if (focused) {
-                return <FontAwesome name="user" color="#00264B" size={size} />;
-              }
-              return <FontAwesome name="user" color={color} size={size} />;
-            },
-          }}
-        /> */}
     </Tabs>
   );
 }

@@ -1,4 +1,4 @@
-import { Feather, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Feather, FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
 import React, { useEffect, useRef, useState } from 'react';
@@ -21,6 +21,7 @@ export const DocumentDownloadButton: React.FC<DocumentDownloadButtonProps> = ({ 
   const [progress, setProgress] = React.useState(0);
   const [progressAnimation] = useState(new Animated.Value(0));
   const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState('');
 
   useEffect(() => {
     Animated.timing(progressAnimation, {
@@ -31,10 +32,13 @@ export const DocumentDownloadButton: React.FC<DocumentDownloadButtonProps> = ({ 
   }, [progress]);
 
   async function downloadFile() {
-    setLoading(true);
-    const safeName = document.name.replace(/[^a-zA-Z0-9]/g, '_');
-    const fileUri = FileSystem.documentDirectory + safeName;
+    if (file) {
+      return await Sharing.shareAsync(file);
+    }
 
+    setLoading(true);
+    const safeName = document.name; //.replace(/[^a-zA-Z0-9]/g, '_');
+    const fileUri = FileSystem.documentDirectory + safeName;
     const uri = `${process.env.EXPO_PUBLIC_API_URL}/document/download?key=${document.path}`;
     const downloadsDir = FileSystem.documentDirectory + 'downloads/';
 
@@ -57,6 +61,7 @@ export const DocumentDownloadButton: React.FC<DocumentDownloadButtonProps> = ({ 
         return;
       }
 
+      setFile(fileUri);
       setLoading(false);
       await Sharing.shareAsync(fileUri);
     } catch (error) {
@@ -75,20 +80,29 @@ export const DocumentDownloadButton: React.FC<DocumentDownloadButtonProps> = ({ 
         marginBottom: 5,
         width: '100%',
       }}>
-      <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+      <View
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
         <Text
           numberOfLines={1}
-          ellipsizeMode="tail"
+          // ellipsizeMode="tail"
           style={{
             bottom: 0,
             fontSize: 16,
             color: '#6D6D6D',
             fontFamily: 'Lato_400Regular',
+            width: '85%',
           }}>
           {document.name}
         </Text>
         {loading ? (
           <ActivityIndicator style={{ marginRight: 10, marginBottom: 4 }} />
+        ) : file ? (
+          <FontAwesome name="save" size={24} color="#6D6D6D" style={{ marginRight: 10 }} />
         ) : (
           <Feather name="download" size={24} color="#6D6D6D" style={{ marginRight: 10 }} />
         )}

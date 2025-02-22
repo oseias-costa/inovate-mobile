@@ -1,6 +1,6 @@
 import { FlashList } from '@shopify/flash-list';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { RefreshControl, StatusBar, View } from 'react-native';
 
@@ -18,6 +18,7 @@ export default function Reports() {
   const { user } = useUser();
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter();
 
   const { data, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery<
     PaginateReponse<ReportType>
@@ -69,7 +70,7 @@ export default function Reports() {
                   title={item.title}
                   createdAt={item.createdAt}
                   key={item.uuid}
-                  onPress={() => router.navigate(`/screens/report/Detail?uuid=${item.uuid}`)}
+                  onPress={() => router.push(`/screens/report/Detail?uuid=${item.uuid}`)}
                 />
               )}
               estimatedItemSize={5}

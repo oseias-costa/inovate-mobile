@@ -1,18 +1,9 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useQuery } from '@tanstack/react-query';
-import * as FileSystem from 'expo-file-system';
-import { router, Stack, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  Alert,
-  Animated,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import React from 'react';
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { RequestStatus } from '~/app/components/RequestStatus';
 import { useUpload } from '~/app/hook/useUpload';
@@ -24,6 +15,7 @@ import { httpClient } from '~/app/lib/http.client';
 
 export default function Detail() {
   const { uuid } = useLocalSearchParams();
+  const router = useRouter();
 
   const {
     data,
@@ -49,9 +41,7 @@ export default function Detail() {
           headerTintColor: '#fff',
           headerRight: () => (
             <TouchableOpacity
-              onPress={() =>
-                router.navigate({ pathname: '/screens/request/Edit', params: { uuid } })
-              }>
+              onPress={() => router.push({ pathname: '/screens/request/Edit', params: { uuid } })}>
               <Text style={styles.headerButton}>Editar</Text>
             </TouchableOpacity>
           ),

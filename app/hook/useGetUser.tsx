@@ -40,7 +40,7 @@ export default function useGetUser() {
 
   //   if (getError.response?.status === 401) {
   //     await AsyncStorage.removeItem('token');
-  //     return router.navigate('/auth/login');
+  //     return router.push('/auth/login');
   //   }
   // };
 

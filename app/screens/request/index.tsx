@@ -91,7 +91,7 @@ export default function Requests() {
                   expiration={item?.expiration}
                   key={item?.uuid}
                   status={item?.status}
-                  onPress={() => router.navigate(`/screens/request/Detail?uuid=${item?.uuid}`)}
+                  onPress={() => router.push(`/screens/request/Detail?uuid=${item?.uuid}`)}
                 />
               )}
               onEndReached={() => {

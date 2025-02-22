@@ -110,13 +110,13 @@ export default function Dashboard() {
     responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
       const notificationBody = response.notification.request.content.data;
       if (notificationBody['type'] === 'REQUEST') {
-        return router.navigate(`/screens/request/Detail?uuid=${notificationBody['uuid']}`);
+        return router.push(`/screens/request/Detail?uuid=${notificationBody['uuid']}`);
       }
       if (notificationBody['type'] === 'NOTICE') {
-        return router.navigate(`/screens/notice/Detail?uuid=${notificationBody['uuid']}`);
+        return router.push(`/screens/notice/Detail?uuid=${notificationBody['uuid']}`);
       }
       if (notificationBody['type'] === 'REPORT') {
-        return router.navigate(`/screens/report/Detail?uuid=${notificationBody['uuid']}`);
+        return router.push(`/screens/report/Detail?uuid=${notificationBody['uuid']}`);
       }
     });
 
@@ -165,7 +165,7 @@ export default function Dashboard() {
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
           <View style={[styles.titleBox, { paddingBottom: 15 }]}>
             <Text style={[styles.title, { marginTop: 60 }]}>Solicitações</Text>
-            <TouchableOpacity onPress={() => router.navigate('/requests')}>
+            <TouchableOpacity onPress={() => router.push('/requests')}>
               <Text style={styles.seeAll}>Ver todos</Text>
             </TouchableOpacity>
           </View>
@@ -184,7 +184,7 @@ export default function Dashboard() {
                 key={request.uuid}
                 status={request?.status}
                 onPress={() =>
-                  router.navigate({
+                  router.push({
                     pathname: '/screens/request/Detail',
                     params: { uuid: request.uuid },
                   })
@@ -197,7 +197,7 @@ export default function Dashboard() {
           ) : null}
           <View style={[styles.titleBox, { paddingBottom: 15 }]}>
             <Text style={[styles.title, { marginTop: 25 }]}>Avisos</Text>
-            <TouchableOpacity onPress={() => router.navigate('/notice')}>
+            <TouchableOpacity onPress={() => router.push('/notice')}>
               <Text style={styles.seeAll}>Ver todos</Text>
             </TouchableOpacity>
           </View>
@@ -220,7 +220,7 @@ export default function Dashboard() {
                   description={item.text}
                   createdAt={item.createdAt}
                   onPress={() =>
-                    router.navigate({
+                    router.push({
                       pathname: '/screens/notice/Detail',
                       params: { uuid: item.uuid },
                     })
@@ -236,7 +236,7 @@ export default function Dashboard() {
           <View style={{ paddingBottom: 120 }}>
             <View style={[styles.titleBox, { paddingBottom: 15 }]}>
               <Text style={[styles.title, { marginTop: 5 }]}>Relatórios</Text>
-              <TouchableOpacity onPress={() => router.navigate('/reports')}>
+              <TouchableOpacity onPress={() => router.push('/reports')}>
                 <Text style={styles.seeAll}>Ver todos</Text>
               </TouchableOpacity>
             </View>
@@ -253,7 +253,7 @@ export default function Dashboard() {
                   title={report.title}
                   createdAt={report.createdAt}
                   onPress={() =>
-                    router.navigate({
+                    router.push({
                       pathname: '/screens/report/Detail',
                       params: { uuid: report.uuid },
                     })

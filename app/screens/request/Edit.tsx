@@ -1,6 +1,6 @@
 import Modal from '@ant-design/react-native/lib/modal';
 import { useIsMutating, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Stack, router, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -24,6 +24,7 @@ export default function UpdateSolicitation() {
   const { uuid } = useLocalSearchParams();
   const { setLoading } = useLoading();
   const { showToast } = useToast();
+  const router = useRouter();
 
   const { data: request } = useQuery({
     queryKey: [`request-${uuid}`],
@@ -74,7 +75,7 @@ export default function UpdateSolicitation() {
     onSuccess: (data) => {
       showToasting();
       setLoading(false);
-      router.navigate('/(tabs)/requests');
+      router.push('/(tabs)/requests');
       return queryClient.invalidateQueries({ queryKey: ['requests'] });
     },
   });
@@ -102,7 +103,7 @@ export default function UpdateSolicitation() {
   };
 
   const deleteSucess = () => {
-    router.navigate({
+    router.push({
       pathname: '/(drawer)/(tabs)/requests',
     });
     return queryClient.invalidateQueries({

@@ -86,7 +86,7 @@ export default function Edit() {
     onSuccess: (data) => {
       setLoading(false);
       showToasting();
-      router.navigate('/(drawer)/(tabs)/notice');
+      router.push('/(drawer)/(tabs)/notice');
       return queryClient.invalidateQueries({ queryKey: ['notice'] });
     },
   });

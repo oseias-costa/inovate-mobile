@@ -43,7 +43,7 @@ export default function VerifyCode() {
     onSuccess: async (data) => {
       await AsyncStorage.setItem('token', data.token);
       await AsyncStorage.setItem('email', String(params.email));
-      return router.navigate('/auth/updatePassword');
+      return router.push('/auth/updatePassword');
     },
     onError: (err) => {
       console.log(err);

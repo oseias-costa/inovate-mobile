@@ -91,7 +91,7 @@ export default function Edit() {
     onSuccess: (data) => {
       setLoading(false);
       showToasting();
-      router.navigate('/(drawer)/(tabs)/reports');
+      router.push('/(drawer)/(tabs)/reports');
       return queryClient.invalidateQueries({ queryKey: ['reports', `reports-${uuid}`] });
     },
   });

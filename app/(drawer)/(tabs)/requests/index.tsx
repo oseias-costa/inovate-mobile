@@ -21,7 +21,6 @@ export default function Requests() {
   const pathname = useSegments();
   const router = useRouter();
 
-  console.log('paaaaaaaaaaaa', pathname);
   const { data, refetch, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery<PaginateReponse<RequestType>>({
       queryKey: [`requests`],

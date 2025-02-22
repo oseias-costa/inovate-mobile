@@ -6,6 +6,6 @@ export default async function useError(error: Error | null) {
   const getError = error as AxiosError;
   if (getError.response?.status === 401) {
     await AsyncStorage.removeItem('token');
-    return router.navigate('/auth/login');
+    return router.push('/auth/login');
   }
 }

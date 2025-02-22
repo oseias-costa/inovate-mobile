@@ -10,6 +10,7 @@ import { useUser } from '~/app/components/UserProvider';
 import NoticeItemSkeleton from '~/app/lib/Loader/NoticeItemSkeleton';
 import { EmptyData } from '~/app/lib/components/EmptyData';
 import { httpClient } from '~/app/lib/http.client';
+import { removeHtml } from '~/app/lib/remove-html';
 import { NoticeType } from '~/app/lib/types/notice.type';
 import { PaginateReponse } from '~/app/lib/types/paginate-response.type';
 
@@ -47,6 +48,8 @@ export default function Notice() {
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.meta.nextPage,
   });
+
+  console.log('tetttt', removeHtml(data?.pages[0]?.items?.[0]?.text ?? '', 50));
 
   return (
     <>
@@ -101,7 +104,7 @@ export default function Notice() {
                   description={item.text}
                   createdAt={item.createdAt}
                   key={item.uuid}
-                  onPress={() => router.navigate(`/screens/notice/Detail?uuid=${item.uuid}`)}
+                  onPress={() => router.push(`/screens/notice/Detail?uuid=${item.uuid}`)}
                 />
               )}
               estimatedItemSize={5}

@@ -23,7 +23,7 @@ export default function NotificationItem(notification: Notification) {
 
   return (
     <TouchableOpacity
-      onPress={() => router.navigate(url)}
+      onPress={() => router.push(url)}
       style={[styles.button, { backgroundColor: notification.isRead ? '#fff' : '#00264B09' }]}>
       {!notification.isRead ? (
         <FontAwesome name="circle" size={12} color="#6597C9" style={styles.circle} />

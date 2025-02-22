@@ -201,7 +201,7 @@ export default function Login() {
             loading={!!isMutating}>
             {!isMutating && 'Entrar'}
           </CustomButton>
-          <CustomButton style={{ height: 40 }} onPress={() => router.navigate('/auth/firstAcess')}>
+          <CustomButton style={{ height: 40 }} onPress={() => router.push('/auth/firstAcess')}>
             Primeiro Acesso
           </CustomButton>
         </View>

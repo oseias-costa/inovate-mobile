@@ -66,9 +66,7 @@ export default function NoticeDetail() {
           headerTintColor: '#fff',
           headerRight: () => (
             <TouchableOpacity
-              onPress={() =>
-                router.navigate({ pathname: '/screens/report/Edit', params: { uuid } })
-              }>
+              onPress={() => router.push({ pathname: '/screens/report/Edit', params: { uuid } })}>
               <Text style={styles.headerButton}>Excluir</Text>
             </TouchableOpacity>
           ),
