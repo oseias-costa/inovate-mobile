@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#3B3D3E',
     paddingBottom: 4,
+    flexWrap: 'wrap',
   },
   description: {
     fontSize: 13,

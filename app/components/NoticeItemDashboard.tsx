@@ -4,7 +4,7 @@ import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { formatDate } from '../lib/date';
 import { RichEditor } from 'react-native-pell-rich-editor';
 
-type RequestItemDashboardProps = {
+type RequestItemNoticeProps = {
   title: string;
   description: string;
   createdAt: string;
@@ -17,7 +17,7 @@ export default function NoticeItemDashboard({
   createdAt,
   description,
   onPress,
-}: RequestItemDashboardProps) {
+}: RequestItemNoticeProps) {
   const text = description.slice(0, 130) + '...';
   return (
     <TouchableOpacity style={styles.constainer} onPress={onPress}>
@@ -29,7 +29,7 @@ export default function NoticeItemDashboard({
         initialContentHTML={text}
         disabled
         editorStyle={{
-          color: '#D3D3D3',
+          color: '#000',
           backgroundColor: 'transparent',
           contentCSSText: 'font-size: 14px;',
         }}

@@ -38,11 +38,10 @@ export default function NoticeDetail() {
     mutationKey: [`notice-end-${uuid}`],
     mutationFn: async () =>
       httpClient({
-        path: '/notice/end',
+        path: '/notice/complete',
         method: 'POST',
-        data: {
-          user: user?.uuid,
-          notice: uuid,
+        queryString: {
+          noticeUuid: uuid,
         },
       }),
     onSuccess: () => {

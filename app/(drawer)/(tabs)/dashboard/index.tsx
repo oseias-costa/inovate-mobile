@@ -63,8 +63,6 @@ export default function Dashboard() {
     }
   };
 
-  console.log('dataaaa Dashboard', data);
-
   useEffect(() => {
     handleLayout();
   }, [destakeRef]);
