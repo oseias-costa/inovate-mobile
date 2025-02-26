@@ -3,9 +3,8 @@
     "name": "inovate-ambiental",
     "slug": "inovate-ambiental",
     "version": "1.0.0",
-    "newArchEnabled": true,
     "notification": {
-      "icon": "./assets/icon.png"
+      "icon": "./assets/icons/ios-dark.png"
     },
     "scheme": "mobile",
     "web": {
@@ -15,22 +14,23 @@
     },
     "plugins": ["expo-router"],
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icons/ios-dark.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/icons/splash-icon-light.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FFFFFF"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.inovate.ambiental.mobile"
+      "bundleIdentifier": "com.inovate.ambiental.mobile",
+      "icon": "./assets/icons/ios-dark.png"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/icons/adaptive-icon.png",
+        "backgroundColor": "#00264B"
       },
       "package": "come.inovate_ambiental.mobile"
     },
