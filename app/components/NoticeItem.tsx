@@ -28,17 +28,20 @@ export default function NoticeItem({
         <Text style={styles.title} numberOfLines={2} ellipsizeMode="tail">
           {title}
         </Text>
-        <RichEditor
-          initialContentHTML={text}
-          disabled
-          editorStyle={{
-            color: '#B8A1A1',
-            backgroundColor: 'transparent',
-            contentCSSText: 'font-size: 14px;',
-          }}
-          // containerStyle={{}}
-          initialHeight={25}
-        />
+        <View style={styles.richTextBox}>
+          <RichEditor
+            initialContentHTML={text}
+            disabled
+            style={{ marginBottom: 'auto' }}
+            editorStyle={{
+              color: '#B8A1A1',
+              backgroundColor: 'transparent',
+              contentCSSText: 'font-size: 14px;',
+            }}
+            containerStyle={{ marginBottom: 'auto' }}
+            initialHeight={25}
+          />
+        </View>
         <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}></View>
       </View>
     </TouchableOpacity>
@@ -50,9 +53,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   div: {
-    maxWidth: 170,
-    minWidth: 170,
-    height: 160,
+    width: 170,
+    minHeight: 160,
+    justifyContent: 'flex-start',
     paddingVertical: 10,
     borderRadius: 10,
     marginHorizontal: 5,
@@ -68,6 +71,10 @@ const styles = StyleSheet.create({
     shadowRadius: 2.45,
     elevation: 7,
   },
+  richTextBox: {
+    marginBottom: 'auto',
+    height: 100,
+  },
   createAt: {
     fontSize: 9,
     color: '#3B3D3E',
@@ -81,7 +88,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Lato_400Regular',
     // paddingBottom: 2,
     paddingHorizontal: 8,
-    height: 60,
+    // height: 60,
     // flexWrap: 'wrap',
     // flexShrink: 1,
   },

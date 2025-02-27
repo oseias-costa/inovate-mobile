@@ -20,13 +20,7 @@ export default function useDashboard() {
     queryFn: async () =>
       await httpClient({
         method: 'GET',
-        path: '/requests',
-        queryString: {
-          companyUuid: user?.uuid,
-          status: 'PENDING',
-          limit: 3,
-          page: 1,
-        },
+        path: `/requests/dashboard/${user?.uuid}`,
       }),
     enabled: false,
   });

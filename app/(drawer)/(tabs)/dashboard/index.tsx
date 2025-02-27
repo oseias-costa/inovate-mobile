@@ -212,6 +212,7 @@ export default function Dashboard() {
               horizontal
               showsHorizontalScrollIndicator={false}
               decelerationRate="normal"
+              contentContainerStyle={{ paddingRight: 15 }}
               style={{ paddingHorizontal: 15 }}>
               {data?.notice?.items?.map((item: any) => (
                 <NoticeItem
