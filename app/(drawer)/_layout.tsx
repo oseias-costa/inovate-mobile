@@ -154,6 +154,23 @@ const CustomDrawerContent = (props: any) => {
         label="Usuários"
         onPress={() => router.push('/screens/managment/Users')}
       />
+      <DrawerItem
+        style={{
+          height: 50,
+          borderRadius: 5,
+          backgroundColor: pathname === '/Tags' ? '#fff' : 'transparent',
+        }}
+        labelStyle={{
+          color: pathname === '/Tags' ? '#00264B' : '#fff',
+          fontSize: 14,
+          fontFamily: 'Lato_400Regular',
+        }}
+        icon={({ color, size }) => (
+          <FontAwesome5 name="users" size={22} color={pathname === '/Tags' ? '#00264B' : '#fff'} />
+        )}
+        label="Eiquetas"
+        onPress={() => router.push('/screens/managment/Tags')}
+      />
       <View style={{ marginTop: 'auto' }}>
         <DrawerItem
           style={{

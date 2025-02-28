@@ -80,7 +80,7 @@ export default function Create() {
   return (
     <Provider>
       <SafeAreaView style={style.container}>
-        <View style={{ paddingBottom: 15, paddingTop: 20, flex: 1 }}>
+        <View style={{ paddingTop: 20, flex: 1 }}>
           <Subtitle text="Nova solicitação" />
           <Text style={style.description}>
             Preencha os campos abaixo para abrir uma nova solicitação.

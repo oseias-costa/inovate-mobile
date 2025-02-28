@@ -20,7 +20,6 @@ export default function NoticeItem({
 }: RequestItemDashboardProps) {
   const text = description.slice(0, 110) + '...';
 
-  console.log('tittle 12345555', title);
   return (
     <TouchableOpacity style={styles.constainer} onPress={onPress}>
       <View style={styles.div}>
@@ -40,6 +39,7 @@ export default function NoticeItem({
             }}
             containerStyle={{ marginBottom: 'auto' }}
             initialHeight={25}
+            scrollEnabled={false}
           />
         </View>
         <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}></View>
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   div: {
     width: 170,
-    minHeight: 160,
+    height: 160,
     justifyContent: 'flex-start',
     paddingVertical: 10,
     borderRadius: 10,
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   richTextBox: {
     marginBottom: 'auto',
-    height: 100,
+    height: 90,
   },
   createAt: {
     fontSize: 9,
