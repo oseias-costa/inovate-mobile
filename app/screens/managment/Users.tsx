@@ -32,7 +32,7 @@ export default function Users() {
           },
         }),
       initialPageParam: 1,
-      getNextPageParam: (lastPage) => lastPage.meta.nextPage,
+      getNextPageParam: (lastPage) => lastPage.meta.nextPage ?? lastPage.meta.nextPage,
     });
 
   useEffect(() => {

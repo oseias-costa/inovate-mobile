@@ -1,7 +1,6 @@
-import RadioItem from '@ant-design/react-native/lib/radio/RadioItem';
 import { useQuery } from '@tanstack/react-query';
 import React, { Dispatch, SetStateAction } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
 import { httpClient } from '../http.client';
 import { SelectItem } from './SelectItem';
 
@@ -16,7 +15,7 @@ type SelectTagProps = {
 
 export default function SelectTag({ tagSelected, setTagSelected, type }: SelectTagProps) {
   const { data } = useQuery({
-    queryKey: ['tag' + type],
+    queryKey: ['tag', type],
     queryFn: async () =>
       httpClient({
         path: '/tags',

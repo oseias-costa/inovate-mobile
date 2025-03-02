@@ -1,43 +1,175 @@
-import { Entypo, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Stack, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import SelectUserType from '~/app/components/SelectUserType';
+import React, { memo, useState } from 'react';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import ModalAnt from '@ant-design/react-native/lib/modal';
 
 import RequestItemSkeleton from '~/app/lib/Loader/RequestItemSkeleton';
 import TagFilterButton, { TagType } from '~/app/lib/components/SelecTagButton';
 import { httpClient } from '~/app/lib/http.client';
-import { PaginateReponse } from '~/app/lib/types/paginate-response.type';
-import { User } from '~/app/lib/types/user.type';
+import { useLoading } from '~/app/components/LoadingProvider';
+import { Provider } from '@ant-design/react-native';
+
+type Tag = {
+  id: number;
+  name: string;
+  type: TagType;
+};
 
 export default function Tags() {
   const [tag, setTag] = useState<TagType>('REQUEST');
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
+  const [tagSelected, setTagSelected] = useState<
+    { id: number; name: string; modal?: 'UPDATTE' | 'CREATE' } | undefined
+  >(undefined);
+  const [err, setErr] = useState({ input: '', message: '' });
+  const { setLoading } = useLoading();
+  const [isFocus, setIsFocus] = useState(false);
 
-  const { data, refetch, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery<PaginateReponse<User>>({
-      queryKey: [`users`],
-      queryFn: async ({ pageParam }) =>
-        httpClient({
-          path: `/tags`,
-          method: 'GET',
-          queryString: {
-            type: tag,
+  const { data } = useQuery<Array<Tag>>({
+    queryKey: [`tags`, tag],
+    queryFn: async ({ pageParam }) =>
+      httpClient({
+        path: `/tags`,
+        method: 'GET',
+        queryString: {
+          type: tag,
+        },
+      }),
+    staleTime: 5000,
+    enabled: !!tag,
+  });
+
+  const createTag = useMutation({
+    mutationKey: ['create-tag'],
+    mutationFn: async () =>
+      httpClient({
+        path: '/tags',
+        method: 'POST',
+        data: {
+          name: tagSelected?.name,
+          type: tag,
+        },
+      }),
+    onError: (err) => {
+      console.log(err);
+      setLoading(false);
+    },
+    onSuccess: () => sucess(),
+  });
+
+  const updateTag = useMutation({
+    mutationKey: ['create-tag'],
+    mutationFn: async () =>
+      httpClient({
+        path: `/tags/${tagSelected?.id}`,
+        method: 'PATCH',
+        data: {
+          name: tagSelected?.name,
+        },
+      }),
+    onError: (err) => {
+      console.log(err);
+      setLoading(false);
+    },
+    onSuccess: () => sucess(),
+  });
+
+  const deleteTag = useMutation({
+    mutationKey: ['delete-tag'],
+    mutationFn: async () =>
+      httpClient({
+        path: `/tags/${tagSelected?.id}`,
+        method: 'DELETE',
+      }),
+    onError: (err) => {
+      console.log(err);
+      setLoading(false);
+    },
+    onSuccess: () => sucess(),
+  });
+
+  const sucess = () => {
+    setLoading(false);
+    setTagSelected(undefined);
+    return queryClient.invalidateQueries({ queryKey: ['tags', tag] });
+  };
+
+  const modalTag = (type: 'CREATE' | 'UPDATE' | 'DELETE') => {
+    console.log('modal name', tagSelected);
+    if (type === 'DELETE') {
+      return ModalAnt.alert(
+        <Text style={{ color: 'red' }}>Deseja realmente excluir?</Text>,
+        <Text style={styles.descriptionModal}>Atenção, essa ação não poderá ser desfeita.</Text>,
+        [
+          { text: 'Cancel', onPress: () => console.log('cancel'), style: 'cancel' },
+          { text: 'Excluir', onPress: () => deleteTag.mutate() },
+        ]
+      );
+    }
+
+    if (type === 'CREATE') {
+      setTagSelected({ name: '', id: 0, modal: 'CREATE' });
+    }
+
+    ModalAnt.alert(
+      <Text style={{ color: '#3B3D3E' }}>
+        {type === 'CREATE' ? 'Adicionar etiqueta' : 'Editar etiqueta'}
+      </Text>,
+      <View style={{ width: 250 }}>
+        <TextInput
+          style={[
+            {
+              borderColor: isFocus ? (err.input !== '' ? 'red' : '#75BCEE') : '#DADADA',
+              backgroundColor: '#FFF',
+              color: '#363636',
+            },
+            styles.input,
+          ]}
+          defaultValue={tagSelected?.name}
+          onFocus={() => setIsFocus(true)}
+          onBlur={() => setIsFocus(false)}
+          placeholder={'Nome'}
+          onChange={(e) => {
+            setErr({ input: '', message: '' });
+            setTagSelected({ ...tagSelected, id: tagSelected?.id ?? 0, name: e.nativeEvent.text });
+          }}
+        />
+      </View>,
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('test'),
+          style: { fontFamily: 'Lato_400Regular', color: '#6D6D6D' },
+        },
+        {
+          text: type === 'CREATE' ? 'Adicionar' : 'Editar',
+          onPress: () => {
+            setLoading(true);
+            type === 'CREATE' ? createTag.mutate() : updateTag.mutate();
           },
-        }),
-      initialPageParam: 1,
-      getNextPageParam: (lastPage) => lastPage.meta.nextPage,
-    });
-
-  useEffect(() => {
-    refetch();
-  }, [tag]);
-
-  console.log('tagsssss', data);
+          style: { textAlign: 'center', fontFamily: 'Lato_400Regular' },
+        },
+      ]
+    );
+  };
 
   return (
     <>
@@ -52,69 +184,139 @@ export default function Tags() {
               <MaterialIcons name="arrow-back-ios" size={24} color="white" />
             </TouchableOpacity>
           ),
+          headerRight: () => (
+            <TouchableOpacity onPress={() => modalTag('CREATE')}>
+              <Text
+                style={{
+                  color: '#fff',
+                }}>
+                Nova
+              </Text>
+            </TouchableOpacity>
+          ),
         }}
       />
-      <View style={styles.container}>
-        <View style={styles.destakContainer}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            decelerationRate="normal"
-            contentContainerStyle={{
-              marginHorizontal: 15,
-              marginTop: 10,
-              flexDirection: 'row',
-              paddingRight: 20,
-            }}>
-            <TagFilterButton tag={tag} setTag={setTag} item="REQUEST" />
-            <TagFilterButton tag={tag} setTag={setTag} item="NOTICE" />
-            <TagFilterButton tag={tag} setTag={setTag} item="REPORT" />
-          </ScrollView>
-        </View>
-        {false ? (
-          <View style={{ marginTop: 10 }}>
-            <RequestItemSkeleton key={1} />
-            <RequestItemSkeleton key={2} />
-            <RequestItemSkeleton key={3} />
-            <RequestItemSkeleton key={4} />
-            <RequestItemSkeleton key={5} />
-            <RequestItemSkeleton key={6} />
-            <RequestItemSkeleton key={7} />
-            <RequestItemSkeleton key={8} />
-          </View>
-        ) : (
-          <FlashList
-            contentContainerStyle={{ paddingTop: 10 }}
-            renderItem={({ item }: { item: User }) => (
-              <Text>{item.name}</Text>
-
-              // <View>
-              //   <Text>{item.name}</Text>
-              //   <Entypo name="edit" size={24} color="black" />
-              //   <MaterialIcons name="delete" size={24} color="black" />
-              // </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.container}>
+            <View style={styles.destakContainer}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                decelerationRate="normal"
+                contentContainerStyle={{
+                  marginHorizontal: 15,
+                  marginTop: 10,
+                  flexDirection: 'row',
+                  paddingRight: 20,
+                }}>
+                <TagFilterButton tag={tag} setTag={setTag} item="REQUEST" />
+                <TagFilterButton tag={tag} setTag={setTag} item="NOTICE" />
+                <TagFilterButton tag={tag} setTag={setTag} item="REPORT" />
+              </ScrollView>
+            </View>
+            {!data ? (
+              <View style={{ marginTop: 10 }}>
+                {[...Array(8)].map((_, i) => (
+                  <RequestItemSkeleton key={i} />
+                ))}
+              </View>
+            ) : (
+              <Provider>
+                <FlashList
+                  extraData={tagSelected}
+                  contentContainerStyle={{ paddingTop: 10 }}
+                  renderItem={({ item }: { item: Tag }) => (
+                    <SelectItem
+                      key={item.id}
+                      itemSelected={tagSelected?.id}
+                      value={item.id}
+                      placeholder={item.name}
+                      onChange={() =>
+                        setTagSelected((prev) =>
+                          prev?.id !== item.id ? { id: item.id, name: item.name } : undefined
+                        )
+                      }
+                      onUpdate={() => modalTag('UPDATE')}
+                      onDelete={() => modalTag('DELETE')}
+                    />
+                  )}
+                  estimatedItemSize={12}
+                  keyExtractor={(item) => `id-${item.id}-${item.type}`}
+                  data={data}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={() => {
+                        return queryClient.invalidateQueries({ queryKey: ['tags', tag] });
+                      }}
+                      colors={['#9Bd35A', '#689F38']}
+                      progressBackgroundColor="#fff"
+                    />
+                  }
+                  showsVerticalScrollIndicator={false}
+                />
+              </Provider>
             )}
-            onEndReached={() => {
-              if (hasNextPage) fetchNextPage();
-            }}
-            estimatedItemSize={12}
-            keyExtractor={(item) => item?.uuid || Math.random().toString()}
-            data={data?.pages?.flatMap((page) => page.items) || []}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={() => queryClient.invalidateQueries({ queryKey: ['users'] })}
-                colors={['#9Bd35A', '#689F38']}
-                progressBackgroundColor="#fff"
-              />
-            }
-            showsVerticalScrollIndicator={false}
-          />
-        )}
-      </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </>
   );
 }
+
+type SelectItemProps = {
+  itemSelected: number | undefined;
+  value: number;
+  placeholder: string;
+  onChange: () => void;
+  onUpdate: () => void;
+  onDelete?: () => void;
+};
+
+const SelectItem = memo(
+  ({ itemSelected, value, placeholder, onChange, onUpdate, onDelete }: SelectItemProps) => {
+    return (
+      <Pressable
+        onPress={onChange}
+        style={{
+          marginTop: 4,
+          height: 40,
+          marginHorizontal: 20,
+          borderColor: itemSelected === value ? '#5D5B5B' : '#F3F4F9',
+          borderWidth: 1,
+          borderRadius: 5,
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingLeft: 20,
+          flexDirection: 'row',
+        }}>
+        <Text
+          style={{
+            fontFamily: 'Lato_400Regular',
+            fontSize: 16,
+            color: '#5D5B5B',
+          }}>
+          {placeholder}
+        </Text>
+        {itemSelected === value ? (
+          <View style={{ flexDirection: 'row' }}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={onUpdate}>
+              <Text style={styles.buttonText}>Editar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.buttonContainer}>
+              <Text style={[styles.buttonText, { color: 'red' }]} onPress={onDelete}>
+                Excluir
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
+      </Pressable>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -138,72 +340,43 @@ const styles = StyleSheet.create({
     backgroundColor: '#00264B',
     height: 60,
   },
-  imgBox: {
-    backgroundColor: '#fff',
-    // alignSelf: 'center',
+  tagContainer: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+    marginTop: 4,
     marginHorizontal: 20,
-    padding: 20,
-    borderRadius: 15,
+    borderColor: '#F3F4F9',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingLeft: 20,
   },
-  userPhoto: {
-    borderRadius: 500,
-    width: 96,
-    height: 96,
-    alignSelf: 'center',
-  },
-  userName: {
-    color: '#3B3D3E',
-    fontSize: 24,
-    fontFamily: 'Lato_400Regular',
-    marginTop: 10,
-    alignSelf: 'center',
-  },
-  userEmail: {
+  tagName: {
     color: '#3B3D3E',
     fontSize: 16,
-    fontFamily: 'Lato_300Light',
-    alignSelf: 'center',
+    fontFamily: 'Lato_400Regular',
   },
-  itemBox: {
-    flexDirection: 'row',
-    marginHorizontal: 20,
-    backgroundColor: '#0000000b',
+  buttonContainer: {
     paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderWidth: 2,
-    borderColor: '#00000017',
-    alignItems: 'center',
+    paddingVertical: 5,
   },
-  itemText: {
-    paddingLeft: 20,
-    fontSize: 18,
+  buttonText: {
     fontFamily: 'Lato_400Regular',
-    color: '#3b3d3e',
+    color: '#005AB1',
   },
-  title: {
-    color: '#3F3D56',
+  descriptionModal: {
+    fontSize: 16,
     fontFamily: 'Lato_400Regular',
-    fontSize: 24,
-    paddingTop: 20,
+    color: '#363636',
   },
-  email: {
-    color: '#716F6F',
+  input: {
+    borderWidth: 1,
+    height: 40,
+    padding: 10,
+    borderRadius: 5,
+    marginHorizontal: 20,
+    marginVertical: 5,
     fontFamily: 'Lato_400Regular',
-    marginBottom: 20,
-    fontSize: 17,
-  },
-  itemAccountText: {
-    color: '#716F6F',
-    fontFamily: 'Lato_400Regular',
-    marginBottom: 20,
-    fontSize: 19,
-  },
-  itemAccount: {
-    display: 'flex',
-    paddingVertical: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    borderColor: '#C5C4C0',
-    borderTopWidth: 1,
+    fontSize: 16,
   },
 });

@@ -18,7 +18,7 @@ const TagFilterButton = ({ tag, item, setTag }: SelectProps) => {
   };
 
   return (
-    <TouchableOpacity onPress={() => setTag(item)}>
+    <TouchableOpacity onPress={() => setTag(item)} key={item}>
       <View
         style={{
           marginHorizontal: 5,

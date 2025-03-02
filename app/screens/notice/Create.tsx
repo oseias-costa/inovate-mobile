@@ -59,7 +59,7 @@ export default function Create() {
           title: data.title,
           text: data.text,
           user: companySelected.uuid,
-          tag: tagSelected.id,
+          tagId: tagSelected.id,
         },
       }),
     retry: false,

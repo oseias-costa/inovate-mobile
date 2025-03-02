@@ -73,6 +73,7 @@ export default function CreateReport() {
           text: data.text,
           companyUuid: companySelected.uuid,
           authorUuid: user?.uuid,
+          tagId: tagSelected.id,
         },
       }),
     onError: (err) => {

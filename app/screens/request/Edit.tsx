@@ -66,7 +66,7 @@ export default function UpdateSolicitation() {
           description: data.description,
           companyUuid: companySelected.uuid,
           expiration,
-          tag: tagSelected.id,
+          tagId: tagSelected.id,
         },
       }),
     onError: (err) => {
